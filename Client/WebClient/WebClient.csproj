@@ -10,6 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.3" PrivateAssets="all" />
+    <PackageReference Include="Serilog" Version="4.0.0-dev-02122" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.1-dev-00582" />
   </ItemGroup>
 
   <ItemGroup>

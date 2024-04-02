@@ -1,6 +1,6 @@
 ﻿using Libraries.Models.Abstract;
 
-namespace Libraries.Models.Concrete;
+namespace Libraries.Entities.Concrete;
 
 internal class ExampleModel : IExampleModel
 {

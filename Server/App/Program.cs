@@ -1,11 +1,29 @@
+using App.Infrastructure.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// --------------------------------------------------------------------------------------------------------------
+// Удалите этот код, если правильно пропишите код в конфигурациях Арр
+// СМОТРЕТЬ https://github.com/TaisiaKishynskaya/CSharp_A-Level/tree/main/eShop.Project/Application/Catalog/Catalog.API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// --------------------------------------------------------------------------------------------------------------
+// ДОБАВЬТЕ ЭТОТ КОД когда пропишете классы с конфигурациями
+
+// AuthenticationConfiguration.ConfigureAuthentication(builder);
+// AuthorizationConfiguration.ConfigureAuthorization(builder); 
+
+// SwaggerConfiguration.AddSwagger(builder.Services, builder.Configuration); 
+
+ DatabaseConfiguration.ConfigureDatabase(builder);
+
+// ServicesConfiguration.ConfigureServices(builder); 
+
+//----------------------------------------------------------------------------------------------------------------
 var app = builder.Build();
+
+// Когда пропишете все файлы конфигураций - удалите строки ниже (кроме "AppConfiguration.ConfigureApp(app);"  и  "app.Run();")
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -14,31 +32,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// AppConfiguration.ConfigureApp(app);
+
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapGet("/weatherforecast", () => { })
+    .WithName("GetWeatherForecast")
+    .WithOpenApi();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
