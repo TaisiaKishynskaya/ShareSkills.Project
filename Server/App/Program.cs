@@ -1,4 +1,9 @@
 using App.Infrastructure.Configurations;
+using App.Infrastructure.Mapping.Endpoints.Concrete;
+using App.Services.Abstract;
+using App.Services.Concrete;
+using Libraries.Data.UnitOfWork.Abstract;
+using Libraries.Data.UnitOfWork.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +23,13 @@ builder.Services.AddSwaggerGen();
 
  DatabaseConfiguration.ConfigureDatabase(builder);
 
+ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+ builder.Services.AddScoped<IUserService, UserService>();
+ builder.Services.AddScoped<IStudentService, StudentService>();
+ builder.Services.AddScoped<ITeacherService, TeacherService>();
+
+ builder.Services.AddMinimalEndpoints();
+
 // ServicesConfiguration.ConfigureServices(builder); 
 
 //----------------------------------------------------------------------------------------------------------------
@@ -36,9 +48,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/weatherforecast", () => { })
+/*app.MapGet("/weatherforecast", () => { })
     .WithName("GetWeatherForecast")
-    .WithOpenApi();
+    .WithOpenApi()*/
 
+app.RegisterStudentEndpoint();
+app.RegisterStudentEndpoint();
+
+app.RegisterMinimalEndpoints();
 
 app.Run();

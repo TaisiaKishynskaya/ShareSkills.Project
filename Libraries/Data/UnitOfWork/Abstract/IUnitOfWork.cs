@@ -7,6 +7,7 @@ public interface  IUnitOfWork : IDisposable
 {
     DbContext Context { get; }
     
+    public IUserRepository UserRepository { get; }
     IStudentRepository StudentRepository { get; }
     ITeacherRepository TeacherRepository { get; }
     

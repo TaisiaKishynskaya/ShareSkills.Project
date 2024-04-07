@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
 	public DbSet<TeacherEntity> Teachers { get; set; }
 	public DbSet<MeetingEntity> Meetings { get; set; }
 	public DbSet<GradeEntity> Grades { get; set; }
+	public DbSet<SkillEntity> Skills { get; set; }
 	
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
@@ -25,6 +26,7 @@ public class AppDbContext : DbContext
 		builder.ApplyConfiguration(new TeacherConfiguration());
 		builder.ApplyConfiguration(new MeetingConfiguration());
 		builder.ApplyConfiguration(new GradeConfiguration());
+		builder.ApplyConfiguration(new SkillConfiguration());
 		
 		//AppDbSeed.Seed(builder);
 	}
