@@ -1,5 +1,5 @@
-using App.Data;
 using App.Infrastructure.Exceptions;
+using Libraries.Data;
 using Serilog;
 
 namespace App.Infrastructure.Configurations;

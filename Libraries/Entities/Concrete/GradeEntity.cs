@@ -2,7 +2,7 @@ namespace Libraries.Entities.Concrete;
 
 public class GradeEntity
 {
-    public int Id { get; set; }
+    public required Guid Id { get; set; }
     public int Grade { get; set; }
     
     // *-*

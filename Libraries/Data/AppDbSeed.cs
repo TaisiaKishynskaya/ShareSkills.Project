@@ -1,7 +1,7 @@
 using Libraries.Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 
-namespace App.Data;
+namespace Libraries.Data;
 
 // Тут наши начальные данные.
 // ЭТО ПРИМЕР работы этого класса, вы эти данные удалите и начнете писать свой гибкий код
@@ -13,25 +13,25 @@ public class AppDbSeed
         {
             new()
             {
-                Id = 1, 
+                Id = Guid.NewGuid(), 
                 Name = "Bob", 
                 Surname = "Smith",
                 Email = "bobsmith@gmail.com",
-                Role = "Student",
+                //Role = "Student",
                 Skills = new List<SkillEntity>(), //here should be list/etc of skills, that user choose, fix it
-                Objective = string.Empty,
+                //Objective = string.Empty,
                 Password = "HashCode,Boys!"
             },
             
             new()
             {
-                Id = 2, 
+                Id = Guid.NewGuid(), 
                 Name = "Alice", 
                 Surname = "Smith", 
                 Email = "alicesmith@gmail.com",
                 Skills = new List<SkillEntity>(), // here should be list/etc of skills, that user choose, fix it
-                Role = "Teacher",
-                Objective = "I like math and",
+                //Role = "Teacher",
+                //Objective = "I like math and",
                 Password = "HashCode,Boys!",
             },
             
@@ -43,8 +43,8 @@ public class AppDbSeed
         {
             new()
             {
-                Id = 1,
-                UserId = 1,
+                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 User = users[1], // because we have "required" UserEntity User in StudentEntity. If u don`t want required - don`t write this
                 Meetings = new List<MeetingEntity>(),
                 Grades = new List<GradeEntity>(),
@@ -59,8 +59,8 @@ public class AppDbSeed
         {
             new()
             {
-                Id = 1,
-                UserId = 2,
+                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 Meetings = new List<MeetingEntity>(),
                 Grades = new List<GradeEntity>(),
                 Rating = 1.9,
@@ -74,7 +74,7 @@ public class AppDbSeed
         {
             new()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Skill = "Math",
                 Users = users, // here should be users (or users' id) who have "Math" in skills, fix it
             }
@@ -87,10 +87,10 @@ public class AppDbSeed
         {
             new()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 DateAndTime = DateTime.UtcNow,
-                TeacherId = 1,
-                StudentId = 1,
+                TeacherId = Guid.NewGuid(),
+                StudentId = Guid.NewGuid(),
             }
             
             // new() { ... }
@@ -101,7 +101,7 @@ public class AppDbSeed
         {
             new()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Grade = 1,
                 Teachers = teachers,  // here should be teachers (or teachers' id) who have this grade, fix it
                 Students = students,  // here should be students (or students' id) who have this grade, fix it
@@ -111,7 +111,7 @@ public class AppDbSeed
             
             new()
             {
-                Id = 5,
+                Id = Guid.NewGuid(),
                 Grade = 5,
                 Teachers = teachers,  // here should be teachers (or teachers' id) who have this grade, fix it
                 Students = students,  // here should be students (or students' id) who have this grade, fix it

@@ -1,4 +1,6 @@
-namespace App.Data;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Libraries.Data;
 
 public class AppDbInitializer
 {

@@ -1,3 +1,4 @@
+using Libraries.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Infrastructure.Configurations;

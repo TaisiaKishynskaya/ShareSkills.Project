@@ -1,7 +1,8 @@
-﻿using App.Data;
-using Libraries.Configurations;
+﻿using Libraries.Configurations;
 using Libraries.Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
+
+namespace Libraries.Data;
 
 public class AppDbContext : DbContext
 {

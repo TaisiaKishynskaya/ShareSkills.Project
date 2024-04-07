@@ -2,11 +2,11 @@ namespace Libraries.Entities.Concrete;
 
 public class TeacherEntity
 {
-    public int Id { get; set; }
+    public required Guid Id { get; set; }
     public double Rating { get; set; }
     
     // 1-1
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public UserEntity User { get; set; }
     
     // 1-*

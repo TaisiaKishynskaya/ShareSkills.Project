@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
     public void Configure(EntityTypeBuilder<UserEntity> builder)
     {
-        //builder.ToTable("User");
+        //]builder.ToTable("User");
         
         builder.HasKey(item => item.Id); 
         
@@ -24,16 +24,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .IsRequired()
             .HasMaxLength(50); 
         
-        builder.Property(item => item.Role)
-            .IsRequired()
-            .HasMaxLength(7); 
-        
         builder.Property(item => item.Password)
             .IsRequired()
             .HasMaxLength(15); 
         
-        builder.Property(item => item.Objective)
-            .HasMaxLength(300); 
+        //builder.Property(item => item.Role).IsRequired().HasMaxLength(7); 
+        //builder.Property(item => item.Objective).HasMaxLength(300); 
         
         // 1-1
         builder
