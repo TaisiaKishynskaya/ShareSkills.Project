@@ -8,7 +8,7 @@ public class TeacherConfiguration : IEntityTypeConfiguration<TeacherEntity>
 {
     public void Configure(EntityTypeBuilder<TeacherEntity> builder)
     {
-        // builder.ToTable("Teacher");
+        builder.ToTable("Teachers");
         
         builder.HasKey(item => item.Id);
         
@@ -19,7 +19,9 @@ public class TeacherConfiguration : IEntityTypeConfiguration<TeacherEntity>
         // 1-1
         builder
             .HasOne(x => x.User)
-            .WithOne(x => x.Teacher);
+            .WithOne(x => x.Teacher)
+            .HasForeignKey<UserEntity>(s => s.TeacherId)
+            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления
         
         // *-1
         builder

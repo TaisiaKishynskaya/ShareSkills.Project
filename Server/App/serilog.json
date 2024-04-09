@@ -1,0 +1,14 @@
+{
+  "Serilog": {
+    "MinimumLevel": "Information",
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Infrastructure/Logs/servicelogs.txt",
+          "rollingInterval": "Day"
+        }
+      }
+    ]
+  }
+}
