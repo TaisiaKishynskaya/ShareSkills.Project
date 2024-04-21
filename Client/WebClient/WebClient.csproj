@@ -19,8 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\" />
-    <Folder Include="Static\" />
+    <ProjectReference Include="..\..\Libraries\Libraries.csproj" />
   </ItemGroup>
 
 </Project>

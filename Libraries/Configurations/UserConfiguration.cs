@@ -11,6 +11,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.ToTable("Users");
         
         builder.HasKey(item => item.Id); 
+        builder.Property(item => item.Id)
+            .IsRequired()
+            .HasConversion(
+                id => id.ToString(), // Преобразование Guid в строку при сохранении в базу данных
+                id => Guid.Parse(id) // Преобразование строки обратно в Guid при чтении из базы данных
+            ); 
         
         builder.Property(item => item.Name)
             .IsRequired()

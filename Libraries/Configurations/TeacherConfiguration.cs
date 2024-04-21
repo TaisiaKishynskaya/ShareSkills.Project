@@ -17,11 +17,11 @@ public class TeacherConfiguration : IEntityTypeConfiguration<TeacherEntity>
             .HasPrecision(2, 1); // Максимальне значення рейтинга буде мати 5 цифр, з яких 2 - після крапки; 
         
         // 1-1
-        builder
+        /*builder
             .HasOne(x => x.User)
             .WithOne(x => x.Teacher)
             .HasForeignKey<UserEntity>(s => s.TeacherId)
-            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления
+            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления*/
         
         // *-1
         builder

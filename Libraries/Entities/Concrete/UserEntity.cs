@@ -13,11 +13,11 @@ public class UserEntity
     //public string Objective { get; set; }
     
     // 1-1
-    public Guid StudentId { get; set; }
+    //public Guid StudentId { get; set; }
     public StudentEntity Student { get; set; }
     
     // 1-1
-    public Guid TeacherId { get; set; }
+    //public Guid TeacherId { get; set; }
     public TeacherEntity Teacher { get; set; }
     
     // *-*

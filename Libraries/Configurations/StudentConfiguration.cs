@@ -17,11 +17,11 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
             .HasMaxLength(200); 
         
         // 1-1
-        builder
+        /*builder
             .HasOne(x => x.User)
             .WithOne(x => x.Student)
             .HasForeignKey<UserEntity>(u => u.StudentId)
-            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления;
+            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления;*/
         
         // *-1
         builder
