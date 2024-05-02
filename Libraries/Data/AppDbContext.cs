@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
 	{
 	}
 	
-	public DbSet<UserEntity> Users { get; set; }
+	//public DbSet<UserEntity> Users { get; set; }
 	public DbSet<StudentEntity> Students { get; set; }
 	public DbSet<TeacherEntity> Teachers { get; set; }
 	public DbSet<MeetingEntity> Meetings { get; set; }
@@ -21,7 +21,7 @@ public class AppDbContext : DbContext
 	{
 		//builder.ApplyConfigurationsFromAssembly(GetType().Assembly); // it for Configurations in App project
 
-		builder.ApplyConfiguration(new UserConfiguration());
+		//builder.ApplyConfiguration(new UserConfiguration());
 		builder.ApplyConfiguration(new StudentConfiguration());
 		builder.ApplyConfiguration(new TeacherConfiguration());
 		builder.ApplyConfiguration(new MeetingConfiguration());

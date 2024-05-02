@@ -11,7 +11,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
 
     public DbContext Context => context;
     
-    public IUserRepository UserRepository { get; } = new UserRepository(context);
+    // public IUserRepository UserRepository { get; } = new UserRepository(context);
     public IStudentRepository StudentRepository { get; } = new StudentRepository(context);
     public ITeacherRepository TeacherRepository { get; } = new TeacherRepository(context);
 

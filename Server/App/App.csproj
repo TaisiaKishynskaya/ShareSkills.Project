@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\" />
     <Folder Include="Infrastructure\Mapping\Endpoints\" />
     <Folder Include="Infrastructure\Validations\" />
   </ItemGroup>

@@ -14,7 +14,11 @@ public class StudentService (IUnitOfWork unitOfWork) : IStudentService
         {
             Id = Guid.NewGuid(),
             Purpose = studentForCreationDto.Purpose,
-            UserId = default,
+            Name = studentForCreationDto.Name,
+            Surname = studentForCreationDto.Surname,
+            Email = studentForCreationDto.Email,
+            Password = studentForCreationDto.Password
+            
         };
 
         unitOfWork.StudentRepository.Insert(student);
@@ -23,7 +27,11 @@ public class StudentService (IUnitOfWork unitOfWork) : IStudentService
         return new StudentDto
         {
             Id = student.Id,
-            Purpose = student.Purpose
+            Purpose = student.Purpose,
+            Name = student.Name,
+            Surname = student.Surname,
+            Email = student.Email,
+            Password = student.Password
         };
     }
 
@@ -50,7 +58,11 @@ public class StudentService (IUnitOfWork unitOfWork) : IStudentService
             studentDtos.Add(new StudentDto
             {
                 Id = student.Id,
-                Purpose = student.Purpose
+                Purpose = student.Purpose,
+                Name = student.Name,
+                Surname = student.Surname,
+                Email = student.Email,
+                Password = student.Password
             });
         }
 
@@ -66,7 +78,11 @@ public class StudentService (IUnitOfWork unitOfWork) : IStudentService
         return new StudentDto
         {
             Id = student.Id,
-            Purpose = student.Purpose
+            Purpose = student.Purpose,
+            Name = student.Name,
+            Surname = student.Surname,
+            Email = student.Email,
+            Password = student.Password
         };
     }
 

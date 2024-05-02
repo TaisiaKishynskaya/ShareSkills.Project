@@ -1,7 +1,6 @@
 using App.Infrastructure.Exceptions;
 using App.Services.Abstract;
 using Libraries.Contracts.Teacher;
-using Libraries.Contracts.User;
 using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Entities.Concrete;
 
@@ -17,6 +16,10 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         {
             Id = Guid.NewGuid(),
             Rating = teacherForCreationDto.Rating,
+            Name = teacherForCreationDto.Name,
+            Surname = teacherForCreationDto.Surname,
+            Email = teacherForCreationDto.Email,
+            Password = teacherForCreationDto.Password
         };
 
         unitOfWork.TeacherRepository.Insert(teacher);
@@ -25,7 +28,11 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         return new TeacherDto
         {
             Id = teacher.Id,
-            Rating = teacher.Rating
+            Rating = teacher.Rating,
+            Name = teacher.Name,
+            Surname = teacher.Surname,
+            Email = teacher.Email,
+            Password = teacher.Password
         };
     }
 
@@ -55,6 +62,10 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
             {
                 Id = teacher.Id,
                 Rating = teacher.Rating,
+                Name = teacher.Name,
+                Surname = teacher.Surname,
+                Email = teacher.Email,
+                Password = teacher.Password
             });
         }
 
@@ -70,7 +81,11 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         return new TeacherDto
         {
             Id = teacher.Id,
-            Rating = teacher.Rating
+            Rating = teacher.Rating,
+            Name = teacher.Name,
+            Surname = teacher.Surname,
+            Email = teacher.Email,
+            Password = teacher.Password
         };
     }
 
@@ -81,6 +96,10 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
             ?? throw new TeacherNotFoundException(id);
 
         teacher.Rating = teacherForUpdateDto.Rating;
+        teacher.Name = teacherForUpdateDto.Name;
+        teacher.Surname = teacherForUpdateDto.Surname;
+        teacher.Email = teacherForUpdateDto.Email;
+        teacher.Password = teacherForUpdateDto.Password;
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

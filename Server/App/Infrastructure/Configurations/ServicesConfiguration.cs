@@ -14,8 +14,8 @@ public static class ServicesConfiguration
     {
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IUserService, UserService>();
+        // builder.Services.AddScoped<IUserRepository, UserRepository>();
+        // builder.Services.AddScoped<IUserService, UserService>();
 
         builder.Services.AddScoped<IStudentRepository, StudentRepository>();
         builder.Services.AddScoped<IStudentService, StudentService>();
