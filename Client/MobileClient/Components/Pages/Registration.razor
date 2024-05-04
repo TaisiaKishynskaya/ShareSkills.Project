@@ -1,5 +1,7 @@
 @page "/registration"
 @inject IStringLocalizer<Registration> localizer
+@inject HttpClient httpClient
+
 <div class="main">
         <h1>Навички Share</h1>
         <div class="info">
@@ -25,3 +27,44 @@
     
         </div>
     </div>
+
+@if (tasks != null)
+{
+    <ul>
+        @foreach (var task in tasks)
+        {
+            <li>
+                <input type="checkbox" disabled="@task.completed" /> @task.title
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private TaskModel[]? tasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Выполняем GET-запрос к серверу
+            tasks = await httpClient.GetFromJsonAsync<TaskModel[]>("https://pojwct.free.beeceptor.com/todos");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    public class TaskModel
+    {
+        public int id { get; set; }
+        public string? title { get; set; }
+        public bool completed { get; set; }
+    }
+}
+}
