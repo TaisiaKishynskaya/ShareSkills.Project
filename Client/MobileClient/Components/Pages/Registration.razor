@@ -1,5 +1,6 @@
 @page "/registration"
 @inject IStringLocalizer<Registration> localizer
+@inject NavigationManager Navigation
 @inject HttpClient httpClient
 
 <div class="main">
@@ -19,7 +20,7 @@
                 </label>
                 <p>Вчитель</p>
             </div>
-            <button class="next-btn">Далі</button>
+            <button class="next-btn" @onclick="NavigateToOtherPage">Далі</button>
             <div class="login-link">
                 <p>вже зареєстровані?</p>
                 <a href="">увійти</a>
@@ -66,5 +67,10 @@ else
         public string? title { get; set; }
         public bool completed { get; set; }
     }
-}
+
+    private void NavigateToOtherPage()
+    {
+        Navigation.NavigateTo("/choose-skills");
+    }
+
 }
