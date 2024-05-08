@@ -1,0 +1,76 @@
+@page "/registration"
+@inject IStringLocalizer<Registration> localizer
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+
+<div class="main">
+        <h1>Навички Share</h1>
+        <div class="info">
+            <div class="input-info">
+                <input type="text" class="main-input" placeholder="Ім'я">
+                <input type="text" class="main-input" placeholder="Прізвище">
+                <input type="text" class="main-input" placeholder="email">
+                <input type="text" class="main-input" placeholder="Пароль">
+            </div>
+            <div class="switch-btn">
+                <p>Учень</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+                <p>Вчитель</p>
+            </div>
+            <button class="next-btn" @onclick="NavigateToOtherPage">Далі</button>
+            <div class="login-link">
+                <p>вже зареєстровані?</p>
+                <a href="">увійти</a>
+            </div>
+    
+        </div>
+    </div>
+
+@if (tasks != null)
+{
+    <ul>
+        @foreach (var task in tasks)
+        {
+            <li>
+                <input type="checkbox" disabled="@task.completed" /> @task.title
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private TaskModel[]? tasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Выполняем GET-запрос к серверу
+            tasks = await httpClient.GetFromJsonAsync<TaskModel[]>("https://pojwct.free.beeceptor.com/todos");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    public class TaskModel
+    {
+        public int id { get; set; }
+        public string? title { get; set; }
+        public bool completed { get; set; }
+    }
+
+    private void NavigateToOtherPage()
+    {
+        Navigation.NavigateTo("/choose-skills");
+    }
+
+}

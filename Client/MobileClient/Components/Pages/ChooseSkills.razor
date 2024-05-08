@@ -1,0 +1,21 @@
+@page "/choose-skills"
+
+<div class="main">
+        <h1>Виберіть навички, яким хочете навчитися</h1>
+        <input class="skill-search" type="text" placeholder="Пошук навички...">
+        <div class="skills">
+            @foreach (var skill in skills)
+            {
+            <div class="skill-check-container">
+                <input class="skill-check" type="checkbox">
+                <p>@skill</p>
+            </div>
+            }
+        </div>
+        <button>Зареєструватися</button>
+        
+    </div>
+
+    @code {
+        private string[] skills = { "Python", "C#", "JavaScript", "HTML", "CSS" };
+    }
