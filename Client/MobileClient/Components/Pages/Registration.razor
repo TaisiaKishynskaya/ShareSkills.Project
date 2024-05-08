@@ -20,16 +20,16 @@
                 </label>
                 <p>Вчитель</p>
             </div>
-            <button class="next-btn" @onclick="NavigateToOtherPage">Далі</button>
+            <button class="next-btn" @onclick="nextNavigane">Далі</button>
             <div class="login-link">
                 <p>вже зареєстровані?</p>
-                <a href="">увійти</a>
+                <a href="" @onclick="loginNavigate">увійти</a>
             </div>
     
         </div>
     </div>
 
-@if (tasks != null)
+@* @if (tasks != null)
 {
     <ul>
         @foreach (var task in tasks)
@@ -43,7 +43,7 @@
 else
 {
     <p>Loading...</p>
-}
+} *@
 
 @code {
     private TaskModel[]? tasks;
@@ -68,9 +68,14 @@ else
         public bool completed { get; set; }
     }
 
-    private void NavigateToOtherPage()
+    private void nextNavigane()
     {
         Navigation.NavigateTo("/choose-skills");
+    }
+
+    private void loginNavigate()
+    {
+        Navigation.NavigateTo("/login");
     }
 
 }
