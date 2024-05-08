@@ -1,4 +1,5 @@
-@page "/registration"
+@page "/"
+@layout NoMenuLayout
 @inject IStringLocalizer<Registration> localizer
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
@@ -20,7 +21,7 @@
                 </label>
                 <p>Вчитель</p>
             </div>
-            <button class="next-btn" @onclick="nextNavigane">Далі</button>
+            <button class="next-btn" @onclick="nextNavigate">Далі</button>
             <div class="login-link">
                 <p>вже зареєстровані?</p>
                 <a href="" @onclick="loginNavigate">увійти</a>
@@ -68,7 +69,7 @@ else
         public bool completed { get; set; }
     }
 
-    private void nextNavigane()
+    private void nextNavigate()
     {
         Navigation.NavigateTo("/choose-skills");
     }
