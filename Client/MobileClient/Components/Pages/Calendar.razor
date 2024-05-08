@@ -1,0 +1,113 @@
+@page "/calendar"
+
+<div class="main">
+    <div class="day">
+        <div class="day-info">
+            <p>Понеділок</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Вівторок</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Середа</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Четвер</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>П'ятниця</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Субота</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Неділя</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card">
+                    <p>@lesson</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string[] mondayEvents = { "Python", "Java" };
+}
