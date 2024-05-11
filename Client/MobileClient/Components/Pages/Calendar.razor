@@ -1,4 +1,5 @@
 @page "/calendar"
+@inject NavigationManager Navigation
 
 <div class="main">
     <div class="day">
@@ -9,8 +10,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -24,8 +25,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -39,8 +40,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -54,8 +55,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -69,8 +70,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -84,8 +85,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -99,8 +100,8 @@
         <div class="cards">
             @foreach (var lesson in mondayEvents) 
             {
-                <div class="lesson-card">
-                    <p>@lesson</p>
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.id)">
+                    <p>@lesson.title</p>
                 </div>
             }
         </div>
@@ -109,5 +110,36 @@
 
 
 @code {
-    private string[] mondayEvents = { "Python", "Java" };
+
+    private class Meeting
+    {
+        public int id { get; set; }
+        public string title { get; set; }
+        public int studentId { get; set; }
+        public int teacherId { get; set; }
+        public string link { get; set; }
+        public DateTime date { get; set; }
+
+        public Meeting(int id, string title, int studentId, int teacherId, string link, DateTime date)
+        {
+            this.id = id;
+            this.title = title;
+            this.studentId = studentId;
+            this.teacherId = teacherId;
+            this.link = link;
+            this.date = date;
+        }
+    }
+
+    private Meeting[] mondayEvents = {
+        new Meeting(0, "Python", 0, 0, "zoom", new DateTime(2024, 5, 9, 14, 43, 0)),
+        new Meeting(1, "C#", 0, 0, "zoom", new DateTime(2024, 5, 9, 14, 43, 0))
+    };
+
+    @* private string[] mondayEvents = {"Python", "Java"}; *@
+
+    private void OpenLessonDetails(int lessonId)
+    {
+        Navigation.NavigateTo($"/lesson/{lessonId}");
+    }
 }

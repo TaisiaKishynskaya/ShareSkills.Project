@@ -1,0 +1,34 @@
+@page "/lesson/{id}"
+
+<div class="main">
+    <div class="title">
+        <img src="https://static-00.iconduck.com/assets.00/arrow-back-outline-icon-512x448-c4m21vap.png" alt="" class="arrow">
+        <p>@Id</p>
+        <div class="blank"></div>
+    </div>
+
+    <div class="content">
+        <div class="block">
+            <p class="text-info">Ментор:</p>
+            <p class="text-value">Іванов Іван</p>
+        </div>
+
+        <div class="block">
+            <p class="text-info">Час:</p>
+            <p class="text-value">12:00</p>
+        </div>
+
+        <div class="block">
+            <p class="text-info">Посилання:</p>
+            <a class="text-value" href="#">Приєднатися</a>
+        </div>
+    </div>
+
+    <button class="cancel">скасувати</button>
+</div>
+
+
+@code {
+    [Parameter]
+    public required string Id { get; set; }
+}
