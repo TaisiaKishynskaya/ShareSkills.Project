@@ -1,0 +1,37 @@
+@page "/cabinet"
+@inject NavigationManager Navigation
+
+<div class="main">
+        <div class="title">
+            <p>Навички Share</p>
+        </div>
+
+        <div class="content">
+            <div class="block">
+                <p class="name">Іванов Іван</p>
+                <p class="email">email@gmail.com</p>
+            </div>
+            <hr>
+            <div class="block">
+                <p class="skills-text">Обрані навички</p>
+                <div class="skills-cards">
+                    @foreach (var skill in skills) 
+                    {
+                        <div class="skill-card">
+                            <p>@skill</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <hr>
+            <button class="feedback" @onclick="goToFeedbackPage">Залишити звортній зв'язок</button>
+        </div>
+    </div>
+
+@code {
+    private string[] skills = {"Python", "Java", "C#", "HTML", "C++"};
+
+    private void goToFeedbackPage() {
+        Navigation.NavigateTo("/feedback");
+    }
+}
