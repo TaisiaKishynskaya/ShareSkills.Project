@@ -1,7 +1,5 @@
 .main {
     padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
     display: flex;
     flex-direction: column;
     height: 93vh;

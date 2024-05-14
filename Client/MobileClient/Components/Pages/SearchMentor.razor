@@ -1,11 +1,12 @@
 @page "/search"
+@inject NavigationManager Navigation
 
 <div class="main">
         <input class="mentor-search" type="text" placeholder="Пошук ментора...">
         <div class="mentor-cards">
             @foreach (var mentor in mentorList)
             {
-                <div class="card">
+                <div class="card" @onclick="() => OpenMentorInformation(mentor.id)">
                     <div class="text">
                         <p>@mentor.name</p>
                         <p>@mentor.skill</p>
@@ -21,11 +22,13 @@
 
 @code {
     private class MentorEntity {
+        public int id {get; set;}
         public string name {get; set;}
         public string skill {get; set;}
         public double rating {get; set;}
 
-        public MentorEntity(string name, string skill, double rating) {
+        public MentorEntity(int id, string name, string skill, double rating) {
+            this.id = id;
             this.name = name;
             this.skill = skill;
             this.rating = rating;
@@ -33,17 +36,21 @@
     }
 
     private MentorEntity[] mentorList = {
-        new MentorEntity("Іванов Іван", "Python", 4.8),
-        new MentorEntity("Шевченко Тарас", "Java", 4.8),
-        new MentorEntity("Іванов Іван", "Python", 4.8),
-        new MentorEntity("Шевченко Тарас", "Java", 4.8),
-        new MentorEntity("Іванов Іван", "Python", 4.8),
-        new MentorEntity("Шевченко Тарас", "Java", 4.8),
-        new MentorEntity("Іванов Іван", "Python", 4.8),
-        new MentorEntity("Шевченко Тарас", "Java", 4.8),
-        new MentorEntity("Іванов Іван", "Python", 4.8),
-        new MentorEntity("Шевченко Тарас", "Java", 4.8),
-        new MentorEntity("Іванов Іван", "Python", 4.8),
-        new MentorEntity("Шевченко Тарас", "Java", 4.8)
+        new MentorEntity(0, "Іванов Іван", "Python", 4.8),
+        new MentorEntity(1, "Шевченко Тарас", "Java", 4.8),
+        new MentorEntity(2, "Іванов Іван", "Python", 4.8),
+        new MentorEntity(3, "Шевченко Тарас", "Java", 4.8),
+        new MentorEntity(4, "Іванов Іван", "Python", 4.8),
+        new MentorEntity(5, "Шевченко Тарас", "Java", 4.8),
+        new MentorEntity(6, "Іванов Іван", "Python", 4.8),
+        new MentorEntity(7, "Шевченко Тарас", "Java", 4.8),
+        new MentorEntity(8, "Іванов Іван", "Python", 4.8),
+        new MentorEntity(9, "Шевченко Тарас", "Java", 4.8),
+        new MentorEntity(10, "Іванов Іван", "Python", 4.8),
+        new MentorEntity(11, "Шевченко Тарас", "Java", 4.8)
     };
+
+    private void OpenMentorInformation(int mentorId) {
+        Navigation.NavigateTo($"/mentor/{mentorId}");
+    }
 }
