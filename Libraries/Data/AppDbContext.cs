@@ -1,10 +1,11 @@
 ﻿using Libraries.Configurations;
 using Libraries.Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Libraries.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext
 {
 	public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
 	{
@@ -20,7 +21,7 @@ public class AppDbContext : DbContext
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		//builder.ApplyConfigurationsFromAssembly(GetType().Assembly); // it for Configurations in App project
-
+		base.OnModelCreating(builder);
 		builder.ApplyConfiguration(new UserConfiguration());
 		builder.ApplyConfiguration(new StudentConfiguration());
 		builder.ApplyConfiguration(new TeacherConfiguration());

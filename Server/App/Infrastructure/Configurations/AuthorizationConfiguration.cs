@@ -1,3 +1,6 @@
+using Libraries.Data;
+using Microsoft.AspNetCore.Identity;
+
 namespace App.Infrastructure.Configurations;
 
 public class AuthorizationConfiguration
@@ -12,5 +15,9 @@ public class AuthorizationConfiguration
                 policy.RequireClaim("scope", "App"); 
             });
         });
+        
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
     }
 }

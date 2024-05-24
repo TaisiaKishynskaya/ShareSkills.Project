@@ -21,7 +21,7 @@ internal class Program
         // ДОБАВЬТЕ ЭТОТ КОД когда пропишете классы с конфигурациями
 
         // AuthenticationConfiguration.ConfigureAuthentication(builder);
-        // AuthorizationConfiguration.ConfigureAuthorization(builder); 
+        AuthorizationConfiguration.ConfigureAuthorization(builder); 
 
         builder.Services.AddSwagger(builder.Configuration); 
 
@@ -39,6 +39,10 @@ internal class Program
         //----------------------------------------------------------------------------------------------------------------
         var app = builder.Build();
         
+        app.UseAuthentication();
+        
+        app.UseAuthorization();
+        
         app.UseHttpsRedirection();
 
         app.RegisterStudentEndpoint();
@@ -49,10 +53,4 @@ internal class Program
         
         app.Run();
     }
-    
-    // EF Core uses this method at design time to access the DbContext
-    /*public static IHostBuilder CreateHostBuilder(string[] args)
-            => Host.CreateDefaultBuilder(args)
-                    .ConfigureWebHostDefaults(
-                            webBuilder => webBuilder.UseStartup<Startup>());*/
 }
