@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace App.Infrastructure.Configurations;
 
-public class AuthorizationConfiguration
+public static class AuthorizationConfiguration
 {
     public static void ConfigureAuthorization(WebApplicationBuilder builder)
     {

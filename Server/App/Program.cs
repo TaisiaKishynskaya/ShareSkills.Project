@@ -20,7 +20,7 @@ internal class Program
         // --------------------------------------------------------------------------------------------------------------
         // ДОБАВЬТЕ ЭТОТ КОД когда пропишете классы с конфигурациями
 
-        // AuthenticationConfiguration.ConfigureAuthentication(builder);
+        AuthenticationConfiguration.ConfigureAuthentication(builder);
         AuthorizationConfiguration.ConfigureAuthorization(builder); 
 
         builder.Services.AddSwagger(builder.Configuration); 
