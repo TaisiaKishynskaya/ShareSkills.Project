@@ -3,12 +3,33 @@ using App.Services.Abstract;
 using Libraries.Contracts.User;
 using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Entities.Concrete;
+using Microsoft.AspNetCore.Identity;
 
 namespace App.Services.Concrete;
 
 public class UserService(IUnitOfWork unitOfWork) : IUserService
 {
-    public async Task<UserDto> CreateAsync(UserForCreationDto userForCreationDto, CancellationToken cancellationToken = default)
+    public async Task<UserDto?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var user = await unitOfWork.UserRepository
+            .GetByEmailAsync(email, cancellationToken);
+
+        if (user is not null)
+        {
+            return new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Surname = user.Surname,
+                PasswordHash = user.Password,
+                Email = user.Email,
+            };
+        }
+
+        return null;
+    }
+
+    public async Task<Guid> CreateAsync(UserModel userForCreationDto, CancellationToken cancellationToken = default)
     {
         var user = new UserEntity
         {
@@ -16,20 +37,13 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
             Name = userForCreationDto.Name,
             Surname = userForCreationDto.Surname,
             Email = userForCreationDto.Email,
-            Password = userForCreationDto.Password
+            Password = userForCreationDto.PasswordHash
         };
 
         unitOfWork.UserRepository.Insert(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new UserDto
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Surname = user.Surname,
-            Email = user.Email,
-            Password = user.Password
-        };
+        return user.Id;
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -58,7 +72,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
                 Name = user.Name,
                 Surname = user.Surname,
                 Email = user.Email,
-                Password = user.Password
+                PasswordHash = user.Password
             });
         }
 
@@ -77,7 +91,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
             Name = user.Name,
             Surname = user.Surname,
             Email = user.Email,
-            Password = user.Password
+            PasswordHash = user.Password
         };
     }
 

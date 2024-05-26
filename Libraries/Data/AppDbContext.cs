@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Libraries.Data;
 
-public class AppDbContext : IdentityDbContext
+public class AppDbContext : DbContext
 {
 	public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
 	{
@@ -20,15 +20,12 @@ public class AppDbContext : IdentityDbContext
 	
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
-		//builder.ApplyConfigurationsFromAssembly(GetType().Assembly); // it for Configurations in App project
-		base.OnModelCreating(builder);
+		//base.OnModelCreating(builder);
 		builder.ApplyConfiguration(new UserConfiguration());
 		builder.ApplyConfiguration(new StudentConfiguration());
 		builder.ApplyConfiguration(new TeacherConfiguration());
 		builder.ApplyConfiguration(new MeetingConfiguration());
 		builder.ApplyConfiguration(new GradeConfiguration());
 		builder.ApplyConfiguration(new SkillConfiguration());
-		
-		//AppDbSeed.Seed(builder);
 	}
 }

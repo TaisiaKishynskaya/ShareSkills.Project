@@ -30,7 +30,6 @@ public static class ServicesConfiguration
 
         //builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
 
-        builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer(); 
     }
 }
