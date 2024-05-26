@@ -31,7 +31,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasMaxLength(50); 
         
         builder.Property(item => item.Password)
-            .IsRequired(); 
+            .IsRequired();
+
+        builder.HasOne(x => x.Role)
+            .WithMany(x => x.Users)
+            .HasForeignKey(x => x.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         //builder.Property(item => item.Role).IsRequired().HasMaxLength(7); 
         //builder.Property(item => item.Objective).HasMaxLength(300); 

@@ -3,19 +3,21 @@ using App.Services.Abstract;
 using Libraries.Contracts.User;
 using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Entities.Concrete;
-using Microsoft.AspNetCore.Identity;
 
 namespace App.Services.Concrete;
 
-public class UserService(IUnitOfWork unitOfWork) : IUserService
+public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUserService
 {
     public async Task<UserDto?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         var user = await unitOfWork.UserRepository
             .GetByEmailAsync(email, cancellationToken);
-
+        
         if (user is not null)
         {
+            //TODO: need to be replaced by EF mapping mechanism for map it automatically
+            var roleName = await roleService.GetRoleNameAsync(user.RoleId);
+            
             return new UserDto
             {
                 Id = user.Id,
@@ -23,6 +25,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
                 Surname = user.Surname,
                 PasswordHash = user.Password,
                 Email = user.Email,
+                Role = roleName
             };
         }
 
@@ -39,7 +42,7 @@ public class UserService(IUnitOfWork unitOfWork) : IUserService
             Email = userForCreationDto.Email,
             Password = userForCreationDto.PasswordHash
         };
-
+        await roleService.AssignUserToRoleAsync(user, userForCreationDto.Role);
         unitOfWork.UserRepository.Insert(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

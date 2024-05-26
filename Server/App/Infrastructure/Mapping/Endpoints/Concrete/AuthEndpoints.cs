@@ -15,19 +15,25 @@ public class AuthEndpoints : IMinimalEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPost("/register", async (IUserService UserService, UserModel user) =>
+        routeBuilder.MapPost("/register", async (IUserService UserService, UserForCreationDto user) =>
         {
             if (await UserService.GetByEmailAsync(user.Email) is not null)
             {
                 return Results.BadRequest("User already exists");
             }
-            
-            var passwordHasher = new PasswordHasher<UserModel>();
-            var passwordHash = passwordHasher.HashPassword(user, user.PasswordHash);
+            var userModel = new UserModel
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                Role = user.Role
+            };
 
-            user.PasswordHash = passwordHash;
+            var passwordHasher = new PasswordHasher<UserModel>();
+            var passwordHash = passwordHasher.HashPassword(userModel, user.Password);
+            userModel.PasswordHash = passwordHash;
             
-            var userId = await UserService.CreateAsync(user);
+            var userId = await UserService.CreateAsync(userModel);
             
             return Results.Ok(userId);
         });
@@ -46,7 +52,8 @@ public class AuthEndpoints : IMinimalEndpoint
                 Name = user.Name,
                 Surname = user.Surname,
                 Email = user.Email,
-                PasswordHash = user.PasswordHash
+                PasswordHash = user.PasswordHash,
+                Role = user.Role
             };
             
             var passwordHasher = new PasswordHasher<UserModel>();
@@ -54,10 +61,11 @@ public class AuthEndpoints : IMinimalEndpoint
             {
                 return Results.BadRequest("Wrong password");
             }
-
+            
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, email), //TODO: claims should be extended
+                new Claim(ClaimTypes.Name, user.Name), //TODO: claims should be extended
+                new Claim(ClaimTypes.Role, user.Role),
             };
 
             var token = new JwtSecurityToken
@@ -77,6 +85,6 @@ public class AuthEndpoints : IMinimalEndpoint
             return Results.Ok(tokenString);
         });
         
-        routeBuilder.MapGet("/test", [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "Teacher"*/)]() => "It works");
+        routeBuilder.MapGet("/test", [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]() => "It works");
     }
 }

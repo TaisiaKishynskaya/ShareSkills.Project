@@ -2,7 +2,6 @@ using App.Services.Abstract;
 using App.Services.Concrete;
 using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Data.UnitOfWork.Concrete;
-using Libraries.Entities.Concrete;
 using Libraries.Repositories.Abstract;
 using Libraries.Repositories.Concrete;
 
@@ -22,6 +21,9 @@ public static class ServicesConfiguration
 
         builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
         builder.Services.AddScoped<ITeacherService, TeacherService>();
+        
+        builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+        builder.Services.AddScoped<IRoleService, RoleService>();
 
         //builder.Services.AddAutoMapper();
 

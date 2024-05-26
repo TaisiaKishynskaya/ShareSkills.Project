@@ -1,7 +1,6 @@
 ﻿using Libraries.Configurations;
 using Libraries.Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Libraries.Data;
 
@@ -17,6 +16,7 @@ public class AppDbContext : DbContext
 	public DbSet<MeetingEntity> Meetings { get; set; }
 	public DbSet<GradeEntity> Grades { get; set; }
 	public DbSet<SkillEntity> Skills { get; set; }
+	public DbSet<RoleEntity> Roles { get; set; }
 	
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
@@ -27,5 +27,6 @@ public class AppDbContext : DbContext
 		builder.ApplyConfiguration(new MeetingConfiguration());
 		builder.ApplyConfiguration(new GradeConfiguration());
 		builder.ApplyConfiguration(new SkillConfiguration());
+		builder.ApplyConfiguration(new RoleConfiguration());
 	}
 }

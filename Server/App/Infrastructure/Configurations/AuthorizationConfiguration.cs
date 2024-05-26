@@ -1,6 +1,3 @@
-using Libraries.Data;
-using Microsoft.AspNetCore.Identity;
-
 namespace App.Infrastructure.Configurations;
 
 public static class AuthorizationConfiguration
