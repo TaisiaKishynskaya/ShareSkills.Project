@@ -2,6 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using App.Infrastructure.Mapping.Endpoints.Abstract;
+using App.Services.Abstract;
+using Libraries.Contracts.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,52 +15,61 @@ public class AuthEndpoints : IMinimalEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPost("/register", async (UserManager<IdentityUser> userManager, string email, string password) =>
+        routeBuilder.MapPost("/register", async (IUserService UserService, UserModel user) =>
         {
-            var user = new IdentityUser { UserName = email, Email = email };
-            var result = await userManager.CreateAsync(user, password);
+            var passwordHasher = new PasswordHasher<UserModel>();
+            var passwordHash = passwordHasher.HashPassword(user, user.PasswordHash);
 
-            if (result.Succeeded)
-            {
-                return Results.Ok(new { Message = "User registered successfully" });
-            }
-
-            return Results.BadRequest(result.Errors);
+            user.PasswordHash = passwordHash;
+            
+            await UserService.CreateAsync(user);
         });
         
-
-        routeBuilder.MapPost("/login", async (UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration, string email, string password) =>
+        routeBuilder.MapPost("/login", async (IUserService UserService, IConfiguration configuration, string email, string password) =>
         {
-            var user = await userManager.FindByEmailAsync(email);
-            if (user != null)
+            var user = await UserService.GetByEmailAsync(email);
+
+            if (user is null)
             {
-                var result = await signInManager.CheckPasswordSignInAsync(user, password, false);
-                if (result.Succeeded)
-                {
-                    var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
-
-                    var authSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtSettings:SecretKey"]));
-
-                    var token = new JwtSecurityToken(
-                        issuer: configuration["JwtSettings:Issuer"],
-                        audience: configuration["JwtSettings:Audience"],
-                        expires: DateTime.Now.AddHours(3),
-                        claims: authClaims,
-                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                    );
-
-                    return Results.Ok(new
-                    {
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        expiration = token.ValidTo
-                    });
-                }
+                return Results.NotFound("The user not found");
             }
-            return Results.Unauthorized();
+
+            var userModel = new UserModel
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash
+            };
+            
+            var passwordHasher = new PasswordHasher<UserModel>();
+            if (passwordHasher.VerifyHashedPassword(userModel, userModel.PasswordHash, password) == PasswordVerificationResult.Failed)
+            {
+                return Results.BadRequest("Wrong password");
+            }
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, email), //TODO: claims should be extended
+            };
+
+            var token = new JwtSecurityToken
+            (
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(60), //TODO: should be changed
+                notBefore: DateTime.UtcNow,
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                    SecurityAlgorithms.HmacSha256)
+            );
+            
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            
+            return Results.Ok(tokenString);
         });
+        
+        routeBuilder.MapGet("/test", [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "Administrator"*/)]() => "It works");
     }
 }

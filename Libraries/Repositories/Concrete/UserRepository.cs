@@ -12,6 +12,8 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<UserEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    public async Task<UserEntity?> GetByEmailAsync(string Email, CancellationToken cancellationToken = default)
+        => await context.Users.FirstOrDefaultAsync(x => x.Email == Email, cancellationToken);
 
     public void Insert(UserEntity user)
         => context.Users.Add(user);

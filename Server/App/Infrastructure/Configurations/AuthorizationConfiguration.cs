@@ -7,17 +7,6 @@ public static class AuthorizationConfiguration
 {
     public static void ConfigureAuthorization(WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthorization(options => 
-        {
-            options.AddPolicy("AppScope", policy =>
-            {
-                policy.RequireAuthenticatedUser(); 
-                policy.RequireClaim("scope", "App"); 
-            });
-        });
-        
-        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+        builder.Services.AddAuthorization();
     }
 }

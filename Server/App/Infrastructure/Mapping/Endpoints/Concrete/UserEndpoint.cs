@@ -24,14 +24,6 @@ public class UserEndpoint : IMinimalEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapPost("/users", async (UserForCreationDto dto, IUserService service) =>
-            {
-                var user = await service.CreateAsync(dto);
-
-                return Results.Created($"/users/{user.Id}", user);
-            })
-            .WithOpenApi();
-
         routeBuilder.MapPut("/users/{id:guid}", async (Guid id, UserForUpdateDto dto, IUserService service) =>
             {
                 await service.UpdateAsync(id, dto);
