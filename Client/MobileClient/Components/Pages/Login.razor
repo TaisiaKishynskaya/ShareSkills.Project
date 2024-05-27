@@ -1,0 +1,23 @@
+@page "/login"
+@layout NoMenuLayout
+@inject NavigationManager Navigation
+
+<div class="main">
+    <h1>Навички Share</h1>
+    <div class="info">
+        <div class="input-info">
+            <input type="text" class="main-input" placeholder="Логін">
+            <input type="text" class="main-input" placeholder="Пароль">
+        </div>
+
+        <button class="login-btn" @onclick="calendarNavigate">Увійти</button>
+    </div>
+</div>
+
+@code 
+{
+    private void calendarNavigate()
+    {
+        Navigation.NavigateTo("/calendar");
+    }
+}
