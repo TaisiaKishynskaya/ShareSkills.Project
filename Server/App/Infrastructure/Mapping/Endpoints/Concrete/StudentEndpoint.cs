@@ -1,5 +1,8 @@
 using App.Services.Abstract;
 using Libraries.Contracts.Student;
+using Libraries.Contracts.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace App.Infrastructure.Mapping.Endpoints.Concrete;
 
@@ -7,7 +10,9 @@ public static class StudentEndpoint
 {
     public static void RegisterStudentEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapGet("/students", async (IStudentService service) =>
+        routeBuilder.MapGet("/students",
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                async (IStudentService service) =>
             {
                 var student = await service.GetAllAsync();
 
@@ -15,7 +20,9 @@ public static class StudentEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapGet("/students/{id:guid}", async (Guid id, IStudentService service) =>
+        routeBuilder.MapGet("/students/{id:guid}", 
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                async (Guid id, IStudentService service) =>
             {
                 var student = await service.GetByIdAsync(id);
 
@@ -23,7 +30,9 @@ public static class StudentEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapPost("/students", async (StudentForCreationDto dto, IStudentService service) =>
+        routeBuilder.MapPost("/students", 
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                async (StudentForCreationDto dto, IStudentService service) =>
             {
                 var student = await service.CreateAsync(dto);
 
@@ -31,7 +40,9 @@ public static class StudentEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapPut("/students/{id:guid}", async (Guid id, StudentForUpdateDto dto, IStudentService service) =>
+        routeBuilder.MapPut("/students/{id:guid}", 
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                async (Guid id, StudentForUpdateDto dto, IStudentService service) =>
             {
                 await service.UpdateAsync(id, dto);
 
@@ -39,7 +50,9 @@ public static class StudentEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapDelete("/students/{id:guid}", async (Guid id, IStudentService service) =>
+        routeBuilder.MapDelete("/students/{id:guid}", 
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                async (Guid id, IStudentService service) =>
             {
                 await service.DeleteAsync(id);
 

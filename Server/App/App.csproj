@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\Mapping\Endpoints\" />
-    <Folder Include="Infrastructure\Validations\" />
   </ItemGroup>
 
   <ItemGroup>

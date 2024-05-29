@@ -73,13 +73,13 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         };
     }
 
-    public async Task UpdateAsync(Guid id, TeacherForUpdateDto teacherForUpdateDto, CancellationToken cancellationToken = default)
+    public async Task RecountTotalGradeAsync(Guid id, int newScore, CancellationToken cancellationToken = default)
     {
         var teacher = await unitOfWork.TeacherRepository
            .GetByIdAsync(id, cancellationToken)
             ?? throw new TeacherNotFoundException(id);
 
-        teacher.Rating = teacherForUpdateDto.Rating;
+        teacher.Rating = newScore;
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

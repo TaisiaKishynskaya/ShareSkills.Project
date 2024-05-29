@@ -23,11 +23,6 @@ public class TeacherConfiguration : IEntityTypeConfiguration<TeacherEntity>
             .HasForeignKey<UserEntity>(s => s.TeacherId)
             .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления*/
         
-        // *-1
-        builder
-            .HasMany(x => x.Meetings)
-            .WithOne(x => x.Teacher);
-        
         // *-*
         builder
             .HasMany(x => x.Grades)

@@ -11,19 +11,10 @@ public class MeetingConfiguration : IEntityTypeConfiguration<MeetingEntity>
         builder.ToTable("Meetings");
         
         builder.HasKey(item => item.Id);
-        
-        builder.Property(b => b.DateAndTime).IsRequired();
-        
-        // *-1
-        builder
-            .HasOne(x => x.Teacher)
-            .WithMany(x => x.Meetings)
-            .HasForeignKey(item => item.TeacherId);
-        
-        // *-1
-        builder
-            .HasOne(x => x.Student)
-            .WithMany(x => x.Meetings)
-            .HasForeignKey(item => item.StudentId);
+
+        builder.Property(x => x.OwnerId).IsRequired();
+        builder.Property(x => x.Description);
+        builder.Property(x => x.ForeignId).IsRequired();
+        builder.Property(x => x.DateTime).IsRequired();
     }
 }

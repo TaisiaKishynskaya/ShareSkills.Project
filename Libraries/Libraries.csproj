@@ -24,4 +24,10 @@
       <Folder Include="Entities\Abstract\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Mono.Android">
+        <HintPath>C:\Program Files\dotnet\packs\Microsoft.Android.Ref.34\34.0.52\ref\net8.0\Mono.Android.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

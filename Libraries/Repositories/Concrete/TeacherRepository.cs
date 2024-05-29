@@ -13,6 +13,16 @@ public class TeacherRepository(AppDbContext context) : ITeacherRepository
     public async Task<TeacherEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await context.Teachers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+    public async Task<IEnumerable<int>> GetScoresByTeacherIdAsync(Guid teacherId)
+    {
+        var grades = await context.Teachers
+            .Where(t => t.Id == teacherId)
+            .SelectMany(t => t.Grades)
+            .ToListAsync();
+
+        return grades.Select(x => x.Grade);
+    }
+
     public void Insert(TeacherEntity teacher)
         => context.Teachers.Add(teacher);
 
