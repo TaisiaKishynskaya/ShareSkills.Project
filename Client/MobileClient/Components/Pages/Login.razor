@@ -1,23 +1,77 @@
-@page "/login"
+@page "/"
 @layout NoMenuLayout
 @inject NavigationManager Navigation
+@inject HttpClient httpClient
 
 <div class="main">
     <h1>Навички Share</h1>
     <div class="info">
         <div class="input-info">
-            <input type="text" class="main-input" placeholder="Логін">
-            <input type="text" class="main-input" placeholder="Пароль">
+            <input type="text" class="main-input" placeholder="Email" @bind="@email">
+            <input type="text" class="main-input" placeholder="Пароль" @bind="@password">
         </div>
 
-        <button class="login-btn" @onclick="calendarNavigate">Увійти</button>
+        <button class="login-btn" @onclick="UserLogin">Увійти</button>
+        <div class="login-link">
+            <a href="" @onclick="registrationNavigate">реєстрація</a>
+        </div>
     </div>
 </div>
 
 @code 
 {
+    private string email;
+    private string password;
+    private string jwt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckExistingToken();
+    }
+
+    private async Task CheckExistingToken()
+    {
+        // Check if the JWT token is stored in Preferences
+        jwt = Preferences.Get("jwt", string.Empty);
+        
+        if (!string.IsNullOrEmpty(jwt))
+        {
+            // Optionally, you can validate the token with the server here
+            Console.WriteLine("JWT token found, navigating to calendar...");
+            Navigation.NavigateTo("/calendar");
+        }
+    }
+
+    private async Task UserLogin()
+    {
+        
+        try {
+            var response = await httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
+            Console.Write(response);
+            if (response.IsSuccessStatusCode)
+            {
+                jwt = await response.Content.ReadFromJsonAsync<string?>();
+                // Preferences for saving data
+                Preferences.Set("jwt", jwt);
+                Console.WriteLine(Preferences.Get("jwt", string.Empty));
+
+                Console.WriteLine(jwt);
+                this.calendarNavigate();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
     private void calendarNavigate()
     {
         Navigation.NavigateTo("/calendar");
+    }
+
+    private void registrationNavigate()
+    {
+        Navigation.NavigateTo("/registration");
     }
 }

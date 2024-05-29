@@ -1,4 +1,4 @@
-@page "/"
+@page "/registration"
 @layout NoMenuLayout
 @inject IStringLocalizer<Registration> localizer
 @inject NavigationManager Navigation
@@ -8,20 +8,20 @@
         <h1>Навички Share</h1>
         <div class="info">
             <div class="input-info">
-                <input type="text" class="main-input" placeholder="Ім'я">
-                <input type="text" class="main-input" placeholder="Прізвище">
-                <input type="text" class="main-input" placeholder="email">
-                <input type="text" class="main-input" placeholder="Пароль">
+                <input type="text" class="main-input" placeholder="Ім'я" @bind="@Name">
+                <input type="text" class="main-input" placeholder="Прізвище" @bind="@Surname">
+                <input type="text" class="main-input" placeholder="email" @bind="@Email">
+                <input type="text" class="main-input" placeholder="Пароль" @bind="@Password">
             </div>
             <div class="switch-btn">
                 <p>Учень</p>
                 <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" @bind="@IsTeacher">
                     <span class="slider round"></span>
                 </label>
                 <p>Вчитель</p>
             </div>
-            <button class="next-btn" @onclick="nextNavigate">Далі</button>
+            <button class="next-btn" @onclick="Register">Далі</button>
             <div class="login-link">
                 <p>вже зареєстровані?</p>
                 <a href="" @onclick="loginNavigate">увійти</a>
@@ -30,43 +30,41 @@
         </div>
     </div>
 
-@* @if (tasks != null)
-{
-    <ul>
-        @foreach (var task in tasks)
-        {
-            <li>
-                <input type="checkbox" disabled="@task.completed" /> @task.title
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <p>Loading...</p>
-} *@
-
 @code {
-    private TaskModel[]? tasks;
+    private string Name { get; set; }
+    private string Surname { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private bool IsTeacher;
 
-    @* protected override async Task OnInitializedAsync()
+    private string userId;
+
+    private async Task Register()
     {
-        try
+        var Role = IsTeacher ? "teacher" : "student";
+        var requestData = new
         {
-            // Выполняем GET-запрос к серверу
-            tasks = await httpClient.GetFromJsonAsync<TaskModel[]>("https://pojwct.free.beeceptor.com/todos");
+            Name,
+            Surname,
+            Email,
+            Password,
+            Role
+        };
+        try {
+            var response = await httpClient.PostAsJsonAsync("http://localhost:5115/register", requestData);
+            Console.Write(response);
+            if (response.IsSuccessStatusCode)
+            {
+                userId = await response.Content.ReadFromJsonAsync<string?>();
+                Preferences.Set("userId", userId);
+                Console.WriteLine(userId);
+                this.nextNavigate();
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-    } *@
-
-    public class TaskModel
-    {
-        public int id { get; set; }
-        public string? title { get; set; }
-        public bool completed { get; set; }
     }
 
     private void nextNavigate()
@@ -76,7 +74,7 @@ else
 
     private void loginNavigate()
     {
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo("/");
     }
 
 }
