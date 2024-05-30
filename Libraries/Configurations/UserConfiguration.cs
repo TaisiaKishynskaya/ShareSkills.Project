@@ -38,7 +38,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasForeignKey(x => x.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        builder.Property(item => item.Role).IsRequired().HasMaxLength(7); 
+        // builder.Property(item => item.Role).IsRequired().HasMaxLength(7); 
         
         // 1-1
         builder
