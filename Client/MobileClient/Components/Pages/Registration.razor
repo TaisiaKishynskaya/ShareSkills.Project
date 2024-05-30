@@ -52,7 +52,6 @@
         };
         try {
             var response = await httpClient.PostAsJsonAsync("http://localhost:5115/register", requestData);
-            Console.Write(response);
             if (response.IsSuccessStatusCode)
             {
                 userId = await response.Content.ReadFromJsonAsync<string?>();

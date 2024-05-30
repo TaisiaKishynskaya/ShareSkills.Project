@@ -28,13 +28,13 @@
             </div>
             <hr>
             <button class="feedback" @onclick="goToFeedbackPage">Залишити звортній зв'язок</button>
-            @* for debug *@
-            <button class="feedback" @onclick="ClearPreferences">clear Preferences</button>
             }
             else
             {
                 <p>loading...</p>
             }
+            @* for debug *@
+            <button class="feedback" @onclick="ClearPreferences">clear Preferences</button>
         </div>
     </div>
 
@@ -55,6 +55,7 @@
     {
         //TODO: get correct user token
         var userId = Preferences.Get("userId", string.Empty);
+        Console.WriteLine(userId);
         try
         {
             var response = await httpClient.GetAsync($"http://localhost:5115/users/{userId}");
