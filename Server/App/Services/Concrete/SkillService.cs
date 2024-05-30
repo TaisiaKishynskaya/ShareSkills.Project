@@ -1,12 +1,12 @@
 using App.Infrastructure.Exceptions;
 using App.Services.Abstract;
 using Libraries.Contracts.Skill;
-using Libraries.Data.UnitOfWork.Concrete;
+using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Entities.Concrete;
 
 namespace App.Services.Concrete;
 
-public class SkillService (UnitOfWork unitOfWork) : ISkillService
+public class SkillService (IUnitOfWork unitOfWork) : ISkillService
 {
     public async Task<SkillDto> CreateAsync(SkillForCreatingDto skillForCreatingDto, CancellationToken cancellationToken = default)
     {
