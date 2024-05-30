@@ -24,8 +24,8 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         
         builder.Property(item => item.Surname)
             .IsRequired()
-            .HasMaxLength(30); 
-        
+            .HasMaxLength(30);
+
         builder.Property(item => item.Email)
             .IsRequired()
             .HasMaxLength(50); 
@@ -38,8 +38,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasForeignKey(x => x.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        //builder.Property(item => item.Role).IsRequired().HasMaxLength(7); 
-        //builder.Property(item => item.Objective).HasMaxLength(300); 
+        // builder.Property(item => item.Role).IsRequired().HasMaxLength(7); 
         
         // 1-1
         builder
@@ -54,5 +53,11 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .WithOne(x => x.User)
             .HasForeignKey<TeacherEntity>(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления
+        
+        // *-1
+        builder
+            .HasOne(x => x.Role)
+            .WithMany(x => x.Users)
+            .HasForeignKey(item => item.RoleId);
     }
 }

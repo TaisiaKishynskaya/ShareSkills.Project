@@ -9,9 +9,6 @@ public class TeacherEntity
     public Guid UserId { get; set; }
     public UserEntity User { get; set; }
     
-    // 1-*
-    public ICollection<MeetingEntity> Meetings { get; set; }
-    
     // *-*
     public ICollection<GradeEntity> Grades { get; set; } = new List<GradeEntity>();
 }
