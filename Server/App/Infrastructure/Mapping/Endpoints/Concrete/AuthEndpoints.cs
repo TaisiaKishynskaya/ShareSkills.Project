@@ -82,7 +82,7 @@ public class AuthEndpoints : IMinimalEndpoint
             
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
             
-            return Results.Ok(tokenString);
+            return Results.Ok(new { Token = tokenString, UserId = user.Id });
         });
         
         routeBuilder.MapGet("/test", [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]() => "It works");

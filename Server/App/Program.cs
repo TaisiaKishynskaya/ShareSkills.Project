@@ -1,5 +1,6 @@
 using App.Infrastructure.Configurations;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
+using Libraries.Data;
 
 // СМОТРЕТЬ https://github.com/TaisiaKishynskaya/CSharp_A-Level/tree/main/eShop.Project/Application/Catalog/Catalog.API
 //TODO: Need refactoring, add validation for registration
@@ -31,6 +32,8 @@ internal class Program
         app.RegisterMinimalEndpoints();
 
         AppConfiguration.ConfigureApp(app);
+        
+        DatabaseConfiguration.SeedDatabase(app);
     
         app.Run();
     }
