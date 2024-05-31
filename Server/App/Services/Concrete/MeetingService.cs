@@ -10,11 +10,12 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
 {
     public async Task<MeetingDto> TryToCreateAsync(MeetingForCreatingDto meetingForCreatingDto, CancellationToken cancellationToken = default)
     {
-        var existedMeeting = await GetExistedMeeting(meetingForCreatingDto.OwnerId, meetingForCreatingDto.DateAndTime, cancellationToken);
-        if (existedMeeting is not null)
-        {
-            throw new MeetingAlreadyExistsException("Meeting already exists");
-        }
+        // тут для проверки создается сущность митинга, но если она null, то выбрасывается ошибка и код дальше не выполнятся. Получается если мы хотим создать новый митинг, то его никогда нельзя создать, потому что всегда будет ошибка MeetingNotFoundException
+        // var existedMeeting = await GetExistedMeeting(meetingForCreatingDto.OwnerId, meetingForCreatingDto.DateAndTime, cancellationToken);
+        // if (existedMeeting is not null)
+        // {
+        //     throw new MeetingAlreadyExistsException("Meeting already exists");
+        // }
         
         var meeting = new MeetingEntity
         {

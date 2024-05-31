@@ -1,0 +1,112 @@
+@page "/"
+@layout NoMenuLayout
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+
+<div class="main">
+    <h1>Навички Share</h1>
+    <div class="info">
+        <div class="input-info">
+            <input type="text" class="main-input" placeholder="Email" @bind="@email">
+            <input type="text" class="main-input" placeholder="Пароль" @bind="@password">
+        </div>
+
+        <button class="login-btn" @onclick="UserLogin">Увійти</button>
+        <div class="login-link">
+            <a href="" @onclick="registrationNavigate">реєстрація</a>
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    private string email;
+    private string password;
+    private string jwt;
+
+    public class User
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public string Role { get; set; }
+    }
+    private User user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // to login automaticly, but jwt is expiring too fast
+        @* await CheckExistingToken(); *@
+    }
+
+    private async Task CheckExistingToken()
+    {
+        // Check if the JWT token is stored in Preferences
+        jwt = Preferences.Get("jwt", string.Empty);
+        
+        if (!string.IsNullOrEmpty(jwt))
+        {
+            // Optionally, you can validate the token with the server here
+            Console.WriteLine("JWT token found, navigating to calendar...");
+            this.getUserRole();
+            this.calendarNavigate();
+        }
+    }
+
+    private async Task UserLogin()
+    {
+        
+        try {
+            Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
+            var response = await httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
+            Console.Write(response);
+            if (response.IsSuccessStatusCode)
+            {
+                jwt = await response.Content.ReadFromJsonAsync<string?>();
+                Preferences.Remove("userId");
+                Preferences.Set("userId", "95fb6076-7a9b-4786-9a64-f6b67a0b13b1");
+                // Preferences for saving data
+                Preferences.Set("jwt", jwt);
+                Console.WriteLine(Preferences.Get("jwt", string.Empty));
+
+                Console.WriteLine(jwt);
+                this.getUserRole();
+                this.calendarNavigate();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async Task getUserRole()
+    {
+        var userId = Preferences.Get("userId", string.Empty);
+        try
+        {
+            var response = await httpClient.GetAsync($"http://localhost:5115/users/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                user = await response.Content.ReadFromJsonAsync<User>();
+                Preferences.Set("userRole", user.Role);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void calendarNavigate()
+    {
+        Navigation.NavigateTo("/calendar");
+    }
+
+    private void registrationNavigate()
+    {
+        Navigation.NavigateTo("/registration");
+    }
+}

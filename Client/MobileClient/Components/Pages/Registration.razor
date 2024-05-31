@@ -1,0 +1,79 @@
+@page "/registration"
+@layout NoMenuLayout
+@inject IStringLocalizer<Registration> localizer
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+
+<div class="main">
+        <h1>Навички Share</h1>
+        <div class="info">
+            <div class="input-info">
+                <input type="text" class="main-input" placeholder="Ім'я" @bind="@Name">
+                <input type="text" class="main-input" placeholder="Прізвище" @bind="@Surname">
+                <input type="text" class="main-input" placeholder="email" @bind="@Email">
+                <input type="text" class="main-input" placeholder="Пароль" @bind="@Password">
+            </div>
+            <div class="switch-btn">
+                <p>Учень</p>
+                <label class="switch">
+                    <input type="checkbox" @bind="@IsTeacher">
+                    <span class="slider round"></span>
+                </label>
+                <p>Вчитель</p>
+            </div>
+            <button class="next-btn" @onclick="Register">Далі</button>
+            <div class="login-link">
+                <p>вже зареєстровані?</p>
+                <a href="" @onclick="loginNavigate">увійти</a>
+            </div>
+    
+        </div>
+    </div>
+
+@code {
+    private string Name { get; set; }
+    private string Surname { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private bool IsTeacher;
+
+    private string userId;
+
+    private async Task Register()
+    {
+        var Role = IsTeacher ? "teacher" : "student";
+        var requestData = new
+        {
+            Name,
+            Surname,
+            Email,
+            Password,
+            Role
+        };
+        try {
+            var response = await httpClient.PostAsJsonAsync("http://localhost:5115/register", requestData);
+            if (response.IsSuccessStatusCode)
+            {
+                userId = await response.Content.ReadFromJsonAsync<string?>();
+                Preferences.Set("userId", userId);
+                Console.WriteLine(userId);
+                this.nextNavigate();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void nextNavigate()
+    {
+        Navigation.NavigateTo("/choose-skills");
+    }
+
+    private void loginNavigate()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+}

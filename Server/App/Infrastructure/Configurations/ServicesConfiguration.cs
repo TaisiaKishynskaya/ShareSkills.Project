@@ -34,6 +34,13 @@ public static class ServicesConfiguration
         builder.Services.AddScoped<IGradeRepository, GradeRepository>();
         builder.Services.AddScoped<IGradeService, GradeService>();
 
+        builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+        // Не работает: Unable to resolve service for type 'Libraries.Data.UnitOfWork.Concrete.UnitOfWork' while attempting to activate 'App.Services.Concrete.SkillService'
+        // builder.Services.AddScoped<ISkillService, SkillService>();
+
+        builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
+        builder.Services.AddScoped<IMeetingService, MeetingService>();
+
         //builder.Services.AddAutoMapper();
 
         //builder.Services.AddFluentValidationAutoValidation();
