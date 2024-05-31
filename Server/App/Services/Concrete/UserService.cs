@@ -75,7 +75,8 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
                 Name = user.Name,
                 Surname = user.Surname,
                 Email = user.Email,
-                PasswordHash = user.Password
+                PasswordHash = user.Password,
+                Role = user.RoleId.ToString()
             });
         }
 
@@ -94,7 +95,8 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
             Name = user.Name,
             Surname = user.Surname,
             Email = user.Email,
-            PasswordHash = user.Password
+            PasswordHash = user.Password,
+            Role = user.RoleId.ToString()
         };
     }
 

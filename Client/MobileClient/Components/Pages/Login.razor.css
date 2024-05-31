@@ -49,3 +49,23 @@ h1 {
     font-size: 20px;
     font-family: "Marmelad";
 }
+
+.login-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-link p, .login-link a {
+    margin: 0;
+}
+
+.login-link p {
+    margin-top: 10px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.login-link a {
+    color: rgba(0, 0, 0, 0.5);
+}

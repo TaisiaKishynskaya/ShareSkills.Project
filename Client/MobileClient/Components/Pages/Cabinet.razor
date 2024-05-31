@@ -1,5 +1,6 @@
 @page "/cabinet"
 @inject NavigationManager Navigation
+@inject HttpClient httpClient
 
 <div class="main">
         <div class="title">
@@ -7,10 +8,12 @@
         </div>
 
         <div class="content">
-            <div class="block">
-                <p class="name">Іванов Іван</p>
-                <p class="email">email@gmail.com</p>
-            </div>
+            @if (user != null)
+            {
+                <div class="block">
+                    <p class="name">@user.Name @user.Surname</p>
+                    <p class="email">@user.Email</p>
+                </div>
             <hr>
             <div class="block">
                 <p class="skills-text">Обрані навички</p>
@@ -25,13 +28,58 @@
             </div>
             <hr>
             <button class="feedback" @onclick="goToFeedbackPage">Залишити звортній зв'язок</button>
+            }
+            else
+            {
+                <p>loading...</p>
+            }
+            @* for debug *@
+            <button class="feedback" @onclick="ClearPreferences">clear Preferences</button>
         </div>
     </div>
 
 @code {
+    public class User
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public string Role { get; set; }
+    }
+    private User user;
     private string[] skills = {"Python", "Java", "C#", "HTML", "C++"};
+
+    protected override async Task OnInitializedAsync()
+    {
+        //TODO: get correct user token
+        var userId = Preferences.Get("userId", string.Empty);
+        Console.WriteLine(userId);
+        try
+        {
+            var response = await httpClient.GetAsync($"http://localhost:5115/users/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                user = await response.Content.ReadFromJsonAsync<User>();
+                StateHasChanged();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
 
     private void goToFeedbackPage() {
         Navigation.NavigateTo("/feedback");
+    }
+
+    //for debug
+    private void ClearPreferences()
+    {
+        Preferences.Clear();
+        Console.WriteLine("Cleared Preferences");
     }
 }

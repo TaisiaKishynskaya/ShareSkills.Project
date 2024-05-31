@@ -14,5 +14,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
 
         builder.Property(item => item.Name)
             .IsRequired();
+        
+        // *-1
+        builder
+            .HasMany(x => x.Users)
+            .WithOne(x => x.Role);
     }
 }

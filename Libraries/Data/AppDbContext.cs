@@ -1,4 +1,5 @@
-﻿using Libraries.Configurations;
+﻿using System.ComponentModel.DataAnnotations;
+using Libraries.Configurations;
 using Libraries.Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,4 +30,21 @@ public class AppDbContext : DbContext
 		builder.ApplyConfiguration(new SkillConfiguration());
 		builder.ApplyConfiguration(new RoleConfiguration());
 	}
+	
+	/* не получилась валидация имейла.
+	 public override int SaveChanges()
+	{
+		foreach (var entry in ChangeTracker.Entries<UserEntity>())
+		{
+			if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
+			{
+				if (!entry.Entity.Email.Contains("@"))
+				{
+					throw new ValidationException("Пошта повинна містити '@'.");
+				}
+			}
+		}
+
+		return base.SaveChanges();
+	}*/
 }

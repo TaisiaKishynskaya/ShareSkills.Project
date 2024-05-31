@@ -23,11 +23,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
             .HasForeignKey<UserEntity>(u => u.StudentId)
             .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления;*/
         
-        // *-1
-        builder
-            .HasMany(x => x.Meetings)
-            .WithOne(x => x.Student);
-        
         // *-*
         builder
             .HasMany(x => x.Grades)
