@@ -141,3 +141,7 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.error {
+  color: rgba(255, 0, 0, 0.5);
+}

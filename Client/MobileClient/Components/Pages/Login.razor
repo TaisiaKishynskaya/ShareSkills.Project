@@ -2,13 +2,14 @@
 @layout NoMenuLayout
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
+@inject AuthService AuthService
 
 <div class="main">
     <h1>Навички Share</h1>
     <div class="info">
         <div class="input-info">
             <input type="text" class="main-input" placeholder="Email" @bind="@email">
-            <input type="text" class="main-input" placeholder="Пароль" @bind="@password">
+            <input type="password" class="main-input" placeholder="Пароль" @bind="@password">
         </div>
 
         @if (isError)
@@ -28,30 +29,12 @@
     private string email;
     private string password;
 
-    public class User
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public string Role { get; set; }
-    }
-
-    public class AuthResponse
-    {
-        public string token { get; set; }
-        public string userId { get; set; }
-    }
-    private AuthResponse authResponse; 
-    private User user;
-
     private bool isError = false;
 
     protected override async Task OnInitializedAsync()
     {
         // to login automaticly, but jwt is expiring too fast
-        await CheckExistingToken();
+        @* await CheckExistingToken(); *@
     }
 
     private async Task CheckExistingToken()
@@ -63,59 +46,26 @@
         {
             // Optionally, you can validate the token with the server here
             Console.WriteLine("JWT token found, navigating to calendar...");
-            this.getUserRole();
+            AuthService.getUserRole();
             this.calendarNavigate();
         }
     }
 
     private async Task UserLogin()
     {
-        
-        try {
-            Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
-            var response = await httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
-            Console.Write(response);
-            if (response.IsSuccessStatusCode)
-            {
-                authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-                Preferences.Set("userId", authResponse.userId);
-                // Preferences for saving data
-                Preferences.Set("jwt", authResponse.token);
-                Console.WriteLine("jwt: "+Preferences.Get("jwt", string.Empty));
-                isError = false;
-
-                this.getUserRole();
-                this.calendarNavigate();
-            }
-            else
-            {
-                isError = true;
-            }
-        }
-        catch (Exception ex)
+        if (await AuthService.UserLogin(email, password))
         {
-            Console.WriteLine(ex);
+            isError = false;
+            AuthService.getUserRole();
+            calendarNavigate();
         }
+        else
+        {
+            isError = true;
+        }
+
     }
 
-    private async Task getUserRole()
-    {
-        var userId = Preferences.Get("userId", string.Empty);
-        try
-        {
-            var response = await httpClient.GetAsync($"http://localhost:5115/users/{userId}");
-            if (response.IsSuccessStatusCode)
-            {
-                user = await response.Content.ReadFromJsonAsync<User>();
-                Preferences.Set("userRole", user.Role);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-    }
 
     private void calendarNavigate()
     {

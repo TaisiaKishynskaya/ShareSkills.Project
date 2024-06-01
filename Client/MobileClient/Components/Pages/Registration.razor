@@ -3,6 +3,7 @@
 @inject IStringLocalizer<Registration> localizer
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
+@inject AuthService AuthService
 
 <div class="main">
         <h1>Навички Share</h1>
@@ -11,7 +12,7 @@
                 <input type="text" class="main-input" placeholder="Ім'я" @bind="@Name">
                 <input type="text" class="main-input" placeholder="Прізвище" @bind="@Surname">
                 <input type="text" class="main-input" placeholder="email" @bind="@Email">
-                <input type="text" class="main-input" placeholder="Пароль" @bind="@Password">
+                <input type="password" class="main-input" placeholder="Пароль" @bind="@Password">
             </div>
             <div class="switch-btn">
                 <p>Учень</p>
@@ -21,7 +22,11 @@
                 </label>
                 <p>Вчитель</p>
             </div>
-            <button class="next-btn" @onclick="nextNavigate">Далі</button>
+            @if (isError)
+            {
+                <p class="error">Сталася помилка</p>
+            }
+            <button class="next-btn" @onclick="Register">Далі</button>
             <div class="login-link">
                 <p>вже зареєстровані?</p>
                 <a href="" @onclick="loginNavigate">увійти</a>
@@ -36,39 +41,23 @@
     private string Email { get; set; }
     private string Password { get; set; }
     private bool IsTeacher;
-
-    private string userId;
+    private bool isError = false;
 
     private async Task Register()
     {
-        var Role = IsTeacher ? "teacher" : "student";
-        var requestData = new
-        {
-            Name,
-            Surname,
-            Email,
-            Password,
-            Role
-        };
-        try {
-            var response = await httpClient.PostAsJsonAsync("http://localhost:5115/register", requestData);
-            if (response.IsSuccessStatusCode)
-            {
-                userId = await response.Content.ReadFromJsonAsync<string?>();
-                Preferences.Set("userId", userId);
-                Console.WriteLine(userId);
-                this.nextNavigate();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+       if (await AuthService.Register(IsTeacher, Name, Surname, Email, Password))
+       {
+        isError = false;
+        nextNavigate();
+       }
+       else
+       {
+        isError = true;
+       }
     }
 
     private void nextNavigate()
     {
-        Register();
         Navigation.NavigateTo("/choose-skills");
     }
 
