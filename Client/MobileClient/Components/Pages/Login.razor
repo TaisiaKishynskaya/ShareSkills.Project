@@ -11,6 +11,11 @@
             <input type="text" class="main-input" placeholder="Пароль" @bind="@password">
         </div>
 
+        @if (isError)
+        {
+        <p class="error">Неправильний логін або пароль</p>
+        }
+
         <button class="login-btn" @onclick="UserLogin">Увійти</button>
         <div class="login-link">
             <a href="" @onclick="registrationNavigate">реєстрація</a>
@@ -22,7 +27,6 @@
 {
     private string email;
     private string password;
-    private string jwt;
 
     public class User
     {
@@ -33,18 +37,27 @@
         public string PasswordHash { get; set; }
         public string Role { get; set; }
     }
+
+    public class AuthResponse
+    {
+        public string token { get; set; }
+        public string userId { get; set; }
+    }
+    private AuthResponse authResponse; 
     private User user;
+
+    private bool isError = false;
 
     protected override async Task OnInitializedAsync()
     {
         // to login automaticly, but jwt is expiring too fast
-        @* await CheckExistingToken(); *@
+        await CheckExistingToken();
     }
 
     private async Task CheckExistingToken()
     {
         // Check if the JWT token is stored in Preferences
-        jwt = Preferences.Get("jwt", string.Empty);
+        var jwt = Preferences.Get("jwt", string.Empty);
         
         if (!string.IsNullOrEmpty(jwt))
         {
@@ -64,16 +77,20 @@
             Console.Write(response);
             if (response.IsSuccessStatusCode)
             {
-                jwt = await response.Content.ReadFromJsonAsync<string?>();
-                Preferences.Remove("userId");
-                Preferences.Set("userId", "95fb6076-7a9b-4786-9a64-f6b67a0b13b1");
+                authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                Preferences.Set("userId", authResponse.userId);
                 // Preferences for saving data
-                Preferences.Set("jwt", jwt);
-                Console.WriteLine(Preferences.Get("jwt", string.Empty));
+                Preferences.Set("jwt", authResponse.token);
+                Console.WriteLine("jwt: "+Preferences.Get("jwt", string.Empty));
+                isError = false;
 
-                Console.WriteLine(jwt);
                 this.getUserRole();
                 this.calendarNavigate();
+            }
+            else
+            {
+                isError = true;
             }
         }
         catch (Exception ex)

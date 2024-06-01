@@ -15,7 +15,7 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 100px;
+    gap: 50px;
 }
 
 .input-info {
@@ -68,4 +68,9 @@ h1 {
 
 .login-link a {
     color: rgba(0, 0, 0, 0.5);
+}
+
+.error {
+    color: rgba(255, 0, 0, 0.5);
+    margin: 0;
 }
