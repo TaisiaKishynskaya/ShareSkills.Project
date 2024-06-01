@@ -3,6 +3,7 @@ using App.Services.Abstract;
 using Libraries.Contracts.User;
 using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Entities.Concrete;
+using Microsoft.AspNetCore.Identity;
 
 namespace App.Services.Concrete;
 
@@ -109,7 +110,13 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
         user.Name = userForUpdateDto.Name;
         user.Surname = userForUpdateDto.Surname;
         user.Email = userForUpdateDto.Email;
-        user.Password = userForUpdateDto.Password;
+        
+        
+        var passwordHasher = new PasswordHasher<UserEntity>();
+        var passwordHash = passwordHasher.HashPassword(user, userForUpdateDto.Password);
+        Console.Write("hash: "+passwordHash);
+
+        user.Password = passwordHash;
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
