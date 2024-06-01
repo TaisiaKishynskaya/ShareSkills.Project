@@ -1,6 +1,39 @@
-@page "/choosedLesson"
-<h3>ChoosedLesson</h3>
+@page "/lesson/{id}"
+@inject NavigationManager Navigation
+
+<div class="main">
+    <div class="title">
+        <svg @onclick="goBack" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+        <p>@Id</p>
+        <div class="blank"></div>
+    </div>
+
+    <div class="content">
+        <div class="block">
+            <p class="text-info">Ментор:</p>
+            <p class="text-value">Іванов Іван</p>
+        </div>
+
+        <div class="block">
+            <p class="text-info">Час:</p>
+            <p class="text-value">12:00</p>
+        </div>
+
+        <div class="block">
+            <p class="text-info">Посилання:</p>
+            <a class="text-value" href="#">Приєднатися</a>
+        </div>
+    </div>
+
+    <button class="cancel">скасувати</button>
+</div>
+
 
 @code {
-    
+    [Parameter]
+    public required string Id { get; set; }
+
+    public void goBack() {
+        Navigation.NavigateTo("/calendar");
+    }
 }
