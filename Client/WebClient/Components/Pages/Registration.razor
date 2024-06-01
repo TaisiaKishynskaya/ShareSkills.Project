@@ -1,4 +1,5 @@
 @page "/"
+@inject NavigationManager Navigation
 
 <div class="main">
     <h1>Навички Share</h1>
@@ -17,11 +18,25 @@
             </label>
             <p>Вчитель</p>
         </div>
-        <button class="next-btn" >Далі</button>
+        <button class="next-btn" @onclick="NextNavigate">Далі</button>
         <div class="login-link">
             <p>вже зареєстровані?</p>
-            <a href="login" >увійти</a>
+            <a @onclick="LoginNavigate">увійти</a>
         </div>
 
     </div>
 </div>
+
+@code {
+
+    private void NextNavigate()
+    {
+        Navigation.NavigateTo("/chooseSkills");
+    }
+
+    private void LoginNavigate()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+}
