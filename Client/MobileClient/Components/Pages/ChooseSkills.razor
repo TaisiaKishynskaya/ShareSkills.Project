@@ -1,27 +1,62 @@
 @page "/choose-skills"
 @layout NoMenuLayout
 @inject NavigationManager Navigation
+@inject HttpClient httpClient
 
 <div class="main">
         <h1>Виберіть навички, яким хочете навчитися</h1>
-        <input class="skill-search" type="text" placeholder="Пошук навички...">
-        <div class="skills">
-            @foreach (var skill in skills)
-            {
-            <div class="skill-check-container">
-                <input class="skill-check" type="checkbox">
-                <p>@skill</p>
+        @if (skills != null)
+        {
+            <input class="skill-search" type="text" placeholder="Пошук навички...">
+            <div class="skills">
+                @foreach (var skill in skills)
+                {
+                <div class="skill-check-container">
+                    <input class="skill-check" type="checkbox">
+                    <p>@skill.skill</p>
+                </div>
+                }
             </div>
-            }
-        </div>
-        <button @onclick="calendarNavigate">Зареєструватися</button>
+        }
+            <button @onclick="calendarNavigate">Зареєструватися</button>
+        
         
     </div>
 
     @code {
-        private string[] skills = { "Python", "C#", "JavaScript", "HTML", "CSS" };
+        @* private string[] skills = { "Python", "C#", "JavaScript", "HTML", "CSS" }; *@
         private void calendarNavigate()
         {
             Navigation.NavigateTo("/calendar");
+        }
+
+        public class Skill
+        {
+            public string id {get; set;}
+            public string skill {get; set;}
+        }
+
+        List<Skill> skills;
+
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+                var response = await httpClient.GetAsync($"http://localhost:5115/skills");
+                if (response.IsSuccessStatusCode)
+                {
+                    skills = await response.Content.ReadFromJsonAsync<List<Skill>>();
+                    StateHasChanged();
+                }
+                else
+                {
+                    Console.WriteLine($"Error: {response.ReasonPhrase}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
