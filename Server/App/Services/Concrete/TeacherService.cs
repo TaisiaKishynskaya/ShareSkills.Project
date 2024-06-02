@@ -7,8 +7,8 @@ using Libraries.Entities.Concrete;
 namespace App.Services.Concrete;
 
 public class TeacherService(IUnitOfWork unitOfWork,
-                            ITimeOfDayService timeOfDayService,
-                            IGoalService goalService,
+                            IClassTimeService classTimeService,
+                            ILevelService levelService,
                             ISkillService skillService) : ITeacherService
 {
     //private UserDto _userDto;
@@ -19,23 +19,23 @@ public class TeacherService(IUnitOfWork unitOfWork,
         {
             Id = Guid.NewGuid(),
             Rating = teacherForCreationDto.Rating,
-            TimeOfDay = teacherForCreationDto.TimeOfDay,
-            Goal = teacherForCreationDto.Goal,
+            ClassTime = teacherForCreationDto.ClassTime,
+            Level = teacherForCreationDto.Level,
             Skill = teacherForCreationDto.Skill
         };
 
         unitOfWork.TeacherRepository.Insert(teacher);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        var timeOfDayName = await timeOfDayService.GetTimeOfDayNameAsync(teacher.TimeOfDayId);
-        var goal = await goalService.GetGoalNameAsync(teacher.GoalId);
+        var classTimeName = await classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
+        var level = await levelService.GetLevelNameAsync(teacher.LevelId);
 
         return new TeacherDto
         {
             Id = teacher.Id,
             Rating = teacher.Rating,
-            TimeOfDay = timeOfDayName,
-            Goal = goal,
+            ClassTime = classTimeName,
+            Level = level,
             Skill = teacher.Skill
         };
     }
@@ -66,8 +66,8 @@ public class TeacherService(IUnitOfWork unitOfWork,
             {
                 Id = teacher.Id,
                 Rating = teacher.Rating,
-                TimeOfDay = teacher.TimeOfDayId.ToString(),
-                Goal = teacher.GoalId.ToString(),
+                ClassTime = teacher.ClassTimeId.ToString(),
+                Level = teacher.LevelId.ToString(),
                 Skill = teacher.Skill
             });
         }
@@ -81,16 +81,16 @@ public class TeacherService(IUnitOfWork unitOfWork,
            .GetByIdAsync(id, cancellationToken)
             ?? throw new TeacherNotFoundException(id);
         
-        var timeOfDayName = await timeOfDayService.GetTimeOfDayNameAsync(teacher.TimeOfDayId);
-        var goal = await goalService.GetGoalNameAsync(teacher.GoalId);
+        var classTimeName = await classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
+        var level = await levelService.GetLevelNameAsync(teacher.LevelId);
         var skill = await skillService.GetByIdAsync(teacher.SkillId);
 
         return new TeacherDto
         {
             Id = teacher.Id,
             Rating = teacher.Rating,
-            TimeOfDay = timeOfDayName,
-            Goal = goal,
+            ClassTime = classTimeName,
+            Level = level,
             Skill = skill
         };
     }

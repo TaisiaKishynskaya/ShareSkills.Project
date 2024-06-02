@@ -8,11 +8,11 @@ public class TeacherEntity
     public double Rating { get; set; }
     
     // *-1
-    public Guid TimeOfDayId { get; set; }
-    public TimeOfDayEntity TimeOfDay { get; set; } = null!;
+    public Guid ClassTimeId { get; set; }
+    public ClassTimeEntity ClassTime { get; set; } = null!;
     
-    public Guid GoalId { get; set; }
-    public GoalEntity Goal { get; set; } = null!;
+    public Guid LevelId { get; set; }
+    public LevelEntity Level { get; set; } = null!;
     
     public Guid SkillId { get; set; }
     public SkillDto Skill { get; set; } = null!;

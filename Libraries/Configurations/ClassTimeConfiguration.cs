@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Libraries.Configurations;
 
-public class TimeOfDayConfiguration : IEntityTypeConfiguration<TimeOfDayEntity>
+public class ClassTimeConfiguration : IEntityTypeConfiguration<ClassTimeEntity>
 {
-    public void Configure(EntityTypeBuilder<TimeOfDayEntity> builder)
+    public void Configure(EntityTypeBuilder<ClassTimeEntity> builder)
     {
-        builder.ToTable("TimeOfDays");
+        builder.ToTable("ClassTimes");
         
         builder.HasKey(item => item.Id);
 
@@ -18,6 +18,6 @@ public class TimeOfDayConfiguration : IEntityTypeConfiguration<TimeOfDayEntity>
         // *-1
         builder
             .HasMany(x => x.Teachers)
-            .WithOne(x => x.TimeOfDay);
+            .WithOne(x => x.ClassTime);
     }
 }

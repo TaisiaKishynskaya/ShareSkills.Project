@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Libraries.Configurations;
 
-public class GoalConfiguration : IEntityTypeConfiguration<GoalEntity>
+public class LevelConfiguration : IEntityTypeConfiguration<LevelEntity>
 {
-    public void Configure(EntityTypeBuilder<GoalEntity> builder)
+    public void Configure(EntityTypeBuilder<LevelEntity> builder)
     {
-        builder.ToTable("Goals");
+        builder.ToTable("Levels");
         
         builder.HasKey(item => item.Id);
 
@@ -18,6 +18,6 @@ public class GoalConfiguration : IEntityTypeConfiguration<GoalEntity>
         // *-1
         builder
             .HasMany(x => x.Teachers)
-            .WithOne(x => x.Goal);
+            .WithOne(x => x.Level);
     }
 }

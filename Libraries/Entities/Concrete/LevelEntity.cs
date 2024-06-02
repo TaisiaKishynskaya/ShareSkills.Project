@@ -1,6 +1,6 @@
 ﻿namespace Libraries.Entities.Concrete;
 
-public class GoalEntity
+public class LevelEntity
 {
     public required Guid Id { get; set; }
     public required string Name { get; set; }

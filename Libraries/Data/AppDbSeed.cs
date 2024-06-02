@@ -32,23 +32,23 @@ public class AppDbSeed
             context.SaveChanges();
         }
         
-        if (!context.TimeOfDays.Any())
+        if (!context.ClassTimes.Any())
         {
-            context.TimeOfDays.AddRange(
-                new TimeOfDayEntity { Id = Guid.NewGuid(), Name = "Morning" },
-                new TimeOfDayEntity { Id = Guid.NewGuid(), Name = "Day" }, 
-                new TimeOfDayEntity { Id = Guid.NewGuid(), Name = "Evening" }
+            context.ClassTimes.AddRange(
+                new ClassTimeEntity { Id = Guid.NewGuid(), Name = "Morning" },
+                new ClassTimeEntity { Id = Guid.NewGuid(), Name = "Day" }, 
+                new ClassTimeEntity { Id = Guid.NewGuid(), Name = "Evening" }
             );
 
             context.SaveChanges();
         }
         
-        if (!context.Goals.Any())
+        if (!context.Levels.Any())
         {
-            context.Goals.AddRange(
-                new GoalEntity { Id = Guid.NewGuid(), Name = "Introductory" },
-                new GoalEntity { Id = Guid.NewGuid(), Name = "Intermediate" }, 
-                new GoalEntity { Id = Guid.NewGuid(), Name = "Advanced" }
+            context.Levels.AddRange(
+                new LevelEntity { Id = Guid.NewGuid(), Name = "Introductory" },
+                new LevelEntity { Id = Guid.NewGuid(), Name = "Intermediate" }, 
+                new LevelEntity { Id = Guid.NewGuid(), Name = "Advanced" }
             );
 
             context.SaveChanges();
