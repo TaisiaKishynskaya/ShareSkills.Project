@@ -79,3 +79,11 @@ hr {
 .name, .skills-text {
     font-size: 25px;
 }
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(6,210,255,1) 0%, rgba(227,227,227,1) 100%);
+}
