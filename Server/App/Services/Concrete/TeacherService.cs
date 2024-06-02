@@ -6,7 +6,10 @@ using Libraries.Entities.Concrete;
 
 namespace App.Services.Concrete;
 
-public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
+public class TeacherService(IUnitOfWork unitOfWork,
+                            ITimeOfDayService timeOfDayService,
+                            IGoalService goalService,
+                            ISkillService skillService) : ITeacherService
 {
     //private UserDto _userDto;
     
@@ -16,15 +19,24 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         {
             Id = Guid.NewGuid(),
             Rating = teacherForCreationDto.Rating,
+            TimeOfDay = teacherForCreationDto.TimeOfDay,
+            Goal = teacherForCreationDto.Goal,
+            Skill = teacherForCreationDto.Skill
         };
 
         unitOfWork.TeacherRepository.Insert(teacher);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        var timeOfDayName = await timeOfDayService.GetTimeOfDayNameAsync(teacher.TimeOfDayId);
+        var goal = await goalService.GetGoalNameAsync(teacher.GoalId);
 
         return new TeacherDto
         {
             Id = teacher.Id,
-            Rating = teacher.Rating
+            Rating = teacher.Rating,
+            TimeOfDay = timeOfDayName,
+            Goal = goal,
+            Skill = teacher.Skill
         };
     }
 
@@ -47,13 +59,16 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
             .GetAllAsync(cancellationToken);
 
         var teachersDtos = new List<TeacherDto>();
-
+        
         foreach (var teacher in teachers)
         {
             teachersDtos.Add(new TeacherDto
             {
                 Id = teacher.Id,
                 Rating = teacher.Rating,
+                TimeOfDay = teacher.TimeOfDayId.ToString(),
+                Goal = teacher.GoalId.ToString(),
+                Skill = teacher.Skill
             });
         }
 
@@ -65,11 +80,18 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         var teacher = await unitOfWork.TeacherRepository
            .GetByIdAsync(id, cancellationToken)
             ?? throw new TeacherNotFoundException(id);
+        
+        var timeOfDayName = await timeOfDayService.GetTimeOfDayNameAsync(teacher.TimeOfDayId);
+        var goal = await goalService.GetGoalNameAsync(teacher.GoalId);
+        var skill = await skillService.GetByIdAsync(teacher.SkillId);
 
         return new TeacherDto
         {
             Id = teacher.Id,
-            Rating = teacher.Rating
+            Rating = teacher.Rating,
+            TimeOfDay = timeOfDayName,
+            Goal = goal,
+            Skill = skill
         };
     }
 

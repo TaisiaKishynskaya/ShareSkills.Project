@@ -33,6 +33,12 @@ public static class ServicesConfiguration
         
         builder.Services.AddScoped<IGradeRepository, GradeRepository>();
         builder.Services.AddScoped<IGradeService, GradeService>();
+        
+        builder.Services.AddScoped<ITimeOfDayRepository, TimeOfDayRepository>();
+        builder.Services.AddScoped<ITimeOfDayService, TimeOfDayService>();
+        
+        builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+        builder.Services.AddScoped<IGoalService, GoalService>();
 
         //builder.Services.AddAutoMapper();
 

@@ -62,6 +62,7 @@
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+        <PackageReference Include="Microsoft.ML" Version="3.0.1" />
         <PackageReference Include="Serilog" Version="4.0.0-dev-02122" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.1-dev-00582" />
     </ItemGroup>

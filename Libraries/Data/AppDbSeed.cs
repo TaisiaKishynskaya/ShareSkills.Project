@@ -31,5 +31,27 @@ public class AppDbSeed
 
             context.SaveChanges();
         }
+        
+        if (!context.TimeOfDays.Any())
+        {
+            context.TimeOfDays.AddRange(
+                new TimeOfDayEntity { Id = Guid.NewGuid(), Name = "Morning" },
+                new TimeOfDayEntity { Id = Guid.NewGuid(), Name = "Day" }, 
+                new TimeOfDayEntity { Id = Guid.NewGuid(), Name = "Evening" }
+            );
+
+            context.SaveChanges();
+        }
+        
+        if (!context.Goals.Any())
+        {
+            context.Goals.AddRange(
+                new GoalEntity { Id = Guid.NewGuid(), Name = "Introductory" },
+                new GoalEntity { Id = Guid.NewGuid(), Name = "Intermediate" }, 
+                new GoalEntity { Id = Guid.NewGuid(), Name = "Advanced" }
+            );
+
+            context.SaveChanges();
+        }
     }
 }
