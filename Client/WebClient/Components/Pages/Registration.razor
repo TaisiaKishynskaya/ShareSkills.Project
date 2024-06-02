@@ -20,25 +20,62 @@
             </label>
             <p>Вчитель</p>
         </div>
-        <button class="next-btn" @onclick="NextNavigate">Далі</button>
+        <button class="next-btn" @onclick="nextNavigate">Далі</button>
         <div class="login-link">
             <p>вже зареєстровані?</p>
-            <a @onclick="LoginNavigate">увійти</a>
+            <a @onclick="loginNavigate">увійти</a>
         </div>
 
     </div>
 </div>
 
+@* @if (tasks != null)
+{
+    <ul>
+        @foreach (var task in tasks)
+        {
+            <li>
+                <input type="checkbox" disabled="@task.completed" /> @task.title
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Loading...</p>
+} *@
+
 @code {
+private TaskModel[]? tasks;
 
-    private void NextNavigate()
+@* protected override async Task OnInitializedAsync()
     {
-        Navigation.NavigateTo("/chooseSkills");
-    }
+        try
+        {
+            // Выполняем GET-запрос к серверу
+            tasks = await httpClient.GetFromJsonAsync<TaskModel[]>("https://pojwct.free.beeceptor.com/todos");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    } *@
 
-    private void LoginNavigate()
-    {
-        Navigation.NavigateTo("/login");
-    }
+public class TaskModel
+{
+public int id { get; set; }
+public string? title { get; set; }
+public bool completed { get; set; }
+}
+
+private void nextNavigate()
+{
+Navigation.NavigateTo("/chooseSkills");
+}
+
+private void loginNavigate()
+{
+Navigation.NavigateTo("/login");
+}
 
 }
