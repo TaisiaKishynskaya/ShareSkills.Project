@@ -1,11 +1,7 @@
 .main {
     font-family: "Marmelad";
     background: #F5FFFF;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 3.5rem); /* Висота екрану мінус висота верхнього рядка */
-    padding: 0; /* Видаляємо відступи */
-    margin: 0; /* Видаляємо відступи */
+    height: 93vh;
 }
 
 .title {
@@ -20,7 +16,6 @@
 }
 
 .content {
-    background: #F5FFFF;
     padding-left: 10px;
     padding-right: 10px;
 }
