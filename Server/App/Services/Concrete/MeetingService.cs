@@ -21,7 +21,8 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             Id = Guid.NewGuid(),
             OwnerId = meetingForCreatingDto.OwnerId,
             ForeignId = meetingForCreatingDto.ForeignId,
-            DateTime = meetingForCreatingDto.DateAndTime
+            DateTime = meetingForCreatingDto.DateAndTime,
+            Name = meetingForCreatingDto.Name
         };
 
         unitOfWork.MeetingRepository.Insert(meeting);
@@ -33,7 +34,8 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             OwnerId = meeting.OwnerId,
             ForeignId = meeting.ForeignId,
             DateTime = meeting.DateTime,
-            Description = meeting.Description
+            Description = meeting.Description,
+            Name = meeting.Name
         };
     }
 
@@ -59,7 +61,8 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             OwnerId = entity.OwnerId,
             ForeignId = entity.ForeignId,
             DateTime = entity.DateTime,
-            Description = entity.Description
+            Description = entity.Description,
+            Name = entity.Name
         });
         
         return meetingsDtos;
@@ -77,7 +80,8 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             OwnerId = meeting.OwnerId,
             ForeignId = meeting.ForeignId,
             DateTime = meeting.DateTime,
-            Description = meeting.Description
+            Description = meeting.Description,
+            Name = meeting.Name
         };
     }
 
@@ -92,7 +96,8 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             OwnerId = meeting.OwnerId,
             ForeignId = meeting.ForeignId,
             DateTime = meeting.DateTime,
-            Description = meeting.Description
+            Description = meeting.Description,
+            Name = meeting.Name
         };
     }
 
