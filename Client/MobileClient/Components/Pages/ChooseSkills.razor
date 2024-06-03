@@ -1,0 +1,71 @@
+@page "/choose-skills"
+@layout NoMenuLayout
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+@inject AuthService AuthService
+
+<div class="main">
+    @if (skills != null)
+    {
+    <h3 class="first">Виберіть навички, яким хочете навчитися</h3>
+        @* <input class="skill-search" type="text" placeholder="Пошук навички..."> *@
+        <div class="skills">
+            @foreach (var skill in skills)
+            {
+            <div class="skill-check-container">
+                <input class="skill-check" type="checkbox">
+                <p>@skill.skill</p>
+            </div>
+            }
+        </div>
+        <hr>
+        <h3>Виберіть час, зручний для навчання</h3>
+        <div class="lesson-time">
+            <div class="elem">
+                <label for="time">Ранок</label>
+                <input type="radio" name="time" id="morning">
+            </div>
+            <div class="elem">
+                <label for="time">День</label>
+                <input type="radio" name="time" id="day">
+            </div>
+            <div class="elem">
+                <label for="time">Вечір</label>
+                <input type="radio" name="time" id="evening">
+            </div>
+        </div>
+        <hr>
+        <h3>Виберіть бажаний рівень знань</h3>
+        <div class="level">
+            <div class="elem">
+                <label for="level">Introductory</label>
+                <input type="radio" name="level" id="introductory">
+            </div>
+            <div class="elem">
+                <label for="level">Intermidiate</label>
+                <input type="radio" name="level" id="intermidiate">
+            </div>
+            <div class="elem">
+                <label for="level">Advanced</label>
+                <input type="radio" name="level" id="advanced">
+            </div>
+        </div>
+    }
+        <button @onclick="calendarNavigate">Зареєструватися</button>
+        
+        
+</div>
+
+@code {
+    private void calendarNavigate()
+    {
+        Navigation.NavigateTo("/calendar");
+    }
+
+    List<Skill> skills;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await AuthService.GetSkills();
+    }
+}

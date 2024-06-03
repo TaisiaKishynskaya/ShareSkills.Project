@@ -1,0 +1,223 @@
+@page "/calendar"
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+@inject CalendarService CalendarService
+
+<div class="main">
+    @if (isTeacher)
+    {
+        <div class="plus-button" @onclick="() => IsShowDialog=true">
+            <p>+</p>
+        </div>
+    }
+    <div class="day">
+        <div class="day-info">
+            <p>Понеділок</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Вівторок</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in tuesdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Середа</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in wednesdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Четвер</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in thursdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>П'ятниця</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in fridayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Субота</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in saturdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>Неділя</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in sundayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (IsShowDialog)
+    {
+        <div class="dialog">
+            <svg @onclick="() => IsShowDialog=false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+            <input type="text" class="dialog-input" placeholder="id користувача" @bind="@NameToCreate">
+            <input type="text" class="dialog-input" placeholder="Назва" @bind = "@Title">
+            <input type="datetime-local" class="dialog-input" placeholder="Дата" @bind = "@Date">
+            @if (isError)
+            {
+                <p class="error">Сталася помилка</p>
+            }
+            <button class="next-btn" @onclick="AddMeeting">
+                Створити
+            </button>
+        </div>
+    }
+</div>
+
+
+@code {
+
+    private List<Meeting> mondayEvents = new();
+    private List<Meeting> tuesdayEvents = new();
+    private List<Meeting> wednesdayEvents = new();
+    private List<Meeting> thursdayEvents = new();
+    private List<Meeting> fridayEvents = new();
+    private List<Meeting> saturdayEvents = new();
+    private List<Meeting> sundayEvents = new();
+    private String userRole;
+
+    private String NameToCreate;
+    private String Title;
+    private DateTime Date{get; set;} = DateTime.Now;
+    private bool IsShowDialog = false;
+    private bool isError = false;
+    private bool isTeacher;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userRole = Preferences.Get("userRole", string.Empty);
+        if (userRole == "2ab125a8-72d8-43dd-8860-152bc1cbdf07")
+        {
+            isTeacher = true;
+        }
+        else 
+        {
+            isTeacher = false;
+        }
+        Console.WriteLine("userRole: " + userRole);
+        var meetings = await CalendarService.UpdateCalendar();
+        foreach (var meeting in meetings)
+        {
+            if (meeting.ForeignId.ToString() == Preferences.Get("userId", string.Empty) || meeting.OwnerId.ToString() == Preferences.Get("userId", string.Empty))
+            {
+                switch (meeting.DateTime.DayOfWeek)
+                {
+                    case DayOfWeek.Monday:
+                        mondayEvents.Add(meeting);
+                        break;
+                    case DayOfWeek.Tuesday:
+                        tuesdayEvents.Add(meeting);
+                        break;
+                    case DayOfWeek.Wednesday:
+                        wednesdayEvents.Add(meeting);
+                        break;
+                    case DayOfWeek.Thursday:
+                        thursdayEvents.Add(meeting);
+                        break;
+                    case DayOfWeek.Friday:
+                        fridayEvents.Add(meeting);
+                        break;
+                    case DayOfWeek.Saturday:
+                        saturdayEvents.Add(meeting);
+                        break;
+                    case DayOfWeek.Sunday:
+                        sundayEvents.Add(meeting);
+                        break;
+                }
+            }
+        }
+        
+    }
+
+    private async Task AddMeeting()
+    {
+        if (await CalendarService.AddMeeting(Date, NameToCreate))
+        {
+            IsShowDialog = false;
+            isError = false;
+        }
+        else
+        {
+            isError = true;
+        }
+    }
+
+    private void ShowAddDialog()
+    {
+        IsShowDialog = true;
+    }
+
+    private void OpenLessonDetails(Guid lessonId)
+    {
+        Navigation.NavigateTo($"/lesson/{lessonId.ToString()}");
+    }
+}

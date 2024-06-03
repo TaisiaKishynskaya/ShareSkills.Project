@@ -1,0 +1,79 @@
+@page "/"
+@layout NoMenuLayout
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+@inject AuthService AuthService
+
+<div class="main">
+    <h1>Навички Share</h1>
+    <div class="info">
+        <div class="input-info">
+            <input type="text" class="main-input" placeholder="Email" @bind="@email">
+            <input type="password" class="main-input" placeholder="Пароль" @bind="@password">
+        </div>
+
+        @if (isError)
+        {
+        <p class="error">Неправильний логін або пароль</p>
+        }
+
+        <button class="login-btn" @onclick="UserLogin">Увійти</button>
+        <div class="login-link">
+            <a href="" @onclick="registrationNavigate">реєстрація</a>
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    private string email;
+    private string password;
+
+    private bool isError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // to login automaticly, but jwt is expiring too fast
+        @* await CheckExistingToken(); *@
+    }
+
+    private async Task CheckExistingToken()
+    {
+        // Check if the JWT token is stored in Preferences
+        var jwt = Preferences.Get("jwt", string.Empty);
+        
+        if (!string.IsNullOrEmpty(jwt))
+        {
+            // Optionally, you can validate the token with the server here
+            Console.WriteLine("JWT token found, navigating to calendar...");
+            AuthService.getUserRole();
+            this.calendarNavigate();
+        }
+    }
+
+    private async Task UserLogin()
+    {
+        if (await AuthService.UserLogin(email, password))
+        {
+            isError = false;
+            AuthService.getUserRole();
+            calendarNavigate();
+        }
+        else
+        {
+            isError = true;
+        }
+
+    }
+
+
+    private void calendarNavigate()
+    {
+        Navigation.NavigateTo("/calendar");
+    }
+
+    private void registrationNavigate()
+    {
+        Navigation.NavigateTo("/registration");
+    }
+}
