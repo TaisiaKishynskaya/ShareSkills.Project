@@ -1,6 +1,7 @@
 @page "/lesson/{id}"
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
+@inject CalendarService CalendarService
 
 <div class="main">
     @if (teacher != null && meeting != null)
@@ -13,7 +14,7 @@
 
         <div class="content">
             <div class="block">
-                <p class="text-info">Ментор:</p>
+                <p class="text-info">Учасник:</p>
                 <p class="text-value">@teacher.Name @teacher.Surname</p>
             </div>
 
@@ -22,10 +23,10 @@
                 <p class="text-value">@meeting.DateTime.TimeOfDay</p>
             </div>
 
-            <div class="block">
+            @* <div class="block">
                 <p class="text-info">Посилання:</p>
                 <a class="text-value" href="#">Приєднатися</a>
-            </div>
+            </div> *@
         </div>
 
         <button class="cancel" @onclick="CancelMeeting">скасувати</button>
@@ -41,56 +42,14 @@
     [Parameter]
     public required string Id { get; set; }
 
-    public class Teacher
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public string Role { get; set; }
-    }
-    public class Meeting
-    {
-        public Guid Id { get; set; }
-        public DateTime DateTime { get; set; }
-        public string Description { get; set; }
-        public Guid OwnerId { get; set; }
-        public Guid ForeignId { get; set; }
-    }
-
     private Meeting meeting;
     private Teacher teacher;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var response = await httpClient.GetAsync($"http://localhost:5115/meetings/{Id}");
-            if (response.IsSuccessStatusCode)
-            {
-                meeting = await response.Content.ReadFromJsonAsync<Meeting>();
-                try 
-                {
-                    var response2 = await httpClient.GetAsync($"http://localhost:5115/users/{meeting.OwnerId}");
-                    if (response2.IsSuccessStatusCode)
-                    {
-                        teacher = await response2.Content.ReadFromJsonAsync<Teacher>();
-                        StateHasChanged();
-                    }
-                    
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+        var result = await CalendarService.GetMeetingInfo(Id, Preferences.Get("userRole", string.Empty));
+        meeting = result.Value.meeting;
+        teacher = result.Value.teacher;
 
     }
 
@@ -98,13 +57,13 @@
     {
         try
         {
-            var response = httpClient.DeleteAsync($"http://localhost:5115/meetings/{Id}");
+            var response = await httpClient.DeleteAsync($"http://localhost:5115/meetings/{Id}");
             //TODO: обработать, когда запрос выполнен успешно
-            @* if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"deleted meeting with id: {Id}");
                 this.goBack();
-            } *@
+            }
         }
         catch (Exception ex)
         {

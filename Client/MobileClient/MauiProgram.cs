@@ -23,6 +23,9 @@ namespace MobileClient
             
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Strings");
             builder.Services.AddScoped<HttpClient>();
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<CalendarService>();
+            builder.Services.AddScoped<CabinetService>();
 
             return builder.Build();
         }
