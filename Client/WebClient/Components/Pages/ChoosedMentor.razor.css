@@ -15,8 +15,12 @@
     border-radius: 10px;
     box-shadow: 0px 4px 15px rgba(0,0,0,0.25);
     width: 90%;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 15px;
+    align-items: center;
+}
+
+.skills-text {
+    text-align: center; 
 }
 
 .info {
@@ -55,7 +59,7 @@ svg {
     padding-bottom: 20px;
     padding-left: 15px;
     padding-right: 15px;
-    gap: 10px;
+    gap: -40px;
 }
 
 .skill-card {
