@@ -51,11 +51,19 @@
 
 .text p{
     margin: 0;
+    font-size: 16px;
 }
 
 .rating {
     display: flex;
     gap: 10px;
+   
+}
+
+.rating p {
+    margin: 0; 
+    font-size: 16px; 
+    text-align: center; 
 }
 
 ::-webkit-scrollbar {
