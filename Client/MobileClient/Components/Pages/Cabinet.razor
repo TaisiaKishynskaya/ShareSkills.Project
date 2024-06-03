@@ -1,6 +1,7 @@
 @page "/cabinet"
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
+@inject CabinetService CabinetService
 
 <div class="main">
         <div class="title">
@@ -54,15 +55,6 @@
     </div>
 
 @code {
-    public class User
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public string Role { get; set; }
-    }
     private User user;
     private User userToChange = new User
     {
@@ -79,23 +71,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //TODO: get correct user token
-        var userId = Preferences.Get("userId", string.Empty);
-        Console.WriteLine(userId);
-        try
-        {
-            var response = await httpClient.GetAsync($"http://localhost:5115/users/{userId}");
-            if (response.IsSuccessStatusCode)
-            {
-                user = await response.Content.ReadFromJsonAsync<User>();
-                StateHasChanged();
-            }
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+        user = await CabinetService.GetUser();
+        StateHasChanged();
     }
 
     private void goToFeedbackPage() {
@@ -110,33 +87,10 @@
     }
 
     private async Task ChangeInfo() {
-        var userId = Preferences.Get("userId", string.Empty);
-        var requestData = new
+        if (await CabinetService.ChangeInfo(userToChange, newPassword))
         {
-            name = userToChange.Name,
-            surname = userToChange.Surname,
-            email = userToChange.Email,
-            password = newPassword
-        };
-        var jsonContent = new StringContent(
-            System.Text.Json.JsonSerializer.Serialize(requestData),
-            System.Text.Encoding.UTF8,
-            "application/json"
-        );
-        try
-        {
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
-            var response = await httpClient.PutAsync($"http://localhost:5115/users/{userId}", jsonContent);
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("User info changed");
-                IsShowDialog = false;
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
+            IsShowDialog = false;
+            StateHasChanged();
         }
     }
 }

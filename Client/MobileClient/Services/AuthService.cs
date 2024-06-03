@@ -93,7 +93,31 @@ public class AuthService
             Console.WriteLine(ex);
         }
     }
+
+    public async Task<List<Skill>?> GetSkills()
+    {
+        try
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+            var response = await _httpClient.GetAsync($"http://localhost:5115/skills");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<Skill>>();
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.ReasonPhrase}");
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return null;
+        }
+    }
 }
+
 
 public class User
 {
@@ -109,4 +133,10 @@ public class AuthResponse
 {
     public string token { get; set; }
     public string userId { get; set; }
+}
+
+public class Skill
+{
+    public string id {get; set;}
+    public string skill {get; set;}
 }
