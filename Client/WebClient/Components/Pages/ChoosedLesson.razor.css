@@ -45,7 +45,7 @@
     border-radius: 10px;
     flex-direction: column;
     padding-left: 10px;
-    font-size: 32px;
+    font-size: 24px;
     gap: 25px;
     padding-top: 10px;
     padding-bottom: 20px;
@@ -65,6 +65,10 @@
     color: rgba(0,0,0,0.5);
 }
 
+.text-value {
+    text-decoration: none; 
+}
+
 .block a {
     color: black;
 }
@@ -73,8 +77,8 @@
     background-color: #FF9C9C;
     border: none;
     border-radius: 10px;
-    width: 90%;
-    font-size: 32px;
+    width: 30%;
+    font-size: 24px;
     padding: 5px;
 }
 

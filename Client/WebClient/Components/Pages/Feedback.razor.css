@@ -59,6 +59,10 @@
     margin-top: 10px;
 }
 
+.star-rating {
+    display: flex;
+}
+
 .star-rating p {
     margin: 0;
 }
