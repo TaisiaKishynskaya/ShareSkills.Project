@@ -20,6 +20,7 @@
     border-radius: 10px;
     width: 50%;
     height: 50px;
+    text-indent: 20px; 
 }
 
 .skill-search:focus {
@@ -66,7 +67,7 @@ button {
     width: 180px;
     height: 50px;
     position: absolute;
-    bottom: 70px;
+    bottom: 200px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 20px;
