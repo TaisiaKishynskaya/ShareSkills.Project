@@ -36,10 +36,11 @@ public class CalendarService
         }
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string NameToCreate)
+    public async Task<bool> AddMeeting(DateTime Date, string NameToCreate, String Title)
     {
         var postData = new
         {
+            name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ownerId = Preferences.Get("userId", string.Empty),
             foreignId = NameToCreate
@@ -106,6 +107,7 @@ public class CalendarService
 public class Meeting
 {
     public Guid Id { get; set; }
+    public string Name { get; set; }
     public DateTime DateTime { get; set; }
     public string Description { get; set; }
     public Guid OwnerId { get; set; }
