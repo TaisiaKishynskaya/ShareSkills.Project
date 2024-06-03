@@ -33,6 +33,12 @@ public static class ServicesConfiguration
         
         builder.Services.AddScoped<IGradeRepository, GradeRepository>();
         builder.Services.AddScoped<IGradeService, GradeService>();
+        
+        builder.Services.AddScoped<IClassTimeRepository, ClassTimeRepository>();
+        builder.Services.AddScoped<IClassTimeService, ClassTimeService>();
+        
+        builder.Services.AddScoped<ILevelRepository, LevelRepository>();
+        builder.Services.AddScoped<ILevelService, LevelService>();
 
         builder.Services.AddScoped<ISkillRepository, SkillRepository>();
         // Не работает: Unable to resolve service for type 'Libraries.Data.UnitOfWork.Concrete.UnitOfWork' while attempting to activate 'App.Services.Concrete.SkillService'

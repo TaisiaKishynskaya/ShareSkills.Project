@@ -6,7 +6,10 @@ using Libraries.Entities.Concrete;
 
 namespace App.Services.Concrete;
 
-public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
+public class TeacherService(IUnitOfWork unitOfWork,
+                            IClassTimeService classTimeService,
+                            ILevelService levelService,
+                            ISkillService skillService) : ITeacherService
 {
     //private UserDto _userDto;
     
@@ -16,15 +19,24 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         {
             Id = Guid.NewGuid(),
             Rating = teacherForCreationDto.Rating,
+            ClassTime = teacherForCreationDto.ClassTime,
+            Level = teacherForCreationDto.Level,
+            Skill = teacherForCreationDto.Skill
         };
 
         unitOfWork.TeacherRepository.Insert(teacher);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        var classTimeName = await classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
+        var level = await levelService.GetLevelNameAsync(teacher.LevelId);
 
         return new TeacherDto
         {
             Id = teacher.Id,
-            Rating = teacher.Rating
+            Rating = teacher.Rating,
+            ClassTime = classTimeName,
+            Level = level,
+            Skill = teacher.Skill
         };
     }
 
@@ -47,13 +59,16 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
             .GetAllAsync(cancellationToken);
 
         var teachersDtos = new List<TeacherDto>();
-
+        
         foreach (var teacher in teachers)
         {
             teachersDtos.Add(new TeacherDto
             {
                 Id = teacher.Id,
                 Rating = teacher.Rating,
+                ClassTime = teacher.ClassTimeId.ToString(),
+                Level = teacher.LevelId.ToString(),
+                Skill = teacher.Skill
             });
         }
 
@@ -65,11 +80,18 @@ public class TeacherService(IUnitOfWork unitOfWork) : ITeacherService
         var teacher = await unitOfWork.TeacherRepository
            .GetByIdAsync(id, cancellationToken)
             ?? throw new TeacherNotFoundException(id);
+        
+        var classTimeName = await classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
+        var level = await levelService.GetLevelNameAsync(teacher.LevelId);
+        var skill = await skillService.GetByIdAsync(teacher.SkillId);
 
         return new TeacherDto
         {
             Id = teacher.Id,
-            Rating = teacher.Rating
+            Rating = teacher.Rating,
+            ClassTime = classTimeName,
+            Level = level,
+            Skill = skill
         };
     }
 
