@@ -4,8 +4,8 @@
 @layout NoMenuLayout
 
 <div class="main">
-    <h1>Виберіть навички, яким хочете навчитися</h1>
-    <input class="skill-search" type="text" placeholder="Пошук навички...">
+    <h1>Select skills you want to learn</h1>
+    <input class="skill-search" type="text" placeholder="Find skill...">
     <div class="skills">
         @foreach (var skill in skills)
         {
@@ -15,7 +15,7 @@
             </div>
         }
     </div>
-    <button @onclick="calendarNavigate">Зареєструватися</button>
+    <button @onclick="calendarNavigate">Next</button>
         
 </div>
 

@@ -9,7 +9,6 @@ body {
 }
 
 .main {
-    background: rgb(6,210,255);
     background: linear-gradient(180deg, rgba(6,210,255,1) 0%, rgba(227,227,227,1) 100%);
     font-family: 'Montserrat', serif;
     display: flex;
@@ -25,7 +24,7 @@ h1 {
 }
 
 .info {
-    margin-top: 70px;
+    margin-top: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -143,7 +142,6 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
     border-radius: 34px;
 }

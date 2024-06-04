@@ -4,26 +4,25 @@
 @layout NoMenuLayout
 
 <div class="main">
-    <h1>Навички Share</h1>
+    <h1>Share</h1>
     <div class="info">
         <div class="input-info">
-            <input type="text" class="main-input" placeholder="Ім'я">
-            <input type="text" class="main-input" placeholder="Прізвище">
-            <input type="text" class="main-input" placeholder="email">
-            <input type="text" class="main-input" placeholder="Пароль">
+            <input type="text" class="main-input" placeholder="Name">
+            <input type="text" class="main-input" placeholder="Surname">
+            <input type="text" class="main-input" placeholder="Email">
+            <input type="text" class="main-input" placeholder="Password">
         </div>
         <div class="switch-btn">
-            <p>Учень</p>
+            <p>Student</p>
             <label class="switch">
                 <input type="checkbox">
                 <span class="slider round"></span>
             </label>
-            <p>Вчитель</p>
+            <p>Teacher</p>
         </div>
-        <button class="next-btn" @onclick="nextNavigate">Далі</button>
+        <button class="next-btn" @onclick="nextNavigate">Next</button>
         <div class="login-link">
-            <p>вже зареєстровані?</p>
-            <a @onclick="loginNavigate">увійти</a>
+            <a @onclick="loginNavigate">Log in</a>
         </div>
 
     </div>
