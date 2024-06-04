@@ -2,21 +2,26 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.JSInterop;
+using System.Collections.Generic;
 
 public class CalendarService
 {
     private readonly HttpClient _httpClient;
+    private readonly IJSRuntime _jsRuntime;
 
-    public CalendarService(HttpClient httpClient)
+    public CalendarService(HttpClient httpClient, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient;
+        _jsRuntime = jsRuntime;
     }
 
     public async Task<List<Meeting>?> UpdateCalendar()
     {
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+            var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
             var response = await _httpClient.GetAsync("http://localhost:5115/meetings");
             if (response.IsSuccessStatusCode)
             {
@@ -36,13 +41,14 @@ public class CalendarService
         }
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string NameToCreate, String Title)
+    public async Task<bool> AddMeeting(DateTime Date, string NameToCreate, string Title)
     {
+        var ownerId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var postData = new
         {
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-            ownerId = Preferences.Get("userId", string.Empty),
+            ownerId,
             foreignId = NameToCreate
         };
 
@@ -67,7 +73,7 @@ public class CalendarService
         }
     }
 
-    public async Task<(Meeting meeting, Teacher teacher)?> GetMeetingInfo(string Id, String userRole)
+    public async Task<(Meeting meeting, Teacher teacher)?> GetMeetingInfo(string Id, string userRole)
     {
         try
         {
@@ -85,7 +91,6 @@ public class CalendarService
                         return (meeting, teacher);
                     }
                     return null;
-                    
                 }
                 catch (Exception ex)
                 {
@@ -94,7 +99,6 @@ public class CalendarService
                 }
             }
             return null;
-
         }
         catch (Exception ex)
         {

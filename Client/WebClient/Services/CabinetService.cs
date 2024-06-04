@@ -2,19 +2,23 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.JSInterop;
+using System.Text.Json;
 
 public class CabinetService
 {
     private readonly HttpClient _httpClient;
+    private readonly IJSRuntime _jsRuntime;
 
-    public CabinetService(HttpClient httpClient)
+    public CabinetService(HttpClient httpClient, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient;
+        _jsRuntime = jsRuntime;
     }
 
     public async Task<User?> GetUser()
     {
-        var userId = Preferences.Get("userId", string.Empty);
+        var userId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         Console.WriteLine(userId);
         try
         {
@@ -24,7 +28,6 @@ public class CabinetService
                 return await response.Content.ReadFromJsonAsync<User>();
             }
             return null;
-
         }
         catch (Exception ex)
         {
@@ -33,8 +36,9 @@ public class CabinetService
         }
     }
 
-    public async Task<bool> ChangeInfo(User userToChange, string newPassword) {
-        var userId = Preferences.Get("userId", string.Empty);
+    public async Task<bool> ChangeInfo(User userToChange, string newPassword)
+    {
+        var userId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var requestData = new
         {
             name = userToChange.Name,
@@ -43,13 +47,14 @@ public class CabinetService
             password = newPassword
         };
         var jsonContent = new StringContent(
-            System.Text.Json.JsonSerializer.Serialize(requestData),
+            JsonSerializer.Serialize(requestData),
             System.Text.Encoding.UTF8,
             "application/json"
         );
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+            var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
             var response = await _httpClient.PutAsync($"http://localhost:5115/users/{userId}", jsonContent);
             if (response.IsSuccessStatusCode)
             {

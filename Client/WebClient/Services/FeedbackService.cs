@@ -1,15 +1,20 @@
 using System.Net.Http.Json;
+using System.Threading.Tasks;
+using Microsoft.JSInterop;
+using System;
 
 public class FeedbackService
 {
     private readonly HttpClient _httpClient;
+    private readonly IJSRuntime _jsRuntime;
 
-    public FeedbackService(HttpClient httpClient)
+    public FeedbackService(HttpClient httpClient, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient;
+        _jsRuntime = jsRuntime;
     }
 
-    public async Task<bool> SendFeedback(String Id, int Grade)
+    public async Task<bool> SendFeedback(string Id, int Grade)
     {
         var requestBody = new
         {
@@ -24,7 +29,6 @@ public class FeedbackService
                 return true;
             }
             return false;
-
         }
         catch (Exception ex)
         {

@@ -1,34 +1,36 @@
-using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.JSInterop;
+using System.Collections.Generic;
+using System;
 
 public class AuthService
 {
-
     private readonly HttpClient _httpClient;
+    private readonly IJSRuntime _jsRuntime;
     private AuthResponse authResponse; 
     private User user;
 
-    public AuthService(HttpClient httpClient)
+    public AuthService(HttpClient httpClient, IJSRuntime jsRuntime)
     {
         _httpClient = httpClient;
+        _jsRuntime = jsRuntime;
     }
 
     public async Task<bool> UserLogin(string email, string password)
     {
-        
-        try {
+        try 
+        {
             Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
             var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
-            Console.Write(response);
+
             if (response.IsSuccessStatusCode)
             {
                 authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                Preferences.Set("userId", authResponse.userId);
-                // Preferences for saving data
-                Preferences.Set("jwt", authResponse.token);
-                Console.WriteLine("jwt: "+Preferences.Get("jwt", string.Empty));
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userId", authResponse.userId);
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "jwt", authResponse.token);
+                Console.WriteLine("jwt: " + await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt"));
                 return true;
             }
             else
@@ -43,7 +45,7 @@ public class AuthService
         }
     }
 
-    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, String Email, string Password)
+    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, string Email, string Password)
     {
         var Role = IsTeacher ? "teacher" : "student";
         var requestData = new
@@ -54,12 +56,13 @@ public class AuthService
             Password,
             Role
         };
-        try {
+        try 
+        {
             var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/register", requestData);
             if (response.IsSuccessStatusCode)
             {
-                var userId = await response.Content.ReadFromJsonAsync<string?>();
-                Preferences.Set("userId", userId);
+                var userId = await response.Content.ReadFromJsonAsync<string>();
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userId", userId);
                 Console.WriteLine(userId);
                 await UserLogin(Email, Password);
                 return true;
@@ -76,16 +79,16 @@ public class AuthService
         }
     }
 
-    public async Task getUserRole()
+    public async Task GetUserRole()
     {
-        var userId = Preferences.Get("userId", string.Empty);
+        var userId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         try
         {
             var response = await _httpClient.GetAsync($"http://localhost:5115/users/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 user = await response.Content.ReadFromJsonAsync<User>();
-                Preferences.Set("userRole", user.Role);
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userRole", user.Role);
             }
         }
         catch (Exception ex)
@@ -98,8 +101,9 @@ public class AuthService
     {
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
-            var response = await _httpClient.GetAsync($"http://localhost:5115/skills");
+            var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+            var response = await _httpClient.GetAsync("http://localhost:5115/skills");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<Skill>>();
@@ -117,7 +121,6 @@ public class AuthService
         }
     }
 }
-
 
 public class User
 {
@@ -137,6 +140,6 @@ public class AuthResponse
 
 public class Skill
 {
-    public string id {get; set;}
-    public string skill {get; set;}
+    public string id { get; set; }
+    public string skill { get; set; }
 }
