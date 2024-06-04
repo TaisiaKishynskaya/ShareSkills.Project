@@ -2,23 +2,55 @@
 @using WebClient.Components.Layout
 @inject NavigationManager Navigation
 @layout NoMenuLayout
+@inject AuthService AuthService
 
 <div class="main">
-    <h1>Share</h1>
+    <h1>Skills Share</h1>
     <div class="info">
         <div class="input-info">
-            <input type="text" class="main-input" placeholder="Login">
-            <input type="text" class="main-input" placeholder="Password">
+            <input type="text" class="main-input" placeholder="Email" @bind="@email">
+            <input type="password" class="main-input" placeholder="Password" @bind="@password">
         </div>
 
-        <button class="login-btn" @onclick="CalendarNavigate">Log in</button>
+        @if (isError)
+        {
+            <p class="error">Incorrect email or password</p>
+        }
+
+        <button class="login-btn" @onclick="UserLogin">Log in</button>
+        <div class="login-link">
+            <a @onclick="registrationNavigate">Register now</a>
+        </div>
     </div>
 </div>
 
 @code 
 {
-    private void CalendarNavigate()
+    private string email;
+    private string password;
+    private bool isError = false;
+
+    private async Task UserLogin()
+    {
+        if (await AuthService.UserLogin(email, password))
+        {
+            isError = false;
+            AuthService.GetUserRole(); 
+            NavigateToCalendar();
+        }
+        else
+        {
+            isError = true;
+        }
+    }
+
+    private void NavigateToCalendar()
     {
         Navigation.NavigateTo("/calendar");
+    }
+
+    private void registrationNavigate()
+    {
+        Navigation.NavigateTo("/");
     }
 }
