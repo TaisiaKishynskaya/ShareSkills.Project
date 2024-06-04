@@ -10,7 +10,11 @@ public class UserEntity
     public string Surname { get; set; }
     
     //[ContainsString("@", ErrorMessage = "Назва повинна містити '@'.")] - Для ContainsStringAttribute
+    
+    [EmailValidation]
     public string Email { get; set; }
+    
+    [MinLength(8, ErrorMessage = "< 8")]
     public string Password { get; set; }
     
     // *-1
