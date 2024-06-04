@@ -1,8 +1,27 @@
+@font-face {
+    font-family: 'Marmelad';
+    /* src: url("../../Resources/Fonts/Montserrat-VariableFont_wght.ttf") format("truetype"); */
+}
+
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
 .main {
     background: #F5FFFF;
-    font-family: "Marmelad";
-    max-height: 93vh;
-    overflow: scroll;
+    font-family: 'Marmelad', serif;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     padding-left: 40px;
     padding-right: 5px;
     padding-top: 30px;
