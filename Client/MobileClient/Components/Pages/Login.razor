@@ -5,21 +5,21 @@
 @inject AuthService AuthService
 
 <div class="main">
-    <h1>Навички Share</h1>
+    <h1>Skills Share</h1>
     <div class="info">
         <div class="input-info">
             <input type="text" class="main-input" placeholder="Email" @bind="@email">
-            <input type="password" class="main-input" placeholder="Пароль" @bind="@password">
+            <input type="password" class="main-input" placeholder="Password" @bind="@password">
         </div>
 
         @if (isError)
         {
-        <p class="error">Неправильний логін або пароль</p>
+        <p class="error">Incorrect email or password</p>
         }
 
-        <button class="login-btn" @onclick="UserLogin">Увійти</button>
+        <button class="login-btn" @onclick="UserLogin">Login</button>
         <div class="login-link">
-            <a href="" @onclick="registrationNavigate">реєстрація</a>
+            <a href="" @onclick="registrationNavigate">register now</a>
         </div>
     </div>
 </div>

@@ -7,7 +7,7 @@
 <div class="main">
     @if (skills != null)
     {
-    <h3 class="first">Виберіть навички, яким хочете навчитися</h3>
+    <h3 class="first">Choose the skills you want to learn</h3>
         @* <input class="skill-search" type="text" placeholder="Пошук навички..."> *@
         <div class="skills">
             @foreach (var skill in skills)
@@ -19,23 +19,23 @@
             }
         </div>
         <hr>
-        <h3>Виберіть час, зручний для навчання</h3>
+        <h3>Choose a time convenient for learning</h3>
         <div class="lesson-time">
             <div class="elem">
-                <label for="time">Ранок</label>
+                <label for="time">Morning</label>
                 <input type="radio" name="time" id="morning">
             </div>
             <div class="elem">
-                <label for="time">День</label>
+                <label for="time">Day</label>
                 <input type="radio" name="time" id="day">
             </div>
             <div class="elem">
-                <label for="time">Вечір</label>
+                <label for="time">Evening</label>
                 <input type="radio" name="time" id="evening">
             </div>
         </div>
         <hr>
-        <h3>Виберіть бажаний рівень знань</h3>
+        <h3>Select the desired level of knowledge</h3>
         <div class="level">
             <div class="elem">
                 <label for="level">Introductory</label>
@@ -51,7 +51,7 @@
             </div>
         </div>
     }
-        <button @onclick="calendarNavigate">Далі</button>
+        <button @onclick="calendarNavigate">Next</button>
         
         
 </div>

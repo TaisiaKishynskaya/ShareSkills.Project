@@ -12,7 +12,7 @@
     }
     <div class="day">
         <div class="day-info">
-            <p>Понеділок</p>
+            <p>Monday</p>
             <hr>
         </div>
         <div class="cards">
@@ -27,7 +27,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Вівторок</p>
+            <p>Tuesday</p>
             <hr>
         </div>
         <div class="cards">
@@ -42,7 +42,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Середа</p>
+            <p>Wednesday</p>
             <hr>
         </div>
         <div class="cards">
@@ -57,7 +57,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Четвер</p>
+            <p>Thursday</p>
             <hr>
         </div>
         <div class="cards">
@@ -72,7 +72,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>П'ятниця</p>
+            <p>Friday</p>
             <hr>
         </div>
         <div class="cards">
@@ -87,7 +87,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Субота</p>
+            <p>Saturday</p>
             <hr>
         </div>
         <div class="cards">
@@ -102,7 +102,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Неділя</p>
+            <p>Sunday</p>
             <hr>
         </div>
         <div class="cards">
@@ -119,15 +119,15 @@
     {
         <div class="dialog">
             <svg @onclick="() => IsShowDialog=false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-            <input type="text" class="dialog-input" placeholder="id користувача" @bind="@NameToCreate">
-            <input type="text" class="dialog-input" placeholder="Назва" @bind = "@Title">
-            <input type="datetime-local" class="dialog-input" placeholder="Дата" @bind = "@Date">
+            <input type="text" class="dialog-input" placeholder="User id" @bind="@NameToCreate">
+            <input type="text" class="dialog-input" placeholder="Title" @bind = "@Title">
+            <input type="datetime-local" class="dialog-input" placeholder="Date" @bind = "@Date">
             @if (isError)
             {
-                <p class="error">Сталася помилка</p>
+                <p class="error">An error occurred</p>
             }
             <button class="next-btn" @onclick="AddMeeting">
-                Створити
+                Create
             </button>
         </div>
     }
