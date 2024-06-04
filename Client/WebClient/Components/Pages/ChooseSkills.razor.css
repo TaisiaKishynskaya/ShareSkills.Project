@@ -67,7 +67,6 @@ button {
     width: 180px;
     height: 50px;
     position: absolute;
-    bottom: 200px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 20px;

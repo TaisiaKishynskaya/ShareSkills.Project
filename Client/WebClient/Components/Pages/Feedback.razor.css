@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Marmelad';
+    /* src: url("../../Resources/Fonts/Montserrat-VariableFont_wght.ttf") format("truetype"); */
+}
+
 .main {
     font-family: "Marmelad";
     background: #F5FFFF;
@@ -13,7 +18,7 @@
     font-size: 20px;
     align-items: center;
     padding-left: 10px;
-    gap: 10px;
+    gap: 35%;
 }
 
 .title svg {
@@ -102,12 +107,8 @@ button {
     padding-bottom: 5px;
 }
 
-/* .feedback, hr {
-    display: none;
-} */
-
 .box {
-    display: box;
+    display: block;
 }
 
 .none {
