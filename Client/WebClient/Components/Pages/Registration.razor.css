@@ -12,7 +12,12 @@ body {
     background: rgb(6,210,255);
     background: linear-gradient(180deg, rgba(6,210,255,1) 0%, rgba(227,227,227,1) 100%);
     font-family: 'Montserrat', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding-top: 60px;
+    flex-grow: 1;
+    height: 100vh;
 }
 
 h1 {
@@ -25,6 +30,7 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-grow: 1;
 }
 
 .input-info {
