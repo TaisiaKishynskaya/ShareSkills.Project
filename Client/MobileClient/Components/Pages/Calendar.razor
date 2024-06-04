@@ -4,15 +4,23 @@
 @inject CalendarService CalendarService
 
 <div class="main">
-    @if (isTeacher)
-    {
-        <div class="plus-button" @onclick="() => IsShowDialog=true">
-            <p>+</p>
+    <div class="nav-buttons">
+        @if (isTeacher)
+        {
+            <div class="plus-button" @onclick="() => IsShowDialog=true">
+                <p>+</p>
+            </div>
+        }
+        <div class="week-navigation">
+                <button class="next-btn" @onclick="PreviousWeek">Previous Week</button>
+                <button class="next-btn" @onclick="NextWeek">Next Week</button>
         </div>
-    }
+    </div>
+    @if (weekDates.ContainsKey(DayOfWeek.Monday))
+    {
     <div class="day">
         <div class="day-info">
-            <p>Monday</p>
+            <p>@weekDates[DayOfWeek.Monday].ToString("dd.MM") Monday</p>
             <hr>
         </div>
         <div class="cards">
@@ -27,7 +35,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Tuesday</p>
+            <p>@weekDates[DayOfWeek.Tuesday].ToString("dd.MM") Tuesday</p>
             <hr>
         </div>
         <div class="cards">
@@ -42,7 +50,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Wednesday</p>
+            <p>@weekDates[DayOfWeek.Wednesday].ToString("dd.MM") Wednesday</p>
             <hr>
         </div>
         <div class="cards">
@@ -57,7 +65,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Thursday</p>
+            <p>@weekDates[DayOfWeek.Thursday].ToString("dd.MM") Thursday</p>
             <hr>
         </div>
         <div class="cards">
@@ -72,7 +80,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Friday</p>
+            <p>@weekDates[DayOfWeek.Friday].ToString("dd.MM") Friday</p>
             <hr>
         </div>
         <div class="cards">
@@ -87,7 +95,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Saturday</p>
+            <p>@weekDates[DayOfWeek.Saturday].ToString("dd.MM") Saturday</p>
             <hr>
         </div>
         <div class="cards">
@@ -102,7 +110,7 @@
 
     <div class="day">
         <div class="day-info">
-            <p>Sunday</p>
+            <p>@weekDates[DayOfWeek.Sunday].ToString("dd.MM") Sunday</p>
             <hr>
         </div>
         <div class="cards">
@@ -130,6 +138,7 @@
                 Create
             </button>
         </div>
+        }
     }
 </div>
 
@@ -151,6 +160,9 @@
     private bool IsShowDialog = false;
     private bool isError = false;
     private bool isTeacher;
+    private DateTime currentWeekStartDate;
+    private List<Meeting> currentWeekEvents = new();
+    private Dictionary<DayOfWeek, DateTime> weekDates = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,39 +175,60 @@
         {
             isTeacher = false;
         }
+        currentWeekStartDate = FirstDayOfWeek(DateTime.Now);
+        await LoadMeetingsForCurrentWeek();
         Console.WriteLine("userRole: " + userRole);
-        var meetings = await CalendarService.UpdateCalendar();
-        foreach (var meeting in meetings)
-        {
-            if (meeting.ForeignId.ToString() == Preferences.Get("userId", string.Empty) || meeting.OwnerId.ToString() == Preferences.Get("userId", string.Empty))
-            {
-                switch (meeting.DateTime.DayOfWeek)
-                {
-                    case DayOfWeek.Monday:
-                        mondayEvents.Add(meeting);
-                        break;
-                    case DayOfWeek.Tuesday:
-                        tuesdayEvents.Add(meeting);
-                        break;
-                    case DayOfWeek.Wednesday:
-                        wednesdayEvents.Add(meeting);
-                        break;
-                    case DayOfWeek.Thursday:
-                        thursdayEvents.Add(meeting);
-                        break;
-                    case DayOfWeek.Friday:
-                        fridayEvents.Add(meeting);
-                        break;
-                    case DayOfWeek.Saturday:
-                        saturdayEvents.Add(meeting);
-                        break;
-                    case DayOfWeek.Sunday:
-                        sundayEvents.Add(meeting);
-                        break;
-                }
-            }
-        }
         
+    }
+
+    private async Task LoadMeetingsForCurrentWeek()
+    {
+        var meetings = await CalendarService.UpdateCalendar();
+        currentWeekEvents = meetings.Where(meeting => 
+            meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
+            (meeting.ForeignId.ToString() == Preferences.Get("userId", string.Empty) || meeting.OwnerId.ToString() == Preferences.Get("userId", string.Empty))
+        ).ToList();
+        
+        PopulateDailyEvents();
+    }
+
+    private void PopulateDailyEvents()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            var day = currentWeekStartDate.AddDays(i);
+            weekDates[day.DayOfWeek] = day;
+        }
+        mondayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Monday).ToList();
+        tuesdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Tuesday).ToList();
+        wednesdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Wednesday).ToList();
+        thursdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Thursday).ToList();
+        fridayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Friday).ToList();
+        saturdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Saturday).ToList();
+        sundayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Sunday).ToList();
+    }
+
+    private async Task PreviousWeek()
+    {
+        currentWeekStartDate = currentWeekStartDate.AddDays(-7);
+        await LoadMeetingsForCurrentWeek();
+    }
+
+    private async Task NextWeek()
+    {
+        currentWeekStartDate = currentWeekStartDate.AddDays(7);
+        await LoadMeetingsForCurrentWeek();
+    }
+
+    public static DateTime FirstDayOfWeek(DateTime dt)
+    {
+        var culture = System.Threading.Thread.CurrentThread.CurrentCulture; // Getting current culture information
+        var diff = dt.DayOfWeek - culture.DateTimeFormat.FirstDayOfWeek; // Calculating the difference between the input date's day of the week and the first day of the week in the culture
+
+        if (diff < 0)
+            diff += 7; // If the difference is negative, add 7 days to get the correct first day of the week
+
+        return dt.AddDays(-diff).Date; // Returning the date adjusted to the first day of the week
     }
 
     private async Task AddMeeting()
