@@ -40,6 +40,20 @@ public class CalendarService
             return null;
         }
     }
+    
+    public async Task<string> GetUserRole()
+    {
+        try
+        {
+            var role = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
+            return role;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting user role: {ex.Message}");
+            return null;
+        }
+    }
 
     public async Task<bool> AddMeeting(DateTime Date, string NameToCreate, string Title)
     {
