@@ -12,7 +12,7 @@ public class TeacherEndpoint : IMinimalEndpoint
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/teachers", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
                 async (ITeacherService service) =>
             {
                 var teacher = await service.GetAllAsync();
@@ -22,7 +22,7 @@ public class TeacherEndpoint : IMinimalEndpoint
             .WithOpenApi();
 
         routeBuilder.MapGet("/teachers/{id:guid}",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
                 async (Guid id, ITeacherService service) =>
             {
                 var teacher = await service.GetByIdAsync(id);
