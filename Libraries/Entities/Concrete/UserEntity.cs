@@ -6,14 +6,20 @@ namespace Libraries.Entities.Concrete;
 public class UserEntity
 {
     public required Guid Id { get; set; }
+    [Required(ErrorMessage = "Cannot be empty!")]
+    [RegularExpression("^[A-Za-z]+$", ErrorMessage = "Name should contain only letters")]
     public string Name { get; set; }
+
+    [Required(ErrorMessage = "Cannot be empty!")]
+    [RegularExpression("^[A-Za-z]+$", ErrorMessage = "Surname should contain only letters")]
     public string Surname { get; set; }
-    
-    //[ContainsString("@", ErrorMessage = "Назва повинна містити '@'.")] - Для ContainsStringAttribute
-    [EmailValidation]
+
+    [Required(ErrorMessage = "Cannot be empty!")]
+    [EmailAddress(ErrorMessage = "Incorrect Email format")]
     public string Email { get; set; }
-    
-    [MinLength(8, ErrorMessage = "< 8")]
+
+    [Required(ErrorMessage = "Cannot be empty!")]
+    [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
     public string Password { get; set; }
     
     // *-1
