@@ -39,5 +39,11 @@ public class UserEndpoint : IMinimalEndpoint
                 return Results.NoContent();
             })
             .WithOpenApi();
+
+        routeBuilder.MapPost("/getId", async (IUserService UserService, IConfiguration configuration, string email) => 
+        {
+            var user = await UserService.GetByEmailAsync(email);
+            return Results.Ok(new {userId = user.Id});
+        });
     }
 }
