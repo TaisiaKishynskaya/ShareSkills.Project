@@ -54,21 +54,34 @@ public class AppDbSeed
             context.SaveChanges();
         }
         
-        if (!context.Teachers.Any())
-        {
-            var teacher = new TeacherEntity
-            {
-                Id = Guid.NewGuid(),
-                Rating = 0, // Set the default rating
-                SkillId = new Guid("4b7920e7-fc7f-49ca-b297-1e6699888c3e"),
-                ClassTimeId = new Guid("5b4b8b96-7490-4b3e-9519-09411be4bd74"), // Specify the class time ID
-                LevelId = new Guid("447dc41c-c38a-48be-820e-8c6ab124fe8d"), // Specify the level ID
-                UserId = new Guid("461a393b-304a-435b-9c85-b16127d51c7a") // You need to replace this with an existing user ID
-            };
-        
-            context.Teachers.Add(teacher);
-        
-            context.SaveChanges();
-        }
+        // if (!context.Teachers.Any())
+        // {
+        //     var teacher = new TeacherEntity
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         Rating = 0, // Set the default rating
+        //         SkillId = new Guid("c36935a1-27fd-49fe-931c-bc291bfd3f3c"),
+        //         ClassTimeId = new Guid("2028a98d-caea-4206-b2f9-fbf6df6f457b"), // Specify the class time ID
+        //         LevelId = new Guid("3825028c-6985-4423-9d94-3e57985e1e1b"), // Specify the level ID
+        //         UserId = new Guid("197a37d2-7d1c-447d-823a-b9a7f490b407") // You need to replace this with an existing user ID
+        //     };
+        //     
+        //     var teacher1 = new TeacherEntity
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         Rating = 0, // Set the default rating
+        //         SkillId = new Guid("67c68c91-6938-413e-8dc9-62dee48e301b"),
+        //         ClassTimeId = new Guid("2028a98d-caea-4206-b2f9-fbf6df6f457b"), // Specify the class time ID
+        //         LevelId = new Guid("3825028c-6985-4423-9d94-3e57985e1e1b"), // Specify the level ID
+        //         UserId = new Guid("6626fa39-0623-4717-8cd1-4810576aa585") // You need to replace this with an existing user ID
+        //     };
+        //     
+        //     
+        //
+        //     context.Teachers.Add(teacher);
+        //     context.Teachers.Add(teacher1);
+        //
+        //     context.SaveChanges();
+        // }
     }
 }

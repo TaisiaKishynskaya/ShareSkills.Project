@@ -40,7 +40,7 @@ public static class ServicesConfiguration
         builder.Services.AddScoped<ILevelRepository, LevelRepository>();
         builder.Services.AddScoped<ILevelService, LevelService>();
 
-        builder.Services.AddSingleton<TeacherBinaryTree>();
+        builder.Services.AddScoped<TeacherBinaryTree>();
 
         //builder.Services.AddAutoMapper();
 

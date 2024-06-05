@@ -10,5 +10,5 @@ public class TeacherForCreationDto
     public required double Rating { get; set; }
     public required string ClassTime { get; set; }
     public required string Level { get; set; }
-    public required SkillEntity Skill { get; set; }
+    public required string Skill { get; set; }
 }
