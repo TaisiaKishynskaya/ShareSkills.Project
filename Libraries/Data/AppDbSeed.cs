@@ -53,39 +53,22 @@ public class AppDbSeed
 
             context.SaveChanges();
         }
-
-        var teacherRole = context.Roles.FirstOrDefault(r => r.Name == "Teacher");
-        if (teacherRole != null && !context.Users.Any(u => u.RoleId == teacherRole.Id))
+        
+        if (!context.Teachers.Any())
         {
-            var user = new UserEntity
+            var teacher = new TeacherEntity
             {
                 Id = Guid.NewGuid(),
-                Name = "FirstName",
-                Surname = "LastName",
-                Email = "example@example.com",
-                Password = "password",
-                RoleId = context.Roles.FirstOrDefault(r => r.Name == "Teacher")?.Id ?? Guid.Empty
+                Rating = 0, // Set the default rating
+                SkillId = new Guid("4b7920e7-fc7f-49ca-b297-1e6699888c3e"),
+                ClassTimeId = new Guid("5b4b8b96-7490-4b3e-9519-09411be4bd74"), // Specify the class time ID
+                LevelId = new Guid("447dc41c-c38a-48be-820e-8c6ab124fe8d"), // Specify the level ID
+                UserId = new Guid("461a393b-304a-435b-9c85-b16127d51c7a") // You need to replace this with an existing user ID
             };
-            context.Users.Add(user);
+        
+            context.Teachers.Add(teacher);
+        
             context.SaveChanges();
-
-            var skillId = context.Skills.FirstOrDefault()?.Id ?? Guid.Empty;
-
-            if (skillId != Guid.Empty)
-            {
-                context.Teachers.Add(
-                    new TeacherEntity
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = user.Id,
-                        SkillId = skillId,
-                        LevelId = context.Levels.FirstOrDefault()?.Id ?? Guid.Empty,
-                        ClassTimeId = context.ClassTimes.FirstOrDefault()?.Id ?? Guid.Empty
-                    }
-                );
-
-                context.SaveChanges();
-            }
         }
     }
 }

@@ -1,74 +1,104 @@
-﻿using Libraries.Entities.Concrete;
+﻿using Microsoft.Extensions.Logging;
+using Libraries.Entities.Concrete;
 
-namespace App.Services.Concrete;
-
-public class TeacherNode
+namespace App.Services.Concrete
 {
-    public TeacherEntity Teacher { get; set; }
-    public TeacherNode? Left { get; set; }
-    public TeacherNode? Right { get; set; }
-
-    public TeacherNode(TeacherEntity teacher)
+    public class TeacherNode
     {
-        Teacher = teacher;
-        Left = null;
-        Right = null;
-    }
-}
+        public TeacherEntity Teacher { get; set; }
+        public TeacherNode? Left { get; set; }
+        public TeacherNode? Right { get; set; }
 
-public class TeacherBinaryTree
-{
-    public TeacherNode? Root { get; set; }
-
-    public void Insert(TeacherEntity teacher)
-    {
-        var newNode = new TeacherNode(teacher);
-
-        if (Root == null)
+        public TeacherNode(TeacherEntity teacher)
         {
-            Root = newNode;
-            return;
+            Teacher = teacher;
+            Left = null;
+            Right = null;
+        }
+    }
+
+    public class TeacherBinaryTree
+    {
+        public TeacherNode? Root { get; set; }
+        private readonly ILogger<TeacherBinaryTree> _logger;
+
+        public TeacherBinaryTree(ILogger<TeacherBinaryTree> logger)
+        {
+            _logger = logger;
         }
 
-        InsertRec(Root, newNode);
-    }
-
-    private void InsertRec(TeacherNode root, TeacherNode newNode)
-    {
-        if (newNode.Teacher.SkillId.CompareTo(root.Teacher.SkillId) < 0)
+        public void Insert(TeacherEntity teacher)
         {
-            if (root.Left == null)
-                root.Left = newNode;
+            var newNode = new TeacherNode(teacher);
+
+            if (Root == null)
+            {
+                Root = newNode;
+                _logger.LogInformation("Inserted root teacher: {TeacherId}", teacher.Id);
+                return;
+            }
+
+            InsertRec(Root, newNode);
+        }
+
+        private void InsertRec(TeacherNode root, TeacherNode newNode)
+        {
+            if (newNode.Teacher.SkillId.CompareTo(root.Teacher.SkillId) < 0)
+            {
+                if (root.Left == null)
+                {
+                    root.Left = newNode;
+                    _logger.LogInformation("Inserted teacher {TeacherId} to the left of {RootTeacherId}", newNode.Teacher.Id, root.Teacher.Id);
+                }
+                else
+                {
+                    InsertRec(root.Left, newNode);
+                }
+            }
             else
-                InsertRec(root.Left, newNode);
+            {
+                if (root.Right == null)
+                {
+                    root.Right = newNode;
+                    _logger.LogInformation("Inserted teacher {TeacherId} to the right of {RootTeacherId}", newNode.Teacher.Id, root.Teacher.Id);
+                }
+                else
+                {
+                    InsertRec(root.Right, newNode);
+                }
+            }
         }
-        else
+
+        public TeacherEntity? Search(Guid skillId, Guid levelId, Guid classTimeId)
         {
-            if (root.Right == null)
-                root.Right = newNode;
-            else
-                InsertRec(root.Right, newNode);
+            _logger.LogInformation("Searching for teacher with SkillId: {SkillId}, LevelId: {LevelId}, ClassTimeId: {ClassTimeId}", skillId, levelId, classTimeId);
+            return SearchRec(Root, skillId, levelId, classTimeId);
         }
-    }
 
-    public List<TeacherEntity> Search(Guid skillId, Guid levelId, Guid classTimeId)
-    {
-        var result = new List<TeacherEntity>();
-        SearchRec(Root, skillId, levelId, classTimeId, result);
-        return result;
-    }
-
-    private void SearchRec(TeacherNode? node, Guid skillId, Guid levelId, Guid classTimeId, List<TeacherEntity> result)
-    {
-        if (node == null)
-            return;
-
-        if (node.Teacher.SkillId == skillId && node.Teacher.LevelId == levelId && node.Teacher.ClassTimeId == classTimeId)
+        private TeacherEntity? SearchRec(TeacherNode? node, Guid skillId, Guid levelId, Guid classTimeId)
         {
-            result.Add(node.Teacher);
+            if (node == null)
+            {
+                _logger.LogInformation("GABELA: Node is null");
+                return null; // Возвращаем null только если текущий узел null
+            }
+
+            if (node.Teacher != null && node.Teacher.SkillId == skillId && node.Teacher.LevelId == levelId && node.Teacher.ClassTimeId == classTimeId)
+            {
+                _logger.LogInformation("Found matching teacher: {TeacherId}", node.Teacher.Id);
+                return node.Teacher; // Возвращаем учителя только если он удовлетворяет условиям поиска
+            }
+
+            var leftResult = SearchRec(node.Left, skillId, levelId, classTimeId);
+            if (leftResult != null)
+                return leftResult;
+
+            var rightResult = SearchRec(node.Right, skillId, levelId, classTimeId);
+            if (rightResult != null)
+                return rightResult;
+
+            return null; // Если текущий узел не удовлетворяет условиям поиска, продолжаем поиск в дереве
         }
 
-        SearchRec(node.Left, skillId, levelId, classTimeId, result);
-        SearchRec(node.Right, skillId, levelId, classTimeId, result);
     }
 }
