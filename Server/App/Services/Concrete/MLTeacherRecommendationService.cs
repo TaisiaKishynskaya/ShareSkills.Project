@@ -79,14 +79,14 @@ namespace App.Services.Concrete
         {
             if (node == null)
             {
-                _logger.LogInformation("GABELA: Node is null");
-                return null; // Возвращаем null только если текущий узел null
+                _logger.LogInformation("Node is null");
+                return null; 
             }
 
             if (node.Teacher != null && node.Teacher.SkillId == skillId && node.Teacher.LevelId == levelId && node.Teacher.ClassTimeId == classTimeId)
             {
                 _logger.LogInformation("Found matching teacher: {TeacherId}", node.Teacher.Id);
-                return node.Teacher; // Возвращаем учителя только если он удовлетворяет условиям поиска
+                return node.Teacher; 
             }
 
             var leftResult = SearchRec(node.Left, skillId, levelId, classTimeId);
@@ -97,7 +97,7 @@ namespace App.Services.Concrete
             if (rightResult != null)
                 return rightResult;
 
-            return null; // Если текущий узел не удовлетворяет условиям поиска, продолжаем поиск в дереве
+            return null; 
         }
 
     }
