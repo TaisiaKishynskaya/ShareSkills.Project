@@ -67,7 +67,7 @@ public class CalendarService
         }
     }
 
-    public async Task<(Meeting meeting, Teacher teacher)?> GetMeetingInfo(string Id, String userRole)
+    public async Task<(Meeting meeting, User teacher)?> GetMeetingInfo(string Id, String userRole)
     {
         try
         {
@@ -81,7 +81,7 @@ public class CalendarService
                     var response2 = await _httpClient.GetAsync(url);
                     if (response2.IsSuccessStatusCode)
                     {
-                        var teacher = await response2.Content.ReadFromJsonAsync<Teacher>();
+                        var teacher = await response2.Content.ReadFromJsonAsync<User>();
                         return (meeting, teacher);
                     }
                     return null;
@@ -112,14 +112,4 @@ public class Meeting
     public string Description { get; set; }
     public Guid OwnerId { get; set; }
     public Guid ForeignId { get; set; }
-}
-
-public class Teacher
-{
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string Surname { get; set; }
-    public string Email { get; set; }
-    public string PasswordHash { get; set; }
-    public string Role { get; set; }
 }

@@ -116,6 +116,14 @@ public class AuthService
             return null;
         }
     }
+
+    public async Task ChangeSkills(string skill, string time, string level)
+    {
+        Preferences.Set("skill", skill);
+        Preferences.Set("time", time);
+        Preferences.Set("level", level);
+        //TODO: Add request to server to post data
+    }
 }
 
 

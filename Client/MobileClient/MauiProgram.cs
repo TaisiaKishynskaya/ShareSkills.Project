@@ -26,6 +26,7 @@ namespace MobileClient
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<CalendarService>();
             builder.Services.AddScoped<CabinetService>();
+            builder.Services.AddScoped<SearchService>();
 
             return builder.Build();
         }
