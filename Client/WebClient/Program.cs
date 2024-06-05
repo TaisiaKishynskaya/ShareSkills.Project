@@ -7,5 +7,9 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CalendarService>();
+builder.Services.AddScoped<CabinetService>();
+builder.Services.AddScoped<FeedbackService>();
 
 await builder.Build().RunAsync();

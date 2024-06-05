@@ -1,0 +1,69 @@
+@page "/chooseSkills"
+@using WebClient.Components.Layout
+@inject NavigationManager Navigation
+@layout NoMenuLayout
+@inject AuthService AuthService
+
+<div class="main">
+    @if (skills != null)
+    {
+    <h3 class="first">Choose the skills you want to learn</h3>
+    <input class="skill-search" type="text" placeholder="Find skill..."> 
+    <div class="skills">
+        @foreach (var skill in skills)
+        {
+        <div class="skill-check-container">
+            <input class="skill-check" type="checkbox">
+            <p>@skill.skill</p>
+        </div>
+        }
+    </div>
+    <hr>
+    <h3>Choose a time convenient for learning</h3>
+    <div class="lesson-time">
+        <div class="elem">
+            <label for="time">Morning</label>
+            <input type="radio" name="time" id="morning">
+        </div>
+        <div class="elem">
+            <label for="time">Day</label>
+            <input type="radio" name="time" id="day">
+        </div>
+        <div class="elem">
+            <label for="time">Evening</label>
+            <input type="radio" name="time" id="evening">
+        </div>
+    </div>
+    <hr>
+    <h3>Select the desired level of knowledge</h3>
+    <div class="level">
+        <div class="elem">
+            <label for="level">Introductory</label>
+            <input type="radio" name="level" id="introductory">
+        </div>
+        <div class="elem">
+            <label for="level">Intermidiate</label>
+            <input type="radio" name="level" id="intermidiate">
+        </div>
+        <div class="elem">
+            <label for="level">Advanced</label>
+            <input type="radio" name="level" id="advanced">
+        </div>
+    </div>
+    }
+    <button @onclick="calendarNavigate">Next</button>
+</div>
+
+@code {
+    List<Skill> skills;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await AuthService.GetSkills();
+    }
+
+    private void calendarNavigate()
+    {
+        Navigation.NavigateTo("/calendar");
+    }
+}

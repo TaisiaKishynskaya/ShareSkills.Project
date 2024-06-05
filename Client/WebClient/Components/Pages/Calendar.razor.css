@@ -1,0 +1,76 @@
+@font-face {
+    font-family: 'Marmelad';
+    /* src: url("../../Resources/Fonts/Montserrat-VariableFont_wght.ttf") format("truetype"); */
+}
+
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.main {
+    background: #F5FFFF;
+    font-family: 'Marmelad', serif;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-left: 40px;
+    padding-right: 5px;
+    padding-top: 30px;
+}
+
+hr {
+    border: 1px solid black;
+    width: 70%;
+    margin-left: 0;
+}
+
+.lesson-card {
+    background: white;
+    box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+    border-radius: 10px;
+    padding: 5px 0px 5px 10px;
+    width: 90%;
+}
+
+.lesson-card p {
+    font-size: 23px;
+}
+
+.cards {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.day {
+    margin-bottom: 30px;
+}
+
+.day-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.day-info p {
+    font-size: 20px;
+    color: rgba(0,0,0,0.5);
+}
+
+::-webkit-scrollbar {
+    width: 5px; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(6,210,255,1) 0%, rgba(227,227,227,1) 100%); 
+}
