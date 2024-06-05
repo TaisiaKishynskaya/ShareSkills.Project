@@ -36,14 +36,42 @@ public class CalendarService
         }
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string NameToCreate, String Title)
+    private async Task<string?> GetIdByEmail(string email)
     {
+        Console.WriteLine(email);
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/getId?email={email}", new {});
+            Console.WriteLine("content: "+await response.Content.ReadAsStringAsync());
+
+            if (response.IsSuccessStatusCode)
+            {
+                var EmailResponse = await response.Content.ReadFromJsonAsync<GetEmailResponse>();
+                return EmailResponse.userId;
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.ReasonPhrase}");
+            }
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return null;
+        }
+        
+    }
+
+    public async Task<bool> AddMeeting(DateTime Date, string Email, String Title)
+    {
+        var id = await GetIdByEmail(Email);
         var postData = new
         {
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ownerId = Preferences.Get("userId", string.Empty),
-            foreignId = NameToCreate
+            foreignId = id
         };
 
         try
@@ -112,4 +140,9 @@ public class Meeting
     public string Description { get; set; }
     public Guid OwnerId { get; set; }
     public Guid ForeignId { get; set; }
+}
+
+public class GetEmailResponse
+{
+    public string userId { get; set; }
 }
