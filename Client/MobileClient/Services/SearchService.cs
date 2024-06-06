@@ -9,17 +9,17 @@ public class SearchService
         _httpClient = httpClient;
     }
 
-    public async Task<Teacher?> SearchTeacher()
+    public async Task<string?> SearchTeacher(string skill, string time, string level)
     {
-        var skill = Preferences.Get("skill", String.Empty);
-        var time = Preferences.Get("time", String.Empty);
-        var level = Preferences.Get("level", String.Empty);
         try
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5115/get-teacher?skillId={skill}&levelId={time}&classTimeId={level}");
+            var encodedSkill = Uri.EscapeDataString(skill);
+            var encodedLevel = Uri.EscapeDataString(level);
+            var encodedTime = Uri.EscapeDataString(time);
+            var response = await _httpClient.GetAsync($"http://localhost:5115/get-teacher?skillId={encodedSkill}&levelId={encodedTime}&classTimeId={encodedLevel}");
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<Teacher>();
+                return await response.Content.ReadFromJsonAsync<string>();
             }
             return null;
         }

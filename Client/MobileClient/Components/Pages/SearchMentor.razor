@@ -1,6 +1,7 @@
 @page "/search"
 @inject NavigationManager Navigation
 @inject AuthService AuthService
+@inject SearchService SearchService
 
 <div class="main">
         <input class="mentor-search" type="text" placeholder="Search teacher..." @onclick="()=>isFilters = !isFilters">
@@ -15,7 +16,7 @@
                 @foreach (var skill in skills)
                 {
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="skill">
+                    <input class="skill-check" type="radio" name="skill" @onchange="@(()=>choosedSkill = @skill.skill)">
                     <p>@skill.skill</p>
                 </div>
                 }
@@ -25,31 +26,31 @@
             <div class="col">
                 <p>time:</p>
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="time">
-                    <p>day</p>
+                    <input class="skill-check" type="radio" name="time" @onchange="@(()=>time = "Morning")">
+                    <p>Morning</p>
                 </div>
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="time">
-                    <p>day</p>
+                    <input class="skill-check" type="radio" name="time" @onchange="@(()=>time = "Day")">
+                    <p>Day</p>
                 </div>
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="time">
-                    <p>day</p>
+                    <input class="skill-check" type="radio" name="time" @onchange="@(()=>time = "Evening")">
+                    <p>Evening</p>
                 </div>
             </div>
 
             <div class="col">
                 <p>level:</p>
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="level">
-                    <p>Intermediate</p>
+                    <input class="skill-check" type="radio" name="level" @onchange="@(()=>level = "Introductory")">
+                    <p>Introductory</p>
                 </div>
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="level">
-                    <p>Intermediate</p>
+                    <input class="skill-check" type="radio" name="level" @onchange="@(()=>level = "Advanced")">
+                    <p>Advanced</p>
                 </div>
                 <div class="skill-check-container">
-                    <input class="skill-check" type="radio" name="level">
+                    <input class="skill-check" type="radio" name="level" @onchange="@(()=>level = "Intermediate")">
                     <p>Intermediate</p>
                 </div>
             </div>
@@ -75,7 +76,7 @@
     </div>
 
 @code {
-    private class MentorEntity {
+    @* private class MentorEntity {
         public int id {get; set;}
         public string name {get; set;}
         public string skill {get; set;}
@@ -102,14 +103,23 @@
         new MentorEntity(9, "Шевченко Тарас", "Java", 4.8),
         new MentorEntity(10, "Іванов Іван", "Python", 4.8),
         new MentorEntity(11, "Шевченко Тарас", "Java", 4.8)
-    };
+    }; *@
 
     private List<Skill> skills;
     private bool isFilters = false;
+    private string choosedSkill;
+    private string time;
+    private string level;
+    private List<string> teachers;
 
     protected override async Task OnInitializedAsync()
     {
         skills = await AuthService.GetSkills();
+    }
+    
+    private searchMentor()
+    {
+        teacher = await SearchService.SearchTeacher(choosedSkill, time, level);
     }
 
     private void OpenMentorInformation(int mentorId) {
