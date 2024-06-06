@@ -56,3 +56,50 @@
     gap: 10px;
 }
 
+.filters {
+    display: grid;
+    grid-auto-flow: column;
+    width: 100%;
+    background: white;
+    border-radius: 15px;
+    height: 80%;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.skill-check-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    max-width: 10%;
+}
+
+.find-btn {
+    background: #3B9AA9;
+    width: 30%;
+    text-wrap: wrap;
+    text-align: center;
+    border-radius: 10px;
+    border: none;
+    font-size: 20px;
+    color: white;
+    font-family: "Marmelad";
+    margin-bottom: 10px;
+    display: block;
+    margin-top: 10px;
+}
+
+.filters-container{
+    max-height: 30%;
+    padding: 15px;
+    width: 95%;
+    background: white;
+}
+
+
+

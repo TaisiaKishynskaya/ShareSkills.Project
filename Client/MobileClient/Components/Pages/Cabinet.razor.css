@@ -70,6 +70,7 @@ hr {
     color: white;
     font-family: "Marmelad";
     margin-bottom: 10px;
+    display: block;
 }
 
 .name, .skills-text {

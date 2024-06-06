@@ -95,6 +95,18 @@ public class TeacherService(IUnitOfWork unitOfWork,
         };
     }
 
+    public async Task<Guid?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var teacher = await unitOfWork.TeacherRepository
+           .GetByEmailAsync(email, cancellationToken);
+        Console.WriteLine("id from service:"+teacher.Id);
+        if (teacher != null)
+        {
+            return teacher.Id;
+        }
+        return null;
+    }
+
     public async Task RecountTotalGradeAsync(Guid id, int newScore, CancellationToken cancellationToken = default)
     {
         var teacher = await unitOfWork.TeacherRepository

@@ -7,7 +7,7 @@
 <div class="main">
     @if (skills != null)
     {
-    <h3 class="first">Choose the skills you want to learn</h3>
+    <h3 class="first">Choose the skills you want to learn (you can change it later)</h3>
         @* <input class="skill-search" type="text" placeholder="Пошук навички..."> *@
         <div class="skills">
             @foreach (var skill in skills)
@@ -18,6 +18,8 @@
             </div>
             }
         </div>
+        @if (isTeacher)
+        {
         <hr>
         <h3>Choose a time convenient for learning</h3>
         <div class="lesson-time">
@@ -50,6 +52,7 @@
                 <input type="radio" name="level" id="advanced" @onchange="@(()=>Level = "advanced")">
             </div>
         </div>
+        }
     }
         <button @onclick="calendarNavigate">Next</button>
         
@@ -68,10 +71,12 @@
     String choosedSkill;
     String Time;
     String Level;
+    bool isTeacher;
     
 
     protected override async Task OnInitializedAsync()
     {
         skills = await AuthService.GetSkills();
+        isTeacher = (Preferences.Get("userRole", string.Empty) == "2ab125a8-72d8-43dd-8860-152bc1cbdf07") ? true : false;
     }
 }

@@ -1,8 +1,62 @@
 @page "/search"
 @inject NavigationManager Navigation
+@inject AuthService AuthService
 
 <div class="main">
-        <input class="mentor-search" type="text" placeholder="Search teacher...">
+        <input class="mentor-search" type="text" placeholder="Search teacher..." @onclick="()=>isFilters = !isFilters">
+        @if (isFilters)
+        {
+        <div class="filters-container">
+        <div class="filters">
+            <div class="col">
+                <p>skill:</p>
+                @if (skills != null)
+                {
+                @foreach (var skill in skills)
+                {
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="skill">
+                    <p>@skill.skill</p>
+                </div>
+                }
+                }
+            </div>
+
+            <div class="col">
+                <p>time:</p>
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="time">
+                    <p>day</p>
+                </div>
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="time">
+                    <p>day</p>
+                </div>
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="time">
+                    <p>day</p>
+                </div>
+            </div>
+
+            <div class="col">
+                <p>level:</p>
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="level">
+                    <p>Intermediate</p>
+                </div>
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="level">
+                    <p>Intermediate</p>
+                </div>
+                <div class="skill-check-container">
+                    <input class="skill-check" type="radio" name="level">
+                    <p>Intermediate</p>
+                </div>
+            </div>
+            </div>
+            <button class="find-btn">find</button>
+        </div>
+        }
         <div class="mentor-cards">
             @foreach (var mentor in mentorList)
             {
@@ -49,6 +103,14 @@
         new MentorEntity(10, "Іванов Іван", "Python", 4.8),
         new MentorEntity(11, "Шевченко Тарас", "Java", 4.8)
     };
+
+    private List<Skill> skills;
+    private bool isFilters = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await AuthService.GetSkills();
+    }
 
     private void OpenMentorInformation(int mentorId) {
         Navigation.NavigateTo($"/mentor/{mentorId}");

@@ -50,5 +50,16 @@ public class TeacherEndpoint : IMinimalEndpoint
                 return Results.NoContent();
             })
             .WithOpenApi();
+
+        routeBuilder.MapGet("/teachers/get-by-email/{email}",
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                async (ITeacherService service, string email) =>
+            {
+                var TeacherId = await service.GetByEmailAsync(email);
+                Console.WriteLine("id from endpoint:"+TeacherId);
+
+                return Results.Ok(new {id = TeacherId});
+            })
+            .WithOpenApi();
     }
 }
