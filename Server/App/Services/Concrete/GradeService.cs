@@ -18,8 +18,9 @@ public class GradeService(IUnitOfWork unitOfWork, ITeacherService teacherService
 
         unitOfWork.GradeRepository.Insert(grade);
         var teacherScores = await unitOfWork.TeacherRepository.GetScoresByTeacherIdAsync(gradeForCreatingDto.TeacherId);
-        teacherScores.ToList().Add(grade.Grade);
-        var result = teacherScores.Sum()/teacherScores.ToArray().Length;
+        var teacherScoresList = teacherScores.ToList();
+        teacherScoresList.Add(grade.Grade);
+        var result = teacherScoresList.Sum()/teacherScoresList.Count;
         await teacherService.RecountTotalGradeAsync(gradeForCreatingDto.TeacherId, result, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

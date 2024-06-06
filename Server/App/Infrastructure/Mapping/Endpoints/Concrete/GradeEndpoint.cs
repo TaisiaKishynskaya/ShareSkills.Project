@@ -1,3 +1,4 @@
+using App.Infrastructure.Mapping.Endpoints.Abstract;
 using App.Services.Abstract;
 using Libraries.Contracts.Grade;
 using Libraries.Contracts.User;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Infrastructure.Mapping.Endpoints.Concrete;
 
-public class GradeEndpoint
+public class GradeEndpoint : IMinimalEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
