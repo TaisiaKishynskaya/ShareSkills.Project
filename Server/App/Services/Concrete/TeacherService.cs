@@ -13,21 +13,39 @@ public class TeacherService(IUnitOfWork unitOfWork,
 {
     //private UserDto _userDto;
     
-    public async Task<TeacherDto> CreateAsync(TeacherForCreationDto teacherForCreationDto, CancellationToken cancellationToken = default)
+     public async Task<TeacherDto> CreateAsync(TeacherForCreationDto teacherForCreationDto, CancellationToken cancellationToken = default)
     {
+        var skillEntity = await unitOfWork.SkillRepository.GetTeacherSkillAsync(teacherForCreationDto.Skill);
+        if (skillEntity == null)
+        {
+            throw new InvalidOperationException($"Skill '{teacherForCreationDto.Skill}' not found.");
+        }
+
+        var levelEntity = await unitOfWork.LevelRepository.GetTeacherLevelAsync(teacherForCreationDto.Level);
+        if (levelEntity == null)
+        {
+            throw new InvalidOperationException($"Level '{teacherForCreationDto.Level}' not found.");
+        }
+
+        var classTimeEntity = await unitOfWork.ClassTimeRepository.GetTeacherClassTimeAsync(teacherForCreationDto.ClassTime);
+        if (classTimeEntity == null)
+        {
+            throw new InvalidOperationException($"ClassTime '{teacherForCreationDto.ClassTime}' not found.");
+        }
+
         var teacher = new TeacherEntity
         {
             Id = Guid.NewGuid(),
             Rating = teacherForCreationDto.Rating,
-            LevelId = teacherForCreationDto.Level, 
-            ClassTimeId = teacherForCreationDto.ClassTime, 
-            SkillId = teacherForCreationDto.Skill,
+            LevelId = levelEntity.Id,
+            ClassTimeId = classTimeEntity.Id,
+            SkillId = skillEntity.Id,
             UserId = teacherForCreationDto.UserId
         };
-    
+
         unitOfWork.TeacherRepository.Insert(teacher);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         var levelName = await levelService.GetLevelNameAsync(teacher.LevelId);
         var classTimeName = await classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
         var skillName = await skillService.GetSkillNameAsync(teacher.SkillId);
