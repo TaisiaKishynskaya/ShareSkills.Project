@@ -31,15 +31,22 @@ public class TeacherEndpoint : IMinimalEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapPost("/teachers", 
+        routeBuilder.MapPost("/teachers",
                 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
                 async (TeacherForCreationDto dto, ITeacherService service) =>
-            {
-                var teacher = await service.CreateAsync(dto);
-
-                return Results.Created($"/teachers/{teacher.Id}", teacher);
-            })
+                {
+                    try
+                    {
+                        var teacher = await service.CreateAsync(dto);
+                        return Results.Created($"/teachers/{teacher.Id}", teacher);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        return Results.BadRequest(new { StatusCode = 400, Message = ex.Message });
+                    }
+                })
             .WithOpenApi();
+
 
         routeBuilder.MapDelete("/teachers/{id:guid}", 
                 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
