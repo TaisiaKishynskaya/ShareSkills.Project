@@ -7,31 +7,33 @@
 <div class="main">
     @if (skills != null)
     {
-    <h3 class="first">Choose the skills you want to learn</h3>
+    <h3 class="first">Choose the skills you want to learn (you can change it later)</h3>
         @* <input class="skill-search" type="text" placeholder="Пошук навички..."> *@
         <div class="skills">
             @foreach (var skill in skills)
             {
             <div class="skill-check-container">
-                <input class="skill-check" type="checkbox">
+                <input class="skill-check" type="radio" name="skill" @onchange="@(()=>choosedSkill = @skill.skill)">
                 <p>@skill.skill</p>
             </div>
             }
         </div>
+        @if (isTeacher)
+        {
         <hr>
         <h3>Choose a time convenient for learning</h3>
         <div class="lesson-time">
             <div class="elem">
                 <label for="time">Morning</label>
-                <input type="radio" name="time" id="morning">
+                <input type="radio" name="time" id="morning" @onchange="@(()=>Time = "morning")">
             </div>
             <div class="elem">
                 <label for="time">Day</label>
-                <input type="radio" name="time" id="day">
+                <input type="radio" name="time" id="day" @onchange="@(()=>Time = "day")">
             </div>
             <div class="elem">
                 <label for="time">Evening</label>
-                <input type="radio" name="time" id="evening">
+                <input type="radio" name="time" id="evening" @onchange="@(()=>Time = "evening")">
             </div>
         </div>
         <hr>
@@ -39,33 +41,56 @@
         <div class="level">
             <div class="elem">
                 <label for="level">Introductory</label>
-                <input type="radio" name="level" id="introductory">
+                <input type="radio" name="level" id="introductory" @onchange="@(()=>Level = "introductory")">
             </div>
             <div class="elem">
                 <label for="level">Intermidiate</label>
-                <input type="radio" name="level" id="intermidiate">
+                <input type="radio" name="level" id="intermidiate" @onchange="@(()=>Level = "intermidiate")">
             </div>
             <div class="elem">
                 <label for="level">Advanced</label>
-                <input type="radio" name="level" id="advanced">
+                <input type="radio" name="level" id="advanced" @onchange="@(()=>Level = "advanced")">
             </div>
         </div>
+        }
     }
         <button @onclick="calendarNavigate">Next</button>
+        @if (IsError)
+        {
+        <p class="error">An error occured</p>
+        }
         
         
 </div>
 
 @code {
-    private void calendarNavigate()
+    private async Task calendarNavigate()
     {
+        var userId = Preferences.Get("userId", String.Empty);
+        if (await AuthService.ChangeSkills(userId, choosedSkill, Time, Level))
+        {
+        IsError = false;
+        Console.WriteLine($"{choosedSkill}, {Time}, {Level}");
         Navigation.NavigateTo("/calendar");
+        }
+        else 
+        {
+            IsError = true;
+        }
     }
 
     List<Skill> skills;
+    String choosedSkill;
+    String Time;
+    String Level;
+    bool isTeacher;
+    bool IsError = false;
+    
 
     protected override async Task OnInitializedAsync()
     {
         skills = await AuthService.GetSkills();
+        await AuthService.getUserRole();
+        isTeacher = (Preferences.Get("userRole", string.Empty) == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 }

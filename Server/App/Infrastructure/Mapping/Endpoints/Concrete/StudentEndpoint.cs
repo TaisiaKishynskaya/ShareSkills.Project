@@ -11,7 +11,7 @@ public static class StudentEndpoint
     public static void RegisterStudentEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/students",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
                 async (IStudentService service) =>
             {
                 var student = await service.GetAllAsync();
@@ -21,7 +21,7 @@ public static class StudentEndpoint
             .WithOpenApi();
 
         routeBuilder.MapGet("/students/{id:guid}", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
                 async (Guid id, IStudentService service) =>
             {
                 var student = await service.GetByIdAsync(id);

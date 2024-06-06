@@ -1,3 +1,5 @@
+using Libraries.Contracts.ClassTime;
+using Libraries.Contracts.Level;
 using Libraries.Contracts.Skill;
 
 namespace Libraries.Entities.Concrete;
@@ -15,7 +17,7 @@ public class TeacherEntity
     public LevelEntity Level { get; set; } = null!;
     
     public Guid SkillId { get; set; }
-    public SkillDto Skill { get; set; } = null!;
+    public SkillEntity Skill { get; set; } = null!;
  
     // 1-1
     public Guid UserId { get; set; }

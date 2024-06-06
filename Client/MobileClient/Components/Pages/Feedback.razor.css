@@ -98,14 +98,20 @@ button {
     padding-bottom: 5px;
 }
 
-/* .feedback, hr {
-    display: none;
-} */
-
-.box {
-    display: box;
+.text input {
+    background: none;
+    border: none;
+    border-bottom: 1px solid black;
+    font-size: 20px;
+    font-family: "Marmelad";
+    width: 100%;
+    text-align: left;
 }
 
-.none {
-    display: none;
+.text input:focus {
+    outline: none;
+}
+
+.error {
+    color: rgba(255, 0, 0, 0.5);
 }

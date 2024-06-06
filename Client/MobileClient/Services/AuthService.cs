@@ -116,6 +116,33 @@ public class AuthService
             return null;
         }
     }
+
+    public async Task<bool> ChangeSkills(string id, string skill, string time, string level)
+    {
+        var requestData = new
+        {
+            userId=id,
+            rating=0,
+            classTime=time,
+            level=level,
+            skill=skill
+        };
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/teachers", requestData);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("teacher info updated");
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return false;
+        }
+    }
 }
 
 

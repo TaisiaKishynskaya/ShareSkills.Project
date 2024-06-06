@@ -13,6 +13,8 @@ public interface  IUnitOfWork : IDisposable
     IMeetingRepository MeetingRepository { get; }
     IGradeRepository GradeRepository { get; }
     ISkillRepository SkillRepository { get; }
+    ILevelRepository LevelRepository { get; }
+    IClassTimeRepository ClassTimeRepository { get; }
     
     public Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

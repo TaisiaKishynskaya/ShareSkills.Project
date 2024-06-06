@@ -12,7 +12,7 @@ public class TeacherEndpoint : IMinimalEndpoint
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/teachers", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
                 async (ITeacherService service) =>
             {
                 var teacher = await service.GetAllAsync();
@@ -22,7 +22,7 @@ public class TeacherEndpoint : IMinimalEndpoint
             .WithOpenApi();
 
         routeBuilder.MapGet("/teachers/{id:guid}",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
                 async (Guid id, ITeacherService service) =>
             {
                 var teacher = await service.GetByIdAsync(id);
@@ -31,15 +31,22 @@ public class TeacherEndpoint : IMinimalEndpoint
             })
             .WithOpenApi();
 
-        routeBuilder.MapPost("/teachers", 
+        routeBuilder.MapPost("/teachers",
                 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
                 async (TeacherForCreationDto dto, ITeacherService service) =>
-            {
-                var teacher = await service.CreateAsync(dto);
-
-                return Results.Created($"/teachers/{teacher.Id}", teacher);
-            })
+                {
+                    try
+                    {
+                        var teacher = await service.CreateAsync(dto);
+                        return Results.Created($"/teachers/{teacher.Id}", teacher);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        return Results.BadRequest(new { StatusCode = 400, Message = ex.Message });
+                    }
+                })
             .WithOpenApi();
+
 
         routeBuilder.MapDelete("/teachers/{id:guid}", 
                 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
@@ -48,6 +55,17 @@ public class TeacherEndpoint : IMinimalEndpoint
                 await service.DeleteAsync(id);
 
                 return Results.NoContent();
+            })
+            .WithOpenApi();
+
+        routeBuilder.MapGet("/teachers/get-by-email/{email}",
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                async (ITeacherService service, string email) =>
+            {
+                var TeacherId = await service.GetByEmailAsync(email);
+                Console.WriteLine("id from endpoint:"+TeacherId);
+
+                return Results.Ok(TeacherId.ToString());
             })
             .WithOpenApi();
     }

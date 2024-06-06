@@ -16,8 +16,8 @@
                     <p class="email">@user.Email</p>
                 </div>
             <hr>
-            <div class="block">
-                <p class="skills-text">Selected skills</p>
+            @* <div class="block">
+                <p class="skills-text">Selected skill</p>
                 <div class="skills-cards">
                     @foreach (var skill in skills) 
                     {
@@ -26,18 +26,21 @@
                         </div>
                     }
                 </div>
-            </div>
+            </div> *@
             <hr>
             <button class="feedback" @onclick="() => IsShowDialog=true">Change profile information</button>
             <button class="feedback" @onclick='() => Navigation.NavigateTo("/choose-skills")'>Change skills</button>
+            @if (!isTeacher)
+            {
             <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
+            }
             }
             else
             {
                 <p>loading...</p>
             }
             @* for debug *@
-            <button class="feedback" @onclick="ClearPreferences">clear Preferences</button>
+            @* <button class="feedback" @onclick="ClearPreferences">clear Preferences</button> *@
         </div>
         @if (IsShowDialog)
         {
@@ -68,11 +71,13 @@
     private String newPassword = "";
     private string[] skills = {"Python", "Java", "C#", "HTML", "C++"};
     private bool IsShowDialog = false;
+    private bool isTeacher;
 
     protected override async Task OnInitializedAsync()
     {
         user = await CabinetService.GetUser();
         StateHasChanged();
+        isTeacher = (Preferences.Get("userRole", string.Empty) == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 
     private void goToFeedbackPage() {

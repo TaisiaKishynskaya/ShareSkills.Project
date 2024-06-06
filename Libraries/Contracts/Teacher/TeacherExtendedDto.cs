@@ -1,0 +1,8 @@
+namespace Libraries.Contracts.Teacher;
+
+public class TeacherExtendedDto: TeacherDto
+{
+    public required string Name { get; set; }
+    public required string Surname { get; set;}
+    public required string Email { get; set;}
+}
