@@ -9,4 +9,5 @@ public interface ITeacherRepository
     Task<IEnumerable<int>> GetScoresByTeacherIdAsync(Guid teacherId);
     void Insert(TeacherEntity teacher);
     void Remove(TeacherEntity teacher);
+    Task<TeacherEntity?> GetByEmailAsync(string Email, CancellationToken cancellationToken = default);
 }

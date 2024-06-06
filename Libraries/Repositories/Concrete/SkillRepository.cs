@@ -31,6 +31,8 @@ namespace Libraries.Repositories.Concrete
 {
     public class SkillRepository(AppDbContext context) : ISkillRepository
     {
+        public async Task<IEnumerable<SkillEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+        => await context.Skills.ToListAsync(cancellationToken);
         public Task<SkillEntity?> GetTeacherSkillAsync(string teacherSkill) => context.Skills.FirstOrDefaultAsync(x => x.Skill == teacherSkill);
         public Task<SkillEntity?> GetSkillAsync(Guid id) => context.Skills.FirstOrDefaultAsync(x => x.Id == id);
     }

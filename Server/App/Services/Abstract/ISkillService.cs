@@ -11,6 +11,7 @@
 //     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 // }
 
+using Libraries.Contracts.Skill;
 using Libraries.Entities.Concrete;
 using System;
 using System.Threading.Tasks;
@@ -22,5 +23,6 @@ namespace App.Services.Abstract
         Task AssignTeacherToSkillAsync(TeacherEntity teacher, string skill);
         
         Task<string> GetSkillNameAsync(Guid id);
+        Task<IEnumerable<SkillDto>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

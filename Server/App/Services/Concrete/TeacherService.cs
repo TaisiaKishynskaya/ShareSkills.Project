@@ -101,25 +101,41 @@ public class TeacherService(IUnitOfWork unitOfWork,
         return teachersDtos;
     }
 
-    public async Task<TeacherDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<TeacherExtendedDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var teacher = await unitOfWork.TeacherRepository
            .GetByIdAsync(id, cancellationToken)
             ?? throw new TeacherNotFoundException(id);
         
+        var user = await unitOfWork.UserRepository.GetByIdAsync(teacher.UserId, cancellationToken);
+        
         var levelName = await levelService.GetLevelNameAsync(teacher.LevelId);
         var classTimeName = await classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
         var skillName = await skillService.GetSkillNameAsync(teacher.SkillId);
         
-        return new TeacherDto
+        return new TeacherExtendedDto
         {
             Id = teacher.Id,
             UserId = teacher.UserId,
             Rating = teacher.Rating,
             ClassTime = classTimeName,
             Level = levelName,
-            Skill = skillName
+            Skill = skillName,
+            Name = user.Name,
+            Surname = user.Surname,
+            Email = user.Email
         };
+    }
+
+    public async Task<Guid?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var teacher = await unitOfWork.TeacherRepository
+           .GetByEmailAsync(email, cancellationToken);
+        if (teacher != null)
+        {
+            return teacher.Id;
+        }
+        return null;
     }
 
     public async Task RecountTotalGradeAsync(Guid id, int newScore, CancellationToken cancellationToken = default)
