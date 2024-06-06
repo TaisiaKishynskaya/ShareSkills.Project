@@ -65,7 +65,7 @@ public class AppDbSeed
         //         LevelId = new Guid("3825028c-6985-4423-9d94-3e57985e1e1b"), // Specify the level ID
         //         UserId = new Guid("197a37d2-7d1c-447d-823a-b9a7f490b407") // You need to replace this with an existing user ID
         //     };
-        //     
+            
         //     var teacher1 = new TeacherEntity
         //     {
         //         Id = Guid.NewGuid(),
@@ -75,12 +75,12 @@ public class AppDbSeed
         //         LevelId = new Guid("3825028c-6985-4423-9d94-3e57985e1e1b"), // Specify the level ID
         //         UserId = new Guid("6626fa39-0623-4717-8cd1-4810576aa585") // You need to replace this with an existing user ID
         //     };
-        //     
-        //     
-        //
+            
+            
+        
         //     context.Teachers.Add(teacher);
         //     context.Teachers.Add(teacher1);
-        //
+        
         //     context.SaveChanges();
         // }
     }

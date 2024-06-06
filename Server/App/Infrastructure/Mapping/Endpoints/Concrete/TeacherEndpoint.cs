@@ -58,7 +58,7 @@ public class TeacherEndpoint : IMinimalEndpoint
                 var TeacherId = await service.GetByEmailAsync(email);
                 Console.WriteLine("id from endpoint:"+TeacherId);
 
-                return Results.Ok(new {id = TeacherId});
+                return Results.Ok(TeacherId.ToString());
             })
             .WithOpenApi();
     }

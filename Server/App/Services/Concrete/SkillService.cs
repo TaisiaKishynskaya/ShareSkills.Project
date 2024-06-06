@@ -91,6 +91,8 @@
 // }
 
 using App.Services.Abstract;
+using Libraries.Contracts.Skill;
+using Libraries.Data.UnitOfWork.Concrete;
 using Libraries.Entities.Concrete;
 using Libraries.Repositories.Abstract;
 
@@ -107,5 +109,23 @@ public class SkillService(ISkillRepository skillRepository) : ISkillService
     {
         var skill = await skillRepository.GetSkillAsync(id) ?? throw new Exception("Skill doesn't exist");
         return skill.Skill;
+    }
+
+    public async Task<IEnumerable<SkillDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var skills = await skillRepository.GetAllAsync(cancellationToken);
+
+        var skillsDtos = new List<SkillDto>();
+
+        foreach (var skill in skills)
+        {
+            skillsDtos.Add(new SkillDto
+            {
+                Id = skill.Id,
+                Skill = skill.Skill,
+            });
+        }
+
+        return skillsDtos;
     }
 }

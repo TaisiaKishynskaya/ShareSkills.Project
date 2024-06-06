@@ -105,7 +105,7 @@ public class CalendarService
                 var meeting = await response.Content.ReadFromJsonAsync<Meeting>();
                 try 
                 {
-                    var url = (userRole == "2ab125a8-72d8-43dd-8860-152bc1cbdf07") ? $"http://localhost:5115/users/{meeting.ForeignId}" : $"http://localhost:5115/users/{meeting.OwnerId}";
+                    var url = (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? $"http://localhost:5115/users/{meeting.ForeignId}" : $"http://localhost:5115/users/{meeting.OwnerId}";
                     var response2 = await _httpClient.GetAsync(url);
                     if (response2.IsSuccessStatusCode)
                     {

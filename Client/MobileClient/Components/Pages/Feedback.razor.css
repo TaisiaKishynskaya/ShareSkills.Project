@@ -111,3 +111,7 @@ button {
 .text input:focus {
     outline: none;
 }
+
+.error {
+    color: rgba(255, 0, 0, 0.5);
+}

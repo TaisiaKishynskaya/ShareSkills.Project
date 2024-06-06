@@ -15,6 +15,7 @@
     border-radius: 10px;
     width: 90%;
     height: 80px;
+    display: inline-block;
 }
 
 .mentor-search:focus {
@@ -100,6 +101,15 @@
     width: 95%;
     background: white;
 }
+
+svg {
+    width: 35px;
+    display: inline-block
+  }
+
+  .search {
+    width: 95%;
+  }
 
 
 
