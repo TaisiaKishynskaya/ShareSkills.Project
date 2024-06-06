@@ -62,11 +62,19 @@
 </div>
 
 @code {
-    private void calendarNavigate()
+    private async Task calendarNavigate()
     {
-        AuthService.ChangeSkills(choosedSkill, Time, Level);
+        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
+        if (await AuthService.ChangeSkills(userId, choosedSkill, Time, Level))
+        {
+        IsError = false;
         Console.WriteLine($"{choosedSkill}, {Time}, {Level}");
         Navigation.NavigateTo("/calendar");
+        }
+        else 
+        {
+            IsError = true;
+        }
     }
 
     List<Skill> skills;
@@ -74,12 +82,13 @@
     String Time;
     String Level;
     bool isTeacher;
+    bool IsError = false;
     
 
     protected override async Task OnInitializedAsync()
     {
         skills = await AuthService.GetSkills();
-        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "2ab125a8-72d8-43dd-8860-152bc1cbdf07") ? true : false;
-        Console.WriteLine("isTeacher: "+isTeacher);
+        await AuthService.GetUserRole();
+        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 }

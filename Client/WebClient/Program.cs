@@ -11,5 +11,6 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CalendarService>();
 builder.Services.AddScoped<CabinetService>();
 builder.Services.AddScoped<FeedbackService>();
+builder.Services.AddScoped<SearchService>();
 
 await builder.Build().RunAsync();

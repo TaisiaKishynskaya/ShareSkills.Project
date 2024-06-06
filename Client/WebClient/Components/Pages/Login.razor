@@ -3,6 +3,7 @@
 @inject NavigationManager Navigation
 @layout NoMenuLayout
 @inject AuthService AuthService
+@inject IJSRuntime JSRuntime
 
 <div class="main">
     <h1>Skills Share</h1>
@@ -29,6 +30,26 @@
     private string email;
     private string password;
     private bool isError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // to login automaticly, but jwt is expiring too fast
+        @* await CheckExistingToken(); *@
+    }
+
+    private async Task CheckExistingToken()
+    {
+        // Check if the JWT token is stored in Preferences
+        var jwt = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
+        
+        if (!string.IsNullOrEmpty(jwt))
+        {
+            // Optionally, you can validate the token with the server here
+            Console.WriteLine("JWT token found, navigating to calendar...");
+            await AuthService.GetUserRole();
+            this.NavigateToCalendar();
+        }
+    }
 
     private async Task UserLogin()
     {

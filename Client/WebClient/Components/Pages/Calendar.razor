@@ -168,7 +168,7 @@
     protected override async Task OnInitializedAsync()
     {
         userRole = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
-        if (userRole == "2ab125a8-72d8-43dd-8860-152bc1cbdf07")
+        if (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72")
         {
             isTeacher = true;
         }
@@ -184,7 +184,7 @@
 
     private async Task LoadMeetingsForCurrentWeek()
     {
-        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
+        var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var meetings = await CalendarService.UpdateCalendar();
         Console.WriteLine(meetings.Count);
         currentWeekEvents = meetings.Where(meeting => 

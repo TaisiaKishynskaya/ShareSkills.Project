@@ -2,9 +2,10 @@
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject CalendarService CalendarService
+@inject IJSRuntime JSRuntime
 
 <div class="main">
-    @if (teacher != null && meeting != null)
+    @if (participant != null && meeting != null)
     {
         <div class="title">
             <button @onclick="goBack">
@@ -19,7 +20,7 @@
         <div class="content">
             <div class="block">
                 <p class="text-info">Participant:</p>
-                <p class="text-value">@teacher.Name @teacher.Surname</p>
+                <p class="text-value">@participant.Name @participant.Surname</p>
             </div>
 
             <div class="block">
@@ -41,13 +42,14 @@
     public string Id { get; set; }
 
     private Meeting meeting;
-    private Teacher teacher;
+    private User participant;
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await CalendarService.GetMeetingInfo(Id, await CalendarService.GetUserRole());
+        var userRole = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
+        var result = await CalendarService.GetMeetingInfo(Id, userRole);
         meeting = result.Value.meeting;
-        teacher = result.Value.teacher;
+        participant = result.Value.teacher;
     }
 
     private async Task CancelMeeting()
@@ -55,9 +57,11 @@
         try
         {
             var response = await httpClient.DeleteAsync($"http://localhost:5115/meetings/{Id}");
-            response.EnsureSuccessStatusCode();
-            Console.WriteLine($"deleted meeting with id: {Id}");
-            goBack();
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"deleted meeting with id: {Id}");
+                this.goBack();
+            }
         }
         catch (Exception ex)
         {

@@ -77,7 +77,8 @@
     protected override async Task OnInitializedAsync()
     {
         user = await CabinetService.GetUser();
-        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "2ab125a8-72d8-43dd-8860-152bc1cbdf07") ? true : false;
+        StateHasChanged();
+        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 
     private void goToFeedbackPage()
@@ -104,6 +105,7 @@
         if (await CabinetService.ChangeInfo(userToChange, newPassword))
         {
             IsShowDialog = false;
+            StateHasChanged();
         }
     }
 }

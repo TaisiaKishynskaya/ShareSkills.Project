@@ -121,12 +121,31 @@ public class AuthService
         }
     }
 
-    public async Task ChangeSkills(string skill, string time, string level)
+    public async Task<bool> ChangeSkills(string id, string skill, string time, string level)
     {
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "skill", skill);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "time", time);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "level", level);
-        //TODO: Add request to server to post data
+        var requestData = new
+        {
+            userId=id,
+            rating=0,
+            classTime=time,
+            level=level,
+            skill=skill
+        };
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/teachers", requestData);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("teacher info updated");
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return false;
+        }
     }
 }
 

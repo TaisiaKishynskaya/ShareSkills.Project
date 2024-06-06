@@ -46,7 +46,7 @@
         {
             // Optionally, you can validate the token with the server here
             Console.WriteLine("JWT token found, navigating to calendar...");
-            AuthService.getUserRole();
+            await AuthService.getUserRole();
             this.calendarNavigate();
         }
     }
