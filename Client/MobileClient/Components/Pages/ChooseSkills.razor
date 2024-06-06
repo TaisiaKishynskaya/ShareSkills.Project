@@ -55,16 +55,28 @@
         }
     }
         <button @onclick="calendarNavigate">Next</button>
+        @if (IsError)
+        {
+        <p class="error">An error occured</p>
+        }
         
         
 </div>
 
 @code {
-    private void calendarNavigate()
+    private async Task calendarNavigate()
     {
-        AuthService.ChangeSkills(choosedSkill, Time, Level);
+        var userId = Preferences.Get("userId", String.Empty);
+        if (await AuthService.ChangeSkills(userId, choosedSkill, Time, Level))
+        {
+        IsError = false;
         Console.WriteLine($"{choosedSkill}, {Time}, {Level}");
         Navigation.NavigateTo("/calendar");
+        }
+        else 
+        {
+            IsError = true;
+        }
     }
 
     List<Skill> skills;
@@ -72,11 +84,13 @@
     String Time;
     String Level;
     bool isTeacher;
+    bool IsError = false;
     
 
     protected override async Task OnInitializedAsync()
     {
         skills = await AuthService.GetSkills();
+        await AuthService.getUserRole();
         isTeacher = (Preferences.Get("userRole", string.Empty) == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 }

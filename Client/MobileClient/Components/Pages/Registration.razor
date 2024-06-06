@@ -58,7 +58,14 @@
 
     private void nextNavigate()
     {
+        if (IsTeacher)
+        {
         Navigation.NavigateTo("/choose-skills");
+        }
+        else
+        {
+            Navigation.NavigateTo("/calendar");
+        }
     }
 
     private void loginNavigate()
