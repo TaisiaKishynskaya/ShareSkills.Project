@@ -43,7 +43,6 @@ namespace App.Infrastructure.Mapping.Endpoints.Concrete
                     return Results.NotFound(new { StatusCode = 404, Message = "Teacher not found." });
                 }
 
-                // Возвращаем только идентификатор найденного преподавателя
                 return Results.Ok(recommendedTeacher.Id.ToString());
             })
             .WithOpenApi();

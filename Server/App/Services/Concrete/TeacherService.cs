@@ -15,12 +15,14 @@ public class TeacherService(IUnitOfWork unitOfWork,
     
     public async Task<TeacherDto> CreateAsync(TeacherForCreationDto teacherForCreationDto, CancellationToken cancellationToken = default)
     {
-        
-
         var teacher = new TeacherEntity
         {
             Id = Guid.NewGuid(),
             Rating = teacherForCreationDto.Rating,
+            LevelId = teacherForCreationDto.Level, 
+            ClassTimeId = teacherForCreationDto.ClassTime, 
+            SkillId = teacherForCreationDto.Skill,
+            UserId = teacherForCreationDto.UserId
         };
     
         unitOfWork.TeacherRepository.Insert(teacher);
@@ -33,6 +35,7 @@ public class TeacherService(IUnitOfWork unitOfWork,
         return new TeacherDto
         {
             Id = teacher.Id,
+            UserId = teacher.UserId,
             Rating = teacher.Rating,
             ClassTime = classTimeName,
             Level = levelName,
@@ -69,6 +72,7 @@ public class TeacherService(IUnitOfWork unitOfWork,
             teachersDtos.Add(new TeacherDto
             {
                 Id = teacher.Id,
+                UserId = teacher.UserId,
                 Rating = teacher.Rating,
                 ClassTime = classTimeName,
                 Level = levelName,
@@ -92,6 +96,7 @@ public class TeacherService(IUnitOfWork unitOfWork,
         return new TeacherDto
         {
             Id = teacher.Id,
+            UserId = teacher.UserId,
             Rating = teacher.Rating,
             ClassTime = classTimeName,
             Level = levelName,

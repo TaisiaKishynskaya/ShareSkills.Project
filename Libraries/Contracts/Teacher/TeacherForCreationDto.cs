@@ -7,8 +7,9 @@ namespace Libraries.Contracts.Teacher;
 
 public class TeacherForCreationDto
 {
+    public required Guid UserId { get; set; }
     public required double Rating { get; set; }
-    public required string ClassTime { get; set; }
-    public required string Level { get; set; }
-    public required string Skill { get; set; }
+    public required Guid ClassTime { get; set; }
+    public required Guid Level { get; set; }
+    public required Guid Skill { get; set; }
 }
