@@ -120,6 +120,14 @@ public class AuthService
             return null;
         }
     }
+
+    public async Task ChangeSkills(string skill, string time, string level)
+    {
+        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "skill", skill);
+        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "time", time);
+        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "level", level);
+        //TODO: Add request to server to post data
+    }
 }
 
 public class User

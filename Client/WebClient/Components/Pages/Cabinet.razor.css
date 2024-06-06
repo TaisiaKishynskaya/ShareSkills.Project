@@ -69,6 +69,8 @@ hr {
     font-size: 20px;
     color: white;
     font-family: "Marmelad";
+    display: block;
+    margin-top: 10px;
 }
 
 .name, .skills-text {
@@ -82,3 +84,43 @@ hr {
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, rgba(6,210,255,1) 0%, rgba(227,227,227,1) 100%);
 }
+
+.dialog {
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    background: white;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+  }
+  
+  .dialog-input {
+      background: none;
+      border: none;
+      border-bottom: 1px solid black;
+  }
+  
+  .dialog-input:focus {
+    outline: none;
+  }
+
+  
+  .next-btn {
+      width: 150px;
+      height: 50px;
+      border: none;
+      border-radius: 15px;
+      background-color: #3B9AA9;
+      box-shadow: 0px 5px 4px rgba(0, 0, 0, 0.25);
+      color: white;
+  }
+
+  svg {
+    width: 35px;
+  }

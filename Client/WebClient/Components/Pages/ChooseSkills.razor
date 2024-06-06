@@ -1,69 +1,85 @@
 @page "/chooseSkills"
 @using WebClient.Components.Layout
-@inject NavigationManager Navigation
 @layout NoMenuLayout
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
 @inject AuthService AuthService
+@inject IJSRuntime JSRuntime
 
 <div class="main">
     @if (skills != null)
     {
-    <h3 class="first">Choose the skills you want to learn</h3>
-    <input class="skill-search" type="text" placeholder="Find skill..."> 
-    <div class="skills">
-        @foreach (var skill in skills)
+    <h3 class="first">Choose the skills you want to learn (you can change it later)</h3>
+        @* <input class="skill-search" type="text" placeholder="Пошук навички..."> *@
+        <div class="skills">
+            @foreach (var skill in skills)
+            {
+            <div class="skill-check-container">
+                <input class="skill-check" type="radio" name="skill" @onchange="@(()=>choosedSkill = @skill.skill)">
+                <p>@skill.skill</p>
+            </div>
+            }
+        </div>
+        @if (isTeacher)
         {
-        <div class="skill-check-container">
-            <input class="skill-check" type="checkbox">
-            <p>@skill.skill</p>
+        <hr>
+        <h3>Choose a time convenient for learning</h3>
+        <div class="lesson-time">
+            <div class="elem">
+                <label for="time">Morning</label>
+                <input type="radio" name="time" id="morning" @onchange="@(()=>Time = "morning")">
+            </div>
+            <div class="elem">
+                <label for="time">Day</label>
+                <input type="radio" name="time" id="day" @onchange="@(()=>Time = "day")">
+            </div>
+            <div class="elem">
+                <label for="time">Evening</label>
+                <input type="radio" name="time" id="evening" @onchange="@(()=>Time = "evening")">
+            </div>
+        </div>
+        <hr>
+        <h3>Select the desired level of knowledge</h3>
+        <div class="level">
+            <div class="elem">
+                <label for="level">Introductory</label>
+                <input type="radio" name="level" id="introductory" @onchange="@(()=>Level = "introductory")">
+            </div>
+            <div class="elem">
+                <label for="level">Intermidiate</label>
+                <input type="radio" name="level" id="intermidiate" @onchange="@(()=>Level = "intermidiate")">
+            </div>
+            <div class="elem">
+                <label for="level">Advanced</label>
+                <input type="radio" name="level" id="advanced" @onchange="@(()=>Level = "advanced")">
+            </div>
         </div>
         }
-    </div>
-    <hr>
-    <h3>Choose a time convenient for learning</h3>
-    <div class="lesson-time">
-        <div class="elem">
-            <label for="time">Morning</label>
-            <input type="radio" name="time" id="morning">
-        </div>
-        <div class="elem">
-            <label for="time">Day</label>
-            <input type="radio" name="time" id="day">
-        </div>
-        <div class="elem">
-            <label for="time">Evening</label>
-            <input type="radio" name="time" id="evening">
-        </div>
-    </div>
-    <hr>
-    <h3>Select the desired level of knowledge</h3>
-    <div class="level">
-        <div class="elem">
-            <label for="level">Introductory</label>
-            <input type="radio" name="level" id="introductory">
-        </div>
-        <div class="elem">
-            <label for="level">Intermidiate</label>
-            <input type="radio" name="level" id="intermidiate">
-        </div>
-        <div class="elem">
-            <label for="level">Advanced</label>
-            <input type="radio" name="level" id="advanced">
-        </div>
-    </div>
     }
-    <button @onclick="calendarNavigate">Next</button>
+        <button @onclick="calendarNavigate">Next</button>
+        
+        
 </div>
 
 @code {
+    private void calendarNavigate()
+    {
+        AuthService.ChangeSkills(choosedSkill, Time, Level);
+        Console.WriteLine($"{choosedSkill}, {Time}, {Level}");
+        Navigation.NavigateTo("/calendar");
+    }
+
     List<Skill> skills;
+    String choosedSkill;
+    String Time;
+    String Level;
+    bool isTeacher;
+    
 
     protected override async Task OnInitializedAsync()
     {
         skills = await AuthService.GetSkills();
-    }
-
-    private void calendarNavigate()
-    {
-        Navigation.NavigateTo("/calendar");
+        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "2ab125a8-72d8-43dd-8860-152bc1cbdf07") ? true : false;
+        Console.WriteLine("isTeacher: "+isTeacher);
     }
 }
