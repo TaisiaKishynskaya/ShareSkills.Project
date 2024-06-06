@@ -14,12 +14,23 @@ internal class Program
         AuthorizationConfiguration.ConfigureAuthorization(builder); 
 
         builder.Services.AddSwagger(builder.Configuration); 
+        builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
         
         DatabaseConfiguration.ConfigureDatabase(builder);
         ServicesConfiguration.ConfigureServices(builder);
         builder.Services.AddMinimalEndpoints();
 
         var app = builder.Build();
+        app.UseCors("AllowAll");
         
         app.UseAuthentication();
         

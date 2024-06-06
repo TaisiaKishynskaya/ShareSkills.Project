@@ -1,0 +1,71 @@
+@page "/lesson/{id}"
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+@inject CalendarService CalendarService
+
+<div class="main">
+    @if (teacher != null && meeting != null)
+    {
+        <div class="title">
+            <button @onclick="goBack">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+                </svg>
+            </button>
+            <p>@meeting.Name</p>
+            <div class="blank"></div>
+        </div>
+
+        <div class="content">
+            <div class="block">
+                <p class="text-info">Participant:</p>
+                <p class="text-value">@teacher.Name @teacher.Surname</p>
+            </div>
+
+            <div class="block">
+                <p class="text-info">Time:</p>
+                <p class="text-value">@meeting.DateTime.ToString("HH:mm")</p>
+            </div>
+        </div>
+
+        <button class="cancel" @onclick="CancelMeeting">cancel</button>
+    }
+    else 
+    {
+        <p>loading...</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private Meeting meeting;
+    private Teacher teacher;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await CalendarService.GetMeetingInfo(Id, await CalendarService.GetUserRole());
+        meeting = result.Value.meeting;
+        teacher = result.Value.teacher;
+    }
+
+    private async Task CancelMeeting()
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"http://localhost:5115/meetings/{Id}");
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine($"deleted meeting with id: {Id}");
+            goBack();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void goBack() {
+        Navigation.NavigateTo("/calendar");
+    }
+}

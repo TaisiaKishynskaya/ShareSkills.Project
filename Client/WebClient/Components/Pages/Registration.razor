@@ -1,27 +1,66 @@
-@page "/Registration"
+@page "/"
+@using WebClient.Components.Layout
+@inject NavigationManager Navigation
+@layout NoMenuLayout
+@inject AuthService AuthService
 
 <div class="main">
-    <h1>Share Skills</h1>
+    <h1>Skills Share</h1>
     <div class="info">
         <div class="input-info">
-            <input type="text" class="main-input" placeholder="Name">
-            <input type="text" class="main-input" placeholder="Surname">
-            <input type="text" class="main-input" placeholder="Email">
-            <input type="text" class="main-input" placeholder="Password">
+            <input type="text" class="main-input" placeholder="Name" @bind="@Name">
+            <input type="text" class="main-input" placeholder="Surname" @bind="@Surname">
+            <input type="text" class="main-input" placeholder="Email" @bind="@Email">
+            <input type="password" class="main-input" placeholder="Password" @bind="@Password">
         </div>
         <div class="switch-btn">
             <p>Student</p>
             <label class="switch">
-                <input type="checkbox">
+                <input type="checkbox" @bind="@IsTeacher">
                 <span class="slider round"></span>
             </label>
             <p>Teacher</p>
         </div>
-        <button class="next-btn">Continue</button>
+        @if (isError)
+        {
+            <p class="error">An error occurred</p>
+        }
+        <button class="next-btn" @onclick="Register">Next</button>
         <div class="login-link">
             <p>Already have an account?</p>
-            <a href="">Log in</a>
+            <a @onclick="loginNavigate">Log in</a>
         </div>
-    
     </div>
 </div>
+
+@code {
+    private string Name { get; set; }
+    private string Surname { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private bool IsTeacher;
+    private bool isError = false;
+
+    private async Task Register()
+    {
+        if (await AuthService.Register(IsTeacher, Name, Surname, Email, Password))
+        {
+            isError = false;
+            nextNavigate();
+        }
+        else
+        {
+            isError = true;
+        }
+    }
+
+    private void nextNavigate()
+    {
+        Navigation.NavigateTo("/chooseSkills");
+    }
+
+    private void loginNavigate()
+    {
+        Navigation.NavigateTo("/login");
+    }
+}
