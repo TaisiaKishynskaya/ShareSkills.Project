@@ -8,5 +8,6 @@ public interface ITeacherService
     Task<TeacherDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<TeacherDto> CreateAsync(TeacherForCreationDto teacherForCreationDto, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Guid?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task RecountTotalGradeAsync(Guid teacherId, int grade, CancellationToken cancellationToken);
 }
