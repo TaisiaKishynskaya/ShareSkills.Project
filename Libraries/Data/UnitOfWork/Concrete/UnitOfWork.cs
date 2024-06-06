@@ -17,6 +17,8 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
     public IMeetingRepository MeetingRepository { get; } = new MeetingRepository(context);
     public IGradeRepository GradeRepository { get; } = new GradeRepository(context);
     public ISkillRepository SkillRepository { get; } = new SkillRepository(context);
+    public ILevelRepository LevelRepository { get; } = new LevelRepository(context);
+    public IClassTimeRepository ClassTimeRepository { get; } = new ClassTimeRepository(context);
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
