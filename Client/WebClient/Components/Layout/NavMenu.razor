@@ -1,0 +1,51 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="cabinet">Share</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="cabinet" Match="NavLinkMatch.All">
+                <span class="bi bi-cabinet-fill-nav-menu" aria-hidden="true"></span>  Cabinet
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="calendar">
+                <span class="bi bi-calendar-fill-nav-menu" aria-hidden="true"></span> Calendar
+            </NavLink>
+        </div>
+        @if (!isTeacher)
+        {
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="search">
+                <span class="bi bi-search-fill-nav-menu" aria-hidden="true"></span> Search mentor
+            </NavLink>
+        </div>
+        }
+       
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    bool isTeacher;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
+    }
+}

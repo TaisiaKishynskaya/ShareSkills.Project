@@ -8,7 +8,7 @@ public class GradeConfiguration : IEntityTypeConfiguration<GradeEntity>
 {
     public void Configure(EntityTypeBuilder<GradeEntity> builder)
     {
-        // builder.ToTable("Grade");
+        builder.ToTable("Grades");
         
         builder.HasKey(item => item.Id);
 

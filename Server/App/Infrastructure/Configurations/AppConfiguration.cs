@@ -1,5 +1,5 @@
-using App.Data;
 using App.Infrastructure.Exceptions;
+using Libraries.Data;
 using Serilog;
 
 namespace App.Infrastructure.Configurations;
@@ -18,7 +18,7 @@ public static class AppConfiguration
         
         //app.UseAuthentication();
         //app.UseAuthorization();
-        //app.MapControllers().RequireAuthorization("CatalogApiScope");
+        //app.MapControllers().RequireAuthorization("AppScope");
         
         AppDbInitializer.EnsureDatabaseCreated(app.Services);
         

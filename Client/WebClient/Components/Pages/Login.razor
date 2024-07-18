@@ -1,0 +1,77 @@
+@page "/login"
+@using WebClient.Components.Layout
+@inject NavigationManager Navigation
+@layout NoMenuLayout
+@inject AuthService AuthService
+@inject IJSRuntime JSRuntime
+
+<div class="main">
+    <h1>Skills Share</h1>
+    <div class="info">
+        <div class="input-info">
+            <input type="text" class="main-input" placeholder="Email" @bind="@email">
+            <input type="password" class="main-input" placeholder="Password" @bind="@password">
+        </div>
+
+        @if (isError)
+        {
+            <p class="error">Incorrect email or password</p>
+        }
+
+        <button class="login-btn" @onclick="UserLogin">Log in</button>
+        <div class="login-link">
+            <a @onclick="registrationNavigate">Register now</a>
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    private string email;
+    private string password;
+    private bool isError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // to login automaticly, but jwt is expiring too fast
+        @* await CheckExistingToken(); *@
+    }
+
+    private async Task CheckExistingToken()
+    {
+        // Check if the JWT token is stored in Preferences
+        var jwt = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
+        
+        if (!string.IsNullOrEmpty(jwt))
+        {
+            // Optionally, you can validate the token with the server here
+            Console.WriteLine("JWT token found, navigating to calendar...");
+            await AuthService.GetUserRole();
+            this.NavigateToCalendar();
+        }
+    }
+
+    private async Task UserLogin()
+    {
+        if (await AuthService.UserLogin(email, password))
+        {
+            isError = false;
+            AuthService.GetUserRole(); 
+            NavigateToCalendar();
+        }
+        else
+        {
+            isError = true;
+        }
+    }
+
+    private void NavigateToCalendar()
+    {
+        Navigation.NavigateTo("/calendar");
+    }
+
+    private void registrationNavigate()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

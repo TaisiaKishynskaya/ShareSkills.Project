@@ -8,7 +8,7 @@ public class SkillConfiguration : IEntityTypeConfiguration<SkillEntity>
 {
     public void Configure(EntityTypeBuilder<SkillEntity> builder)
     {
-        // builder.ToTable("Skill");
+        builder.ToTable("Skills");
         
         builder.HasKey(item => item.Id);
 

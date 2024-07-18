@@ -1,44 +1,51 @@
 using App.Infrastructure.Configurations;
+using App.Infrastructure.Mapping.Endpoints.Concrete;
+using Libraries.Data;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// --------------------------------------------------------------------------------------------------------------
-// Удалите этот код, если правильно пропишите код в конфигурациях Арр
 // СМОТРЕТЬ https://github.com/TaisiaKishynskaya/CSharp_A-Level/tree/main/eShop.Project/Application/Catalog/Catalog.API
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// --------------------------------------------------------------------------------------------------------------
-// ДОБАВЬТЕ ЭТОТ КОД когда пропишете классы с конфигурациями
-
-// AuthenticationConfiguration.ConfigureAuthentication(builder);
-// AuthorizationConfiguration.ConfigureAuthorization(builder); 
-
-// SwaggerConfiguration.AddSwagger(builder.Services, builder.Configuration); 
-
- DatabaseConfiguration.ConfigureDatabase(builder);
-
-// ServicesConfiguration.ConfigureServices(builder); 
-
-//----------------------------------------------------------------------------------------------------------------
-var app = builder.Build();
-
-// Когда пропишете все файлы конфигураций - удалите строки ниже (кроме "AppConfiguration.ConfigureApp(app);"  и  "app.Run();")
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//TODO: Need refactoring, add validation for registration
+internal class Program
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        AuthenticationConfiguration.ConfigureAuthentication(builder);
+        AuthorizationConfiguration.ConfigureAuthorization(builder); 
+
+        builder.Services.AddSwagger(builder.Configuration); 
+        builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
+        
+        DatabaseConfiguration.ConfigureDatabase(builder);
+        ServicesConfiguration.ConfigureServices(builder);
+        builder.Services.AddMinimalEndpoints();
+
+        var app = builder.Build();
+        app.UseCors("AllowAll");
+        
+        app.UseAuthentication();
+        
+        app.UseAuthorization();
+        
+        app.UseHttpsRedirection();
+
+        app.RegisterStudentEndpoint();
+        
+        app.RegisterMinimalEndpoints();
+
+        AppConfiguration.ConfigureApp(app);
+        
+        DatabaseConfiguration.SeedDatabase(app);
+    
+        app.Run();
+    }
 }
-
-// AppConfiguration.ConfigureApp(app);
-
-app.UseHttpsRedirection();
-
-app.MapGet("/weatherforecast", () => { })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
-
-app.Run();

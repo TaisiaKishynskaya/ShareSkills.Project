@@ -8,7 +8,7 @@ public class TeacherConfiguration : IEntityTypeConfiguration<TeacherEntity>
 {
     public void Configure(EntityTypeBuilder<TeacherEntity> builder)
     {
-        // builder.ToTable("Teacher");
+        builder.ToTable("Teachers");
         
         builder.HasKey(item => item.Id);
         
@@ -17,14 +17,11 @@ public class TeacherConfiguration : IEntityTypeConfiguration<TeacherEntity>
             .HasPrecision(2, 1); // Максимальне значення рейтинга буде мати 5 цифр, з яких 2 - після крапки; 
         
         // 1-1
-        builder
+        /*builder
             .HasOne(x => x.User)
-            .WithOne(x => x.Teacher);
-        
-        // *-1
-        builder
-            .HasMany(x => x.Meetings)
-            .WithOne(x => x.Teacher);
+            .WithOne(x => x.Teacher)
+            .HasForeignKey<UserEntity>(s => s.TeacherId)
+            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления*/
         
         // *-*
         builder

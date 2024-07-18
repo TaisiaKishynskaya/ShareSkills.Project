@@ -1,44 +1,45 @@
-var builder = WebApplication.CreateBuilder(args);
+using System;
+using Microsoft.ML;
+using Microsoft.ML.Data;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+class Program
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    public class HouseData
+    {
+        public float Size { get; set; }
+        public float Price { get; set; }
+    }
 
-app.UseHttpsRedirection();
+    public class Prediction
+    {
+        [ColumnName("Score")]
+        public float Price { get; set; }
+    }
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    static void Main(string[] args)
+    {
+        MLContext mlContext = new MLContext();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+        // 1. Import or create training data
+        HouseData[] houseData = {
+            new HouseData() { Size = 1.1F, Price = 1.2F },
+            new HouseData() { Size = 1.9F, Price = 2.3F },
+            new HouseData() { Size = 2.8F, Price = 3.0F },
+            new HouseData() { Size = 3.4F, Price = 3.7F }
+        };
+        IDataView trainingData = mlContext.Data.LoadFromEnumerable(houseData);
 
-app.Run();
+        // 2. Specify data preparation and model training pipeline
+        var pipeline = mlContext.Transforms.Concatenate("Features", new[] { "Size" })
+            .Append(mlContext.Regression.Trainers.Sdca(labelColumnName: "Price", maximumNumberOfIterations: 100));
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        // 3. Train model
+        var model = pipeline.Fit(trainingData);
+
+        // 4. Make a prediction
+        var size = new HouseData() { Size = 2.5F };
+        var price = mlContext.Model.CreatePredictionEngine<HouseData, Prediction>(model).Predict(size);
+
+        Console.WriteLine($"Predicted price for size: {size.Size * 1000} sq ft= {price.Price * 100:C}k");
+    }
 }

@@ -1,0 +1,256 @@
+@page "/calendar"
+@inject NavigationManager Navigation
+@inject HttpClient httpClient
+@inject CalendarService CalendarService
+
+<div class="main">
+    <div class="nav-buttons">
+        @if (isTeacher)
+        {
+            <div class="plus-button" @onclick="() => IsShowDialog=true">
+                <p>+</p>
+            </div>
+        }
+        <div class="week-navigation">
+                <button class="next-btn" @onclick="PreviousWeek">Previous Week</button>
+                <button class="next-btn" @onclick="NextWeek">Next Week</button>
+        </div>
+    </div>
+    @if (weekDates.ContainsKey(DayOfWeek.Monday))
+    {
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Monday].ToString("dd.MM") Monday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in mondayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Tuesday].ToString("dd.MM") Tuesday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in tuesdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Wednesday].ToString("dd.MM") Wednesday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in wednesdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Thursday].ToString("dd.MM") Thursday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in thursdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Friday].ToString("dd.MM") Friday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in fridayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Saturday].ToString("dd.MM") Saturday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in saturdayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="day">
+        <div class="day-info">
+            <p>@weekDates[DayOfWeek.Sunday].ToString("dd.MM") Sunday</p>
+            <hr>
+        </div>
+        <div class="cards">
+            @foreach (var lesson in sundayEvents) 
+            {
+                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                    <p>@lesson.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (IsShowDialog)
+    {
+        <div class="dialog">
+            <svg @onclick="() => IsShowDialog=false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+            <input type="text" class="dialog-input" placeholder="Email" @bind="@Email">
+            <input type="text" class="dialog-input" placeholder="Title" @bind = "@Title">
+            <input type="datetime-local" class="dialog-input" placeholder="Date" @bind = "@Date">
+            @if (isError)
+            {
+                <p class="error">An error occurred</p>
+            }
+            <button class="next-btn" @onclick="AddMeeting">
+                Create
+            </button>
+        </div>
+        }
+    }
+</div>
+
+
+@code {
+
+    private List<Meeting> mondayEvents = new();
+    private List<Meeting> tuesdayEvents = new();
+    private List<Meeting> wednesdayEvents = new();
+    private List<Meeting> thursdayEvents = new();
+    private List<Meeting> fridayEvents = new();
+    private List<Meeting> saturdayEvents = new();
+    private List<Meeting> sundayEvents = new();
+    private String userRole;
+
+    private String Email;
+    private String Title;
+    private DateTime Date{get; set;} = DateTime.Now;
+    private bool IsShowDialog = false;
+    private bool isError = false;
+    private bool isTeacher;
+    private DateTime currentWeekStartDate;
+    private List<Meeting> currentWeekEvents = new();
+    private Dictionary<DayOfWeek, DateTime> weekDates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        userRole = Preferences.Get("userRole", string.Empty);
+        if (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72")
+        {
+            isTeacher = true;
+        }
+        else 
+        {
+            isTeacher = false;
+        }
+        currentWeekStartDate = FirstDayOfWeek(DateTime.Now);
+        await LoadMeetingsForCurrentWeek();
+        Console.WriteLine("userRole: " + userRole);
+        
+    }
+
+    private async Task LoadMeetingsForCurrentWeek()
+    {
+        var meetings = await CalendarService.UpdateCalendar();
+        currentWeekEvents = meetings.Where(meeting => 
+            meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
+            (meeting.ForeignId.ToString() == Preferences.Get("userId", string.Empty) || meeting.OwnerId.ToString() == Preferences.Get("userId", string.Empty))
+        ).ToList();
+        
+        PopulateDailyEvents();
+    }
+
+    private void PopulateDailyEvents()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            var day = currentWeekStartDate.AddDays(i);
+            weekDates[day.DayOfWeek] = day;
+        }
+        mondayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Monday).ToList();
+        tuesdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Tuesday).ToList();
+        wednesdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Wednesday).ToList();
+        thursdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Thursday).ToList();
+        fridayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Friday).ToList();
+        saturdayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Saturday).ToList();
+        sundayEvents = currentWeekEvents.Where(meeting => meeting.DateTime.DayOfWeek == DayOfWeek.Sunday).ToList();
+    }
+
+    private async Task PreviousWeek()
+    {
+        currentWeekStartDate = currentWeekStartDate.AddDays(-7);
+        await LoadMeetingsForCurrentWeek();
+    }
+
+    private async Task NextWeek()
+    {
+        currentWeekStartDate = currentWeekStartDate.AddDays(7);
+        await LoadMeetingsForCurrentWeek();
+    }
+
+    public static DateTime FirstDayOfWeek(DateTime dt)
+    {
+        var culture = System.Threading.Thread.CurrentThread.CurrentCulture; // Getting current culture information
+        var diff = dt.DayOfWeek - culture.DateTimeFormat.FirstDayOfWeek; // Calculating the difference between the input date's day of the week and the first day of the week in the culture
+
+        if (diff < 0)
+            diff += 7; // If the difference is negative, add 7 days to get the correct first day of the week
+
+        return dt.AddDays(-diff).Date; // Returning the date adjusted to the first day of the week
+    }
+
+    private async Task AddMeeting()
+    {
+        if (await CalendarService.AddMeeting(Date, Email, Title))
+        {
+            IsShowDialog = false;
+            isError = false;
+        }
+        else
+        {
+            isError = true;
+        }
+    }
+
+    private void ShowAddDialog()
+    {
+        IsShowDialog = true;
+    }
+
+    private void OpenLessonDetails(Guid lessonId)
+    {
+        Navigation.NavigateTo($"/lesson/{lessonId.ToString()}");
+    }
+}

@@ -20,6 +20,14 @@ namespace MobileClient
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+            
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Strings");
+            builder.Services.AddScoped<HttpClient>();
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<CalendarService>();
+            builder.Services.AddScoped<CabinetService>();
+            builder.Services.AddScoped<SearchService>();
+            builder.Services.AddScoped<FeedbackService>();
 
             return builder.Build();
         }

@@ -1,0 +1,117 @@
+.main {
+    font-family: "Marmelad";
+    background: #F5FFFF;
+    height: 93vh;
+}
+
+.title {
+    background: white;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.25);
+    height: 50px;
+    display: flex;
+    justify-content: flex-start;
+    font-size: 20px;
+    align-items: center;
+    padding-left: 10px;
+    gap: 10px;
+}
+
+.title svg {
+    width: 35px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.25);
+    background: white;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 30px;
+    font-size: 20px;
+    padding: 10px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.star-rating svg {
+    width: 30px;
+}
+
+.card svg {
+    width: 30px;
+    float: right;
+}
+
+.text p {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.star-rating p {
+    margin: 0;
+}
+
+hr {
+    border: 1px solid black;
+
+}
+
+.stars-input {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+input {
+    width: 50px;
+    text-align: center;
+}
+
+input:focus {
+    outline: none;
+}
+
+button {
+    background: #3B9AA9;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-family: "Marmelad";
+    font-size: 16px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.text input {
+    background: none;
+    border: none;
+    border-bottom: 1px solid black;
+    font-size: 20px;
+    font-family: "Marmelad";
+    width: 100%;
+    text-align: left;
+}
+
+.text input:focus {
+    outline: none;
+}
+
+.error {
+    color: rgba(255, 0, 0, 0.5);
+}
