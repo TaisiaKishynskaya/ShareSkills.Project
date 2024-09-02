@@ -1,4 +1,6 @@
 using App.Infrastructure.Exceptions;
+using App.Infrastructure.Exceptions.AlreadyExistsExceptions;
+using App.Infrastructure.Exceptions.NotFoundExceptions;
 using App.Services.Abstract;
 using Libraries.Contracts.Meeting;
 using Libraries.Data.UnitOfWork.Abstract;

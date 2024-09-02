@@ -1,4 +1,4 @@
-using App.Infrastructure.Exceptions;
+using App.Infrastructure.Exceptions.NotFoundExceptions;
 using App.Services.Abstract;
 using Libraries.Contracts.Student;
 using Libraries.Data.UnitOfWork.Abstract;

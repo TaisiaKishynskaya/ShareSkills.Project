@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
 
+namespace MobileClient.Services;
+
 public class SearchService
 {
     private readonly HttpClient _httpClient;

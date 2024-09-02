@@ -1,9 +1,4 @@
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
-using System.Collections.Generic;
-using System;
+namespace WebClient.Services;
 
 public class AuthService
 {
