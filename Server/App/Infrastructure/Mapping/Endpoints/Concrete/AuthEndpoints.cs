@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using App.Infrastructure.Mapping.Endpoints.Abstract;
 using App.Services.Abstract;
+using FluentValidation;
 using Libraries.Contracts.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,9 +16,15 @@ public class AuthEndpoints : IMinimalEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPost("/register", async (IUserService UserService, UserForCreationDto user) =>
+        routeBuilder.MapPost("/register", async (IUserService userService, UserForCreationDto user, IValidator<UserForCreationDto> validator) =>
         {
-            if (await UserService.GetByEmailAsync(user.Email) is not null)
+            var validationResult = await validator.ValidateAsync(user);
+            if (!validationResult.IsValid)
+            {
+                return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+            
+            if (await userService.GetByEmailAsync(user.Email) is not null)
             {
                 return Results.BadRequest("User already exists");
             }
@@ -33,14 +40,14 @@ public class AuthEndpoints : IMinimalEndpoint
             var passwordHash = passwordHasher.HashPassword(userModel, user.Password);
             userModel.PasswordHash = passwordHash;
             
-            var userId = await UserService.CreateAsync(userModel);
+            var userId = await userService.CreateAsync(userModel);
             
             return Results.Ok(userId);
         });
         
-        routeBuilder.MapPost("/login", async (IUserService UserService, IConfiguration configuration, string email, string password) =>
+        routeBuilder.MapPost("/login", async (IUserService userService, IConfiguration configuration, string email, string password) =>
         {
-            var user = await UserService.GetByEmailAsync(email);
+            var user = await userService.GetByEmailAsync(email);
 
             if (user is null)
             {
@@ -84,7 +91,5 @@ public class AuthEndpoints : IMinimalEndpoint
             
             return Results.Ok(new { Token = tokenString, UserId = user.Id });
         });
-        
-        routeBuilder.MapGet("/test", [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]() => "It works");
     }
 }

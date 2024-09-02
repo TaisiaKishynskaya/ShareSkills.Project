@@ -1,4 +1,5 @@
 using App.Infrastructure.Exceptions;
+using App.Infrastructure.Exceptions.NotFoundExceptions;
 using App.Services.Abstract;
 using Libraries.Contracts.Grade;
 using Libraries.Data.UnitOfWork.Abstract;

@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 
+namespace MobileClient.Services;
+
 public class FeedbackService
 {
     private readonly HttpClient _httpClient;

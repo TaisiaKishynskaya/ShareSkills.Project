@@ -1,4 +1,5 @@
 using App.Infrastructure.Exceptions;
+using App.Infrastructure.Exceptions.AlreadyExistsExceptions;
 using App.Infrastructure.Mapping.Endpoints.Abstract;
 using App.Services.Abstract;
 using Libraries.Contracts.Meeting;
