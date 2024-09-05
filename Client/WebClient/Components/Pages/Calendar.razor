@@ -179,7 +179,7 @@
         currentWeekStartDate = FirstDayOfWeek(DateTime.Now);
         await LoadMeetingsForCurrentWeek();
         Console.WriteLine("userRole: " + userRole);
-        
+
     }
 
     private async Task LoadMeetingsForCurrentWeek()
@@ -187,11 +187,14 @@
         var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var meetings = await CalendarService.UpdateCalendar();
         Console.WriteLine(meetings.Count);
-        currentWeekEvents = meetings.Where(meeting => 
-            meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
-            (meeting.ForeignId.ToString() == userId || meeting.OwnerId.ToString() == userId)
-        ).ToList();
-        
+        if (meetings != null)
+        {
+            currentWeekEvents = meetings.Where(meeting =>
+                meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
+                (meeting.ForeignId.ToString() == userId || meeting.OwnerId.ToString() == userId)
+            ).ToList();
+        }
+
         PopulateDailyEvents();
     }
 

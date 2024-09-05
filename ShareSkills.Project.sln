@@ -16,6 +16,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Libraries", "Libraries\Libraries.csproj", "{987EB738-3916-4540-BB4E-6AD912FA72B2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileClient", "Client\MobileClient\MobileClient.csproj", "{541AD107-4189-40FC-8FB5-3AE613C0A0A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{987EB738-3916-4540-BB4E-6AD912FA72B2} = {987EB738-3916-4540-BB4E-6AD912FA72B2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

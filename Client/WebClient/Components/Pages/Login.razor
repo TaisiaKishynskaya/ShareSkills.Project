@@ -56,7 +56,7 @@
         if (await AuthService.UserLogin(email, password))
         {
             isError = false;
-            AuthService.GetUserRole(); 
+            // AuthService.GetUserRole(); 
             NavigateToCalendar();
         }
         else

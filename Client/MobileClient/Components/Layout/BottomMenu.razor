@@ -1,4 +1,5 @@
 
+@inject AuthService AuthService
 <div class="main">
     <div class="nav-item" @onclick='() => HandleNavLinkClick("calendar")'>
         <NavLink class="nav-link" href="calendar">
@@ -28,11 +29,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        
+        await AuthService.getUserRole();
         isTeacher = (Preferences.Get("userRole", string.Empty) == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 
-    private void HandleNavLinkClick(string navLinkId)
+    private async Task HandleNavLinkClick(string navLinkId)
     {
+        await AuthService.getUserRole();
+        isTeacher = (Preferences.Get("userRole", string.Empty) == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
         selectedNavLink = navLinkId; // сохраняем идентификатор выбранного NavLink
     }
 }

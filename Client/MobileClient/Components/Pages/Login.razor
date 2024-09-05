@@ -41,7 +41,7 @@
     {
         // Check if the JWT token is stored in Preferences
         var jwt = Preferences.Get("jwt", string.Empty);
-        
+
         if (!string.IsNullOrEmpty(jwt))
         {
             // Optionally, you can validate the token with the server here
@@ -56,7 +56,7 @@
         if (await AuthService.UserLogin(email, password))
         {
             isError = false;
-            AuthService.getUserRole();
+            // await AuthService.getUserRole();
             calendarNavigate();
         }
         else
