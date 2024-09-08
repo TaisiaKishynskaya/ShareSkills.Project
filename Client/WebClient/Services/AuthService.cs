@@ -31,6 +31,7 @@ public class AuthService
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userId", authResponse.userId);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "jwt", authResponse.token);
                 Console.WriteLine("jwt: " + await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt"));
+                await GetUserRole();
                 return true;
             }
             else

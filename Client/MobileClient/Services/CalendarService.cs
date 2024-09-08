@@ -16,8 +16,10 @@ public class CalendarService
     {
         try
         {
+            System.Diagnostics.Debug.Print("jwt: " + Preferences.Get("jwt", string.Empty));
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
             var response = await _httpClient.GetAsync("http://localhost:5115/meetings");
+            System.Diagnostics.Debug.Print("update response " + " " + response.StatusCode + await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {
                 var meetings = await response.Content.ReadFromJsonAsync<List<Meeting>>();
@@ -31,7 +33,7 @@ public class CalendarService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            System.Diagnostics.Debug.Print("Error occurred: " + ex.Message);
             return null;
         }
     }

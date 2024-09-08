@@ -17,7 +17,7 @@ public class AuthService
 
     public async Task<bool> UserLogin(string email, string password)
     {
-        
+
         try {
             Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
             var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
@@ -29,6 +29,7 @@ public class AuthService
                 // Preferences for saving data
                 Preferences.Set("jwt", authResponse.token);
                 Console.WriteLine("jwt: "+Preferences.Get("jwt", string.Empty));
+                await getUserRole();
                 return true;
             }
             else
@@ -38,7 +39,7 @@ public class AuthService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            System.Diagnostics.Debug.Print("Error occurred: " + ex.Message);
             return false;
         }
     }
@@ -71,7 +72,7 @@ public class AuthService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            System.Diagnostics.Debug.Print(ex.StackTrace);
             return false;
         }
     }
@@ -86,11 +87,12 @@ public class AuthService
             {
                 user = await response.Content.ReadFromJsonAsync<User>();
                 Preferences.Set("userRole", user.Role);
+                System.Diagnostics.Debug.Print("role was set " + user.Role);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            System.Diagnostics.Debug.Print(ex.Message);
         }
     }
 
@@ -112,7 +114,7 @@ public class AuthService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            System.Diagnostics.Debug.Print(ex.StackTrace);
             return null;
         }
     }
@@ -139,7 +141,7 @@ public class AuthService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            System.Diagnostics.Debug.Print(ex.StackTrace);
             return false;
         }
     }

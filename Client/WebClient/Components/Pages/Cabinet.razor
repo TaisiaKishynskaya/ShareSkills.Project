@@ -30,10 +30,13 @@
             </div> *@
             <hr>
             <button class="feedback" @onclick="() => IsShowDialog=true">Change profile information</button>
-            <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>Change skills</button>
+            @if (isTeacher)
+            {
+                <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>Change skills</button>
+            }
             @if (!isTeacher)
             {
-            <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
+                <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
             }
         }
         else
@@ -77,6 +80,13 @@
     protected override async Task OnInitializedAsync()
     {
         user = await CabinetService.GetUser();
+        if (user != null)
+        {
+            userToChange.Name = user.Name;
+            userToChange.Surname = user.Surname;
+            userToChange.Email = user.Email;
+            userToChange.PasswordHash = user.PasswordHash;
+        }
         StateHasChanged();
         isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }

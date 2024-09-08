@@ -1,4 +1,5 @@
 ﻿@inject IJSRuntime JSRuntime
+@inject AuthService AuthService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -46,6 +47,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await AuthService.GetUserRole();
         isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
     }
 }
