@@ -15,36 +15,43 @@ public class AuthService
         _httpClient = httpClient;
     }
 
-    public async Task<bool> UserLogin(string email, string password)
+    public async Task<bool> UserLogin(string email, string password, bool fortest=false)
     {
 
         try {
             Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
             var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
-            Console.Write(response);
+            Console.WriteLine(response);
             if (response.IsSuccessStatusCode)
             {
                 authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                Preferences.Set("userId", authResponse.userId);
-                // Preferences for saving data
-                Preferences.Set("jwt", authResponse.token);
-                Console.WriteLine("jwt: "+Preferences.Get("jwt", string.Empty));
-                await getUserRole();
+                if (!fortest)
+                {
+                    Preferences.Set("userId", authResponse.userId);
+
+                    // Preferences for saving data
+                    Preferences.Set("jwt", authResponse.token);
+                    Console.WriteLine("jwt: " + Preferences.Get("jwt", string.Empty));
+
+                    await getUserRole();
+                }
                 return true;
             }
             else
             {
+                System.Diagnostics.Debug.Print("status code " + response.StatusCode);
                 return false;
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.Print("Error occurred: " + ex.Message);
+            System.Diagnostics.Debug.Print("trace: " + ex.StackTrace);
             return false;
         }
     }
 
-    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, String Email, string Password)
+    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, String Email, string Password, bool fortest=false)
     {
         var Role = IsTeacher ? "teacher" : "student";
         var requestData = new
@@ -60,7 +67,10 @@ public class AuthService
             if (response.IsSuccessStatusCode)
             {
                 var userId = await response.Content.ReadFromJsonAsync<string?>();
-                Preferences.Set("userId", userId);
+                if (!fortest)
+                {
+                    Preferences.Set("userId", userId);
+                }
                 Console.WriteLine(userId);
                 await UserLogin(Email, Password);
                 return true;

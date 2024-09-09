@@ -18,6 +18,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileClient", "Client\Mobi
 		{987EB738-3916-4540-BB4E-6AD912FA72B2} = {987EB738-3916-4540-BB4E-6AD912FA72B2}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileClient.Tests", "MobileClient.Tests\MobileClient.Tests.csproj", "{88B4BFED-6FE7-41F0-B73B-C31E715305DE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{541AD107-4189-40FC-8FB5-3AE613C0A0A9} = {541AD107-4189-40FC-8FB5-3AE613C0A0A9}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +47,10 @@ Global
 		{541AD107-4189-40FC-8FB5-3AE613C0A0A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{541AD107-4189-40FC-8FB5-3AE613C0A0A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{541AD107-4189-40FC-8FB5-3AE613C0A0A9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{88B4BFED-6FE7-41F0-B73B-C31E715305DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B4BFED-6FE7-41F0-B73B-C31E715305DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B4BFED-6FE7-41F0-B73B-C31E715305DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B4BFED-6FE7-41F0-B73B-C31E715305DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
