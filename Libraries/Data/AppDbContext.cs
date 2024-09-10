@@ -24,7 +24,7 @@ public class AppDbContext : DbContext
 	
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
-		//base.OnModelCreating(builder);
+		base.OnModelCreating(builder);
 		builder.ApplyConfiguration(new UserConfiguration());
 		builder.ApplyConfiguration(new StudentConfiguration());
 		builder.ApplyConfiguration(new TeacherConfiguration());
@@ -35,21 +35,4 @@ public class AppDbContext : DbContext
 		builder.ApplyConfiguration(new ClassTimeConfiguration());
 		builder.ApplyConfiguration(new LevelConfiguration());
 	}
-	
-	/* не получилась валидация имейла.
-	 public override int SaveChanges()
-	{
-		foreach (var entry in ChangeTracker.Entries<UserEntity>())
-		{
-			if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
-			{
-				if (!entry.Entity.Email.Contains("@"))
-				{
-					throw new ValidationException("Пошта повинна містити '@'.");
-				}
-			}
-		}
-
-		return base.SaveChanges();
-	}*/
 }

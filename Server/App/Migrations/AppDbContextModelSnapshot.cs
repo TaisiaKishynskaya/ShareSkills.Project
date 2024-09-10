@@ -34,7 +34,7 @@ namespace App.Migrations
 
                     b.HasIndex("StudentsId");
 
-                    b.ToTable("GradeEntityStudentEntity");
+                    b.ToTable("GradeEntityStudentEntity", (string)null);
                 });
 
             modelBuilder.Entity("GradeEntityTeacherEntity", b =>
@@ -49,7 +49,37 @@ namespace App.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("GradeEntityTeacherEntity");
+                    b.ToTable("GradeEntityTeacherEntity", (string)null);
+                });
+
+            modelBuilder.Entity("Libraries.Contracts.Skill.SkillDto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Skill")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SkillDto", (string)null);
+                });
+
+            modelBuilder.Entity("Libraries.Entities.Concrete.ClassTimeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassTimes", (string)null);
                 });
 
             modelBuilder.Entity("Libraries.Entities.Concrete.GradeEntity", b =>
@@ -67,6 +97,21 @@ namespace App.Migrations
                     b.ToTable("Grades", (string)null);
                 });
 
+            modelBuilder.Entity("Libraries.Entities.Concrete.LevelEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Levels", (string)null);
+                });
+
             modelBuilder.Entity("Libraries.Entities.Concrete.MeetingEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -81,6 +126,10 @@ namespace App.Migrations
 
                     b.Property<Guid>("ForeignId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("char(36)");
@@ -160,15 +209,30 @@ namespace App.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("ClassTimeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("LevelId")
+                        .HasColumnType("char(36)");
+
                     b.Property<double>("Rating")
                         .HasPrecision(2, 1)
                         .HasColumnType("double");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassTimeId");
+
+                    b.HasIndex("LevelId");
+
+                    b.HasIndex("SkillId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -223,7 +287,7 @@ namespace App.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("SkillEntityUserEntity");
+                    b.ToTable("SkillEntityUserEntity", (string)null);
                 });
 
             modelBuilder.Entity("GradeEntityStudentEntity", b =>
@@ -280,11 +344,35 @@ namespace App.Migrations
 
             modelBuilder.Entity("Libraries.Entities.Concrete.TeacherEntity", b =>
                 {
+                    b.HasOne("Libraries.Entities.Concrete.ClassTimeEntity", "ClassTime")
+                        .WithMany("Teachers")
+                        .HasForeignKey("ClassTimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Libraries.Entities.Concrete.LevelEntity", "Level")
+                        .WithMany("Teachers")
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Libraries.Contracts.Skill.SkillDto", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Libraries.Entities.Concrete.UserEntity", "User")
                         .WithOne("Teacher")
                         .HasForeignKey("Libraries.Entities.Concrete.TeacherEntity", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ClassTime");
+
+                    b.Navigation("Level");
+
+                    b.Navigation("Skill");
 
                     b.Navigation("User");
                 });
@@ -313,6 +401,16 @@ namespace App.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Libraries.Entities.Concrete.ClassTimeEntity", b =>
+                {
+                    b.Navigation("Teachers");
+                });
+
+            modelBuilder.Entity("Libraries.Entities.Concrete.LevelEntity", b =>
+                {
+                    b.Navigation("Teachers");
                 });
 
             modelBuilder.Entity("Libraries.Entities.Concrete.RoleEntity", b =>
