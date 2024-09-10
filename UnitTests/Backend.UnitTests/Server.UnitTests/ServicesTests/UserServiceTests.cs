@@ -1,4 +1,4 @@
-using App.Infrastructure.Exceptions;
+using App.Infrastructure.Exceptions.NotFoundExceptions;
 using App.Services.Abstract;
 using App.Services.Concrete;
 using Libraries.Contracts.User;
@@ -47,7 +47,7 @@ public class UserServiceTests
 
         // Настраиваем мок UserRepository для возврата тестовых данных
         _mockUserRepository.Setup(repo => repo
-                .GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(testUsers);
+            .GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(testUsers);
 
         // Настраиваем UnitOfWork для использования мока UserRepository
         _mockUnitOfWork.Setup(uow => uow.UserRepository).Returns(_mockUserRepository.Object);
@@ -74,7 +74,7 @@ public class UserServiceTests
         // Arrange
         // Настраиваем мок UserRepository для возврата null
         _mockUserRepository.Setup(repo => repo
-                .GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync((List<UserEntity>)null);
+            .GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync((List<UserEntity>)null);
 
         // Настраиваем UnitOfWork для использования мока UserRepository
         _mockUnitOfWork.Setup(uow => uow.UserRepository).Returns(_mockUserRepository.Object);
@@ -100,7 +100,7 @@ public class UserServiceTests
 
         // Настраиваем мок UserRepository для возврата тестового пользователя
         _mockUserRepository.Setup(repo => repo
-                .GetByEmailAsync(testEmail, It.IsAny<CancellationToken>())).ReturnsAsync(testUser);
+            .GetByEmailAsync(testEmail, It.IsAny<CancellationToken>())).ReturnsAsync(testUser);
 
         // Настраиваем мок RoleService для возврата имени роли
         _mockRoleService.Setup(service => service
@@ -130,7 +130,7 @@ public class UserServiceTests
 
         // Настраиваем мок UserRepository для возврата null
         _mockUserRepository.Setup(repo => repo
-                .GetByEmailAsync(testEmail, It.IsAny<CancellationToken>())).ReturnsAsync((UserEntity?)null);
+            .GetByEmailAsync(testEmail, It.IsAny<CancellationToken>())).ReturnsAsync((UserEntity?)null);
 
         _mockUnitOfWork.Setup(uow => uow.UserRepository).Returns(_mockUserRepository.Object);
 
@@ -155,7 +155,7 @@ public class UserServiceTests
 
         // Настраиваем мок UserRepository для возврата тестового пользователя
         _mockUserRepository.Setup(repo => repo
-                .GetByIdAsync(testId, It.IsAny<CancellationToken>())).ReturnsAsync(testUser);
+            .GetByIdAsync(testId, It.IsAny<CancellationToken>())).ReturnsAsync(testUser);
 
         _mockUnitOfWork.Setup(uow => uow.UserRepository).Returns(_mockUserRepository.Object);
 
@@ -181,7 +181,7 @@ public class UserServiceTests
 
         // Настраиваем мок UserRepository для возврата null
         _mockUserRepository.Setup(repo => repo
-                .GetByIdAsync(testId, It.IsAny<CancellationToken>())).ReturnsAsync((UserEntity?)null);
+            .GetByIdAsync(testId, It.IsAny<CancellationToken>())).ReturnsAsync((UserEntity?)null);
 
         _mockUnitOfWork.Setup(uow => uow.UserRepository).Returns(_mockUserRepository.Object);
 
@@ -217,7 +217,7 @@ public class UserServiceTests
             .Returns(Task.CompletedTask); // Симулируем успешное выполнение
 
         _mockUnitOfWork.Setup(uow => uow
-                .SaveChangesAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            .SaveChangesAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
 
         // Act:
