@@ -35,34 +35,40 @@ public class TeacherServiceTests
         {
             Skill = "Math",
             Level = "Intermediate",
-            ClassTime = "Morning",
+            ClassTime = "Morning (7:00 - 12:00)",
             Rating = 5,
             UserId = Guid.NewGuid()
         };
 
-        _unitOfWorkMock.Setup(uow => uow.SkillRepository.GetTeacherSkillAsync(teacherDto.Skill))
-                       .ReturnsAsync(new SkillEntity { Id = Guid.NewGuid() });
-        _unitOfWorkMock.Setup(uow => uow.LevelRepository.GetTeacherLevelAsync(teacherDto.Level))
-                       .ReturnsAsync(new LevelEntity { Id = Guid.NewGuid(), Name = "Intermediate" });
-        _unitOfWorkMock.Setup(uow => uow.ClassTimeRepository.GetTeacherClassTimeAsync(teacherDto.ClassTime))
-                       .ReturnsAsync(new ClassTimeEntity { Id = Guid.NewGuid(), Name = "Morning" });
+        var skillId = Guid.NewGuid();
+        var levelId = Guid.NewGuid();
+        var classTimeId = Guid.NewGuid();
 
-        _levelServiceMock.Setup(ls => ls.GetLevelNameAsync(It.IsAny<Guid>()))
-                         .ReturnsAsync("Intermediate");
-        _classTimeServiceMock.Setup(cs => cs.GetClassTimeNameAsync(It.IsAny<Guid>()))
-                             .ReturnsAsync("Morning");
-        _skillServiceMock.Setup(ss => ss.GetSkillNameAsync(It.IsAny<Guid>()))
-                         .ReturnsAsync("Math");
+        _unitOfWorkMock.Setup(uow => uow.SkillRepository.GetTeacherSkillAsync(teacherDto.Skill))
+            .ReturnsAsync(new SkillEntity { Id = skillId });
+        _unitOfWorkMock.Setup(uow => uow.LevelRepository.GetTeacherLevelAsync(teacherDto.Level))
+            .ReturnsAsync(new LevelEntity { Id = levelId, Name = "Intermediate" });
+        _unitOfWorkMock.Setup(uow => uow.ClassTimeRepository.GetTeacherClassTimeAsync(teacherDto.ClassTime))
+            .ReturnsAsync(new ClassTimeEntity { Id = classTimeId, Name = "Morning (7:00 - 12:00)" });
+
+        _levelServiceMock.Setup(ls => ls.GetLevelNameAsync(levelId))
+            .ReturnsAsync("Intermediate");
+        _classTimeServiceMock.Setup(cs => cs.GetClassTimeNameAsync(classTimeId))
+            .ReturnsAsync("Morning (7:00 - 12:00)");
+        _skillServiceMock.Setup(ss => ss.GetSkillNameAsync(skillId))
+            .ReturnsAsync("Math");
+        
+        var cancellationToken = new CancellationToken(); // Create a CancellationToken
 
         // Act
-        var result = await _service.CreateAsync(teacherDto);
+        var result = await _service.CreateAsync(teacherDto, cancellationToken); // Pass the token
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(teacherDto.UserId, result.UserId);
         Assert.Equal(teacherDto.Rating, result.Rating);
         Assert.Equal("Intermediate", result.Level);
-        Assert.Equal("Morning", result.ClassTime);
+        Assert.Equal("Morning (7:00 - 12:00)", result.ClassTime);
         Assert.Equal("Math", result.Skill);
 
         _unitOfWorkMock.Verify(uow => uow.TeacherRepository.Insert(It.IsAny<TeacherEntity>()), Times.Once);
@@ -77,7 +83,7 @@ public class TeacherServiceTests
         {
             Skill = "NonExistentSkill",
             Level = "Intermediate",
-            ClassTime = "Morning",
+            ClassTime = "Morning (7:00 - 12:00)",
             Rating = 5,
             UserId = Guid.NewGuid()
         };
@@ -97,7 +103,7 @@ public class TeacherServiceTests
         {
             Skill = "Math",
             Level = "NonExistentLevel",
-            ClassTime = "Morning",
+            ClassTime = "Morning (7:00 - 12:00)",
             Rating = 5,
             UserId = Guid.NewGuid()
         };
@@ -187,7 +193,7 @@ public class TeacherServiceTests
         };
 
         var levelName = "Intermediate";
-        var classTimeName = "Morning";
+        var classTimeName = "Morning (7:00 - 12:00)";
         var skillName = "Math";
 
         _unitOfWorkMock.Setup(uow => uow.TeacherRepository.GetAllAsync(It.IsAny<CancellationToken>()))
@@ -259,7 +265,7 @@ public class TeacherServiceTests
         };
 
         var levelName = "Intermediate";
-        var classTimeName = "Morning";
+        var classTimeName = "Morning (7:00 - 12:00)";
         var skillName = "Math";
 
         _unitOfWorkMock.Setup(uow => uow.TeacherRepository.GetByIdAsync(teacherId, It.IsAny<CancellationToken>()))
