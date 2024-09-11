@@ -1,31 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using Moq;
+﻿using Moq;
 using System.Net.Http.Json;
 using System.Net;
-using Moq.Protected;
 using RichardSzalay.MockHttp;
-using System.Net.Http;
+
+
 
 namespace MobileClient.Tests.Service.Tests
 {
-    public class AuthServiceTests
+    public class AuthServiceTests : TestsService
 {
-    private readonly AuthService authService;
-    private readonly MockHttpMessageHandler mockHttpMessageHandler;
-    private string fakeBaseAddres;
-        private HttpClient httpClient;
+        private readonly AuthService authService;
 
         public AuthServiceTests()
         {
-            fakeBaseAddres = "http://localhost:5115";
-            mockHttpMessageHandler = new MockHttpMessageHandler();
-            httpClient = new HttpClient(mockHttpMessageHandler);
-            authService = new AuthService(httpClient);
+            mockPreferencesService.Setup(p => p.Get("jwt", It.IsAny<string>())).Returns("mocked_jwt");
+            authService = new AuthService(httpClient, mockPreferencesService.Object);
         }
 
         [Fact]
@@ -37,7 +26,7 @@ namespace MobileClient.Tests.Service.Tests
             };
 
             mockHttpMessageHandler.When($"{fakeBaseAddres}/login?email=email@test.com&password=123").Respond(req=>expectedResponse);
-            var response = await authService.UserLogin("email@test.com", "123", true);
+            var response = await authService.UserLogin("email@test.com", "123");
 
             // Assert
             Assert.True(response);
@@ -53,46 +42,11 @@ namespace MobileClient.Tests.Service.Tests
             };
 
             mockHttpMessageHandler.When($"{fakeBaseAddres}/login?email=email@test.com&password=123").Respond(req => expectedResponse);
-            var response = await authService.UserLogin("email@test.com", "123", true);
+            var response = await authService.UserLogin("email@test.com", "123");
 
             // Assert
             Assert.False(response);
         }
-
-        //[Fact]
-        //public async Task Register_ShouldPostRequest_WhithCorrectData()
-        //{
-        //    // Arrange
-        //    var expectedRequestBody = new
-        //    {
-        //        Name = "John",
-        //        Surname = "Doe",
-        //        Email = "john.doe@example.com",
-        //        Password = "Password123",
-        //        Role = "teacher"
-        //    };
-
-        //    mockHttpMessageHandler
-        //        .When(HttpMethod.Post, "http://localhost:5115/register")
-        //        .WithContent(expectedRequestBody)
-        //        .RespondJson("12345");
-
-        //    // Act
-        //    await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123");
-
-        //    // Assert
-        //    var request = mockHttpMessageHandler.GetMatch(HttpMethod.Post, "http://localhost:5115/register");
-        //    var actualRequestBody = await request.Content.ReadFromJsonAsync<dynamic>();
-
-        //    Assert.NotNull(actualRequestBody);
-        //    Assert.Equal(expectedRequestBody.Name, (string)actualRequestBody.Name);
-        //    Assert.Equal(expectedRequestBody.Surname, (string)actualRequestBody.Surname);
-        //    Assert.Equal(expectedRequestBody.Email, (string)actualRequestBody.Email);
-        //    Assert.Equal(expectedRequestBody.Password, (string)actualRequestBody.Password);
-        //    Assert.Equal(expectedRequestBody.Role, (string)actualRequestBody.Role);
-
-        //    mockHttpMessageHandler.VerifyNoOutstandingExpectation();
-        //}
 
         [Fact]
         public async Task Register_ShouldReturnTrue_WhenSuccessful()
@@ -107,10 +61,116 @@ namespace MobileClient.Tests.Service.Tests
                 .Respond(req=>expectedResponse);
 
             // Act
-            var result = await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123", true);
+            var result = await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123");
 
             // Assert
             Assert.True(result);
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+        }
+
+        [Fact]
+        public async Task Register_ShouldReturnFalse_WhenUnsuccessful()
+        {
+            // Arrange
+            var expectedResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)
+            {
+                
+            };
+            mockHttpMessageHandler
+                .When(HttpMethod.Post, "http://localhost:5115/register")
+                .Respond(req => expectedResponse);
+
+            // Act
+            var result = await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123");
+
+            // Assert
+            Assert.False(result);
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+        }
+
+        [Fact]
+        public async Task GetSkills_ShouldReturnSkillsList_WhenSuccesful()
+        {
+            // Arrange
+            var skillList = new List<Skill> { new Skill { id = "123", skill = "skill" } };
+            var expectedResponseJson = JsonContent.Create(skillList);
+
+            // Создаем мок ответа
+            mockHttpMessageHandler.When($"{fakeBaseAddres}/skills").Respond(req =>
+                new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = JsonContent.Create(skillList)
+                });
+
+            // Act
+            var response = await authService.GetSkills();
+
+            // Теперь создаем ожидаемое значение заново, чтобы избежать повторного использования объекта
+            var expectedResponse = await expectedResponseJson.ReadFromJsonAsync<List<Skill>>();
+
+            // Assert
+            Assert.Equal(expectedResponse.Count, response.Count);
+            for (int i = 0; i < expectedResponse.Count; i++)
+            {
+                Assert.Equal(expectedResponse[i].id, response[i].id);
+                Assert.Equal(expectedResponse[i].skill, response[i].skill);
+            }
+
+        }
+
+        [Fact]
+        public async Task GetSkills_ShouldReturnNull_WhenUnsuccesful()
+        {
+            // Arrange
+
+            // Создаем мок ответа
+            mockHttpMessageHandler.When($"{fakeBaseAddres}/skills").Respond(req =>
+                new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                });
+
+            // Act
+            var response = await authService.GetSkills();
+
+            // Assert
+            Assert.Null(response);
+        }
+
+        [Fact]
+        public async Task ChangeSkills_ShouldReturnTrue_WhenSuccesful()
+        {
+            // Arrange
+            var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+            };
+            mockHttpMessageHandler
+                .When(HttpMethod.Post, "http://localhost:5115/teachers")
+                .Respond(req => expectedResponse);
+
+            // Act
+            var result = await authService.ChangeSkills("1", "skill", "time", "1");
+
+            // Assert
+            Assert.True(result);
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+        }
+
+        [Fact]
+        public async Task ChangeSkills_ShouldReturnFalse_WhenUnsuccesful()
+        {
+            // Arrange
+            var expectedResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)
+            {
+            };
+            mockHttpMessageHandler
+                .When(HttpMethod.Post, "http://localhost:5115/teachers")
+                .Respond(req => expectedResponse);
+
+            // Act
+            var result = await authService.ChangeSkills("1", "skill", "time", "1");
+
+            // Assert
+            Assert.False(result);
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         }
 

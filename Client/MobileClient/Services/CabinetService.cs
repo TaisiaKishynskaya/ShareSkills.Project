@@ -1,3 +1,4 @@
+using MobileClient.Services;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -6,15 +7,17 @@ using System.Threading.Tasks;
 public class CabinetService
 {
     private readonly HttpClient _httpClient;
+    private readonly IPreferencesService _preferencesService;
 
-    public CabinetService(HttpClient httpClient)
+    public CabinetService(HttpClient httpClient, IPreferencesService preferences)
     {
         _httpClient = httpClient;
+        _preferencesService = preferences;
     }
 
     public async Task<User?> GetUser()
     {
-        var userId = Preferences.Get("userId", string.Empty);
+        var userId = _preferencesService.Get("userId", string.Empty);
         Console.WriteLine(userId);
         try
         {
@@ -34,7 +37,7 @@ public class CabinetService
     }
 
     public async Task<bool> ChangeInfo(User userToChange, string newPassword) {
-        var userId = Preferences.Get("userId", string.Empty);
+        var userId = _preferencesService.Get("userId", string.Empty);
         var requestData = new
         {
             name = userToChange.Name,
@@ -49,7 +52,7 @@ public class CabinetService
         );
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
             var response = await _httpClient.PutAsync($"http://localhost:5115/users/{userId}", jsonContent);
             if (response.IsSuccessStatusCode)
             {

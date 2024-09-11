@@ -1,3 +1,4 @@
+using MobileClient.Services;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -7,12 +8,14 @@ public class AuthService
 {
 
     private readonly HttpClient _httpClient;
+    private readonly IPreferencesService _preferencesService;
     private AuthResponse authResponse; 
     private User user;
 
-    public AuthService(HttpClient httpClient)
+    public AuthService(HttpClient httpClient, IPreferencesService preferences)
     {
         _httpClient = httpClient;
+        _preferencesService = preferences;
     }
 
     public async Task<bool> UserLogin(string email, string password, bool fortest=false)
@@ -25,16 +28,13 @@ public class AuthService
             if (response.IsSuccessStatusCode)
             {
                 authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                if (!fortest)
-                {
-                    Preferences.Set("userId", authResponse.userId);
+                _preferencesService.Set("userId", authResponse.userId);
 
-                    // Preferences for saving data
-                    Preferences.Set("jwt", authResponse.token);
-                    Console.WriteLine("jwt: " + Preferences.Get("jwt", string.Empty));
+                // Preferences for saving data
+                _preferencesService.Set("jwt", authResponse.token);
+                Console.WriteLine("jwt: " + _preferencesService.Get("jwt", string.Empty));
 
-                    await getUserRole();
-                }
+                await getUserRole();
                 return true;
             }
             else
@@ -51,7 +51,7 @@ public class AuthService
         }
     }
 
-    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, String Email, string Password, bool fortest=false)
+    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, String Email, string Password)
     {
         var Role = IsTeacher ? "teacher" : "student";
         var requestData = new
@@ -67,36 +67,34 @@ public class AuthService
             if (response.IsSuccessStatusCode)
             {
                 var userId = await response.Content.ReadFromJsonAsync<string?>();
-                if (!fortest)
-                {
-                    Preferences.Set("userId", userId);
-                }
+                _preferencesService.Set("userId", userId);
                 Console.WriteLine(userId);
                 await UserLogin(Email, Password);
                 return true;
             }
             else
             {
+                System.Diagnostics.Debug.Print("status: "+response.StatusCode.ToString());
                 return false;
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.Print(ex.StackTrace);
+            System.Diagnostics.Debug.Print("error: " + ex.StackTrace);
             return false;
         }
     }
 
     public async Task getUserRole()
     {
-        var userId = Preferences.Get("userId", string.Empty);
+        var userId = _preferencesService.Get("userId", string.Empty);
         try
         {
             var response = await _httpClient.GetAsync($"http://localhost:5115/users/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 user = await response.Content.ReadFromJsonAsync<User>();
-                Preferences.Set("userRole", user.Role);
+                _preferencesService.Set("userRole", user.Role);
                 System.Diagnostics.Debug.Print("role was set " + user.Role);
             }
         }
@@ -110,7 +108,7 @@ public class AuthService
     {
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
             var response = await _httpClient.GetAsync($"http://localhost:5115/skills");
             if (response.IsSuccessStatusCode)
             {
