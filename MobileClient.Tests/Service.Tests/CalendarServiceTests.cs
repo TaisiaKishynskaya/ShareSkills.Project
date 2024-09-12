@@ -102,5 +102,89 @@ namespace MobileClient.Tests.Service.Tests
             var response = await _calendarService.AddMeeting(DateTime.Now, "email", "title");
             Assert.False(response);
         }
+
+        [Fact]
+        public async Task GetMeetingInfo_ShouldReturnInfo_WithForeignId_WhenSuccesful()
+        {
+            var fakeId = "1";
+            var fakeRole = "90c08b8a-fa4c-445e-9f66-717bf2bfcf72";
+            var meeting = new Meeting { Id = new Guid(), Name = "name", DateTime = DateTime.Now, Description = "desc", OwnerId = new Guid(), ForeignId = new Guid() };
+            var user = new User { Email = "email", Id = "1", Name = "name", Surname = "surname", PasswordHash = "pass", Role = "student" };
+            var expectedMeetingResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(meeting)
+            };
+            var expectedUserResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(user)
+            };
+
+
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/meetings/{fakeId}")
+                .Respond(req => expectedMeetingResponse);
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/users/{meeting.ForeignId}")
+                .Respond(req => expectedUserResponse);
+
+            var response = await _calendarService.GetMeetingInfo(fakeId, fakeRole);
+            Assert.Equal(JsonConvert.SerializeObject((meeting, user)), JsonConvert.SerializeObject(response));
+        }
+
+        [Fact]
+        public async Task GetMeetingInfo_ShouldReturnInfo_WithOwnerId_WhenSuccesful()
+        {
+            var fakeId = "1";
+            var fakeRole = "another";
+            var meeting = new Meeting { Id = new Guid(), Name = "name", DateTime = DateTime.Now, Description = "desc", OwnerId = new Guid(), ForeignId = new Guid() };
+            var user = new User { Email = "email", Id = "1", Name = "name", Surname = "surname", PasswordHash = "pass", Role = "student" };
+            var expectedMeetingResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(meeting)
+            };
+            var expectedUserResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(user)
+            };
+
+
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/meetings/{fakeId}")
+                .Respond(req => expectedMeetingResponse);
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/users/{meeting.OwnerId}")
+                .Respond(req => expectedUserResponse);
+
+            var response = await _calendarService.GetMeetingInfo(fakeId, fakeRole);
+            Assert.Equal(JsonConvert.SerializeObject((meeting, user)), JsonConvert.SerializeObject(response));
+        }
+
+        [Fact]
+        public async Task GetMeetingInfo_ShouldReturnNull_WhenUnsuccesful()
+        {
+            var fakeId = "1";
+            var fakeRole = "90c08b8a-fa4c-445e-9f66-717bf2bfcf72";
+            var meeting = new Meeting { Id = new Guid(), Name = "name", DateTime = DateTime.Now, Description = "desc", OwnerId = new Guid(), ForeignId = new Guid() };
+            var user = new User { Email = "email", Id = "1", Name = "name", Surname = "surname", PasswordHash = "pass", Role = "student" };
+            var expectedMeetingResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)
+            {
+                Content = JsonContent.Create(meeting)
+            };
+            var expectedUserResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(user)
+            };
+
+
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/meetings/{fakeId}")
+                .Respond(req => expectedMeetingResponse);
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/users/{meeting.ForeignId}")
+                .Respond(req => expectedUserResponse);
+
+            var response = await _calendarService.GetMeetingInfo(fakeId, fakeRole);
+            Assert.Null(response);
+        }
     }
 }
