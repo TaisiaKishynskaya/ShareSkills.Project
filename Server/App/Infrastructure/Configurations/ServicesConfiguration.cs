@@ -49,7 +49,6 @@ public static class ServicesConfiguration
 
         builder.Services.AddFluentValidationAutoValidation();
         builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>(); // OR one by one: builder.Services.AddScoped<IValidator<UserForCreationDto>, UserValidator>(); 
-        //builder.Services.AddFluentValidationAutoValidation();
         //builder.Services.AddFluentValidationClientsideAdapters();
 
         //builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
