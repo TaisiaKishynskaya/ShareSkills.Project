@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MobileClient.Services;
 
 namespace MobileClient
 {
@@ -28,6 +29,7 @@ namespace MobileClient
             builder.Services.AddScoped<CabinetService>();
             builder.Services.AddScoped<SearchService>();
             builder.Services.AddScoped<FeedbackService>();
+            builder.Services.AddScoped<IPreferencesService, PreferencesService>();
 
             return builder.Build();
         }
