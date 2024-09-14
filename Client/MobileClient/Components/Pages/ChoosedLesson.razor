@@ -1,8 +1,9 @@
 @page "/lesson/{id}"
+@using MobileClient.Services
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
-@inject CalendarService CalendarService
-
+@inject ICalendarService CalendarService
+@inject IPreferencesService Preferences
 <div class="main">
     @if (participant != null && meeting != null)
     {

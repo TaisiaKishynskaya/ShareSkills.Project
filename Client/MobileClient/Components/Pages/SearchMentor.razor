@@ -1,7 +1,8 @@
 @page "/search"
+@using MobileClient.Services
 @inject NavigationManager Navigation
-@inject AuthService AuthService
-@inject SearchService SearchService
+@inject IAuthService AuthService
+@inject ISearchService SearchService
 
 <div class="main">
     <div class="search">

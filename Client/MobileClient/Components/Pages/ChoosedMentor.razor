@@ -1,6 +1,7 @@
 @page "/mentor/{id}"
+@using MobileClient.Services
 @inject NavigationManager Navigation
-@inject SearchService SearchService
+@inject ISearchService SearchService
 
 <div class="main">
     @if (teacher != null)

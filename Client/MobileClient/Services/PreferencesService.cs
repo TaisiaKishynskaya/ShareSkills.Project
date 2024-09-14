@@ -14,5 +14,10 @@ namespace MobileClient.Services
         }
 
         public void Set(string key, string value) { Preferences.Set(key, value); }
+
+        public void Clear()
+        {
+            Preferences.Clear();
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
+using MobileClient.Services;
 
-public class SearchService
+public class SearchService : ISearchService
 {
     private readonly HttpClient _httpClient;
 

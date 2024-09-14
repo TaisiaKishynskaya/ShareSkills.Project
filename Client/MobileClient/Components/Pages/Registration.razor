@@ -1,9 +1,9 @@
 @page "/registration"
 @layout NoMenuLayout
-@inject IStringLocalizer<Registration> localizer
+@using MobileClient.Services
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
-@inject AuthService AuthService
+@inject IAuthService AuthService
 
 <div class="main">
         <h1>Skills Share</h1>

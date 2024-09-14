@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-public class AuthService
+public class AuthService : IAuthService
 {
 
     private readonly HttpClient _httpClient;
@@ -18,7 +18,7 @@ public class AuthService
         _preferencesService = preferences;
     }
 
-    public async Task<bool> UserLogin(string email, string password, bool fortest=false)
+    public async Task<bool> UserLogin(string email, string password)
     {
 
         try {

@@ -1,8 +1,10 @@
 @page "/choose-skills"
+@using MobileClient.Services
 @layout NoMenuLayout
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
-@inject AuthService AuthService
+@inject IAuthService AuthService
+@inject IPreferencesService Preferences
 
 <div class="main">
     @if (skills != null)

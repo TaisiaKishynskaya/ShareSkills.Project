@@ -1,7 +1,9 @@
 @page "/calendar"
+@using MobileClient.Services
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
-@inject CalendarService CalendarService
+@inject IPreferencesService Preferences
+@inject ICalendarService CalendarService
 
 <div class="main">
     <div class="nav-buttons">

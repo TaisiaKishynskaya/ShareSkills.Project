@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace MobileClient.Services
 {
-    public interface IPreferencesService
+    public interface ICabinetService
     {
-        string? Get(string key, string defaultValue);
-        void Set(string key, string value);
+        public Task<User?> GetUser();
+        public Task<bool> ChangeInfo(User userToChange, string newPassword);
 
-        void Clear();
     }
 }
