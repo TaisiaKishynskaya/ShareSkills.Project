@@ -29,9 +29,13 @@ jobs:
       - name: Install dependencies
         run: dotnet workload restore
 
+      # Restire NuGet packages
+      - name: NuGet restore
+        run: nuget restore ShareSkills.Project.sln
+
       # Build the project
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build --configuration Release
 
       # Run tests
       - name: Run tests
