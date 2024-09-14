@@ -33,9 +33,17 @@ jobs:
       - name: NuGet restore
         run: nuget restore ShareSkills.Project.sln
 
-      # Build the project
-      - name: Build
-        run: dotnet build --configuration Release
+      # Build MobileClient
+      - name: Build MobileClient
+        run: dotnet build ./Client/MobileClient/MobileClient.csproj --configuration Release
+
+        # Build WebClient
+      - name: Build WebClient
+        run: dotnet build ./Client/WebClient/WebClient.csproj --configuration Release
+
+        # Build App
+      - name: Build App
+        run: dotnet build ./Server/App/App.csproj --configuration Release
 
       # Run tests
       - name: Run tests
