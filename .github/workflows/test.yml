@@ -53,6 +53,7 @@ jobs:
             dotnet build Client/MobileClient/MobileClient.csproj --no-restore --configuration Release -f net8.0-android
             dotnet build Client/WebClient/WebClient.csproj --no-restore --configuration Release -f net8.0
             dotnet build Server/App/App.csproj --no-restore --configuration Release
+            dotnet build MobileClient.Tests/MobileClient.Tests.csproj --no-restore --configuration Release
 
   test:
     needs: restore-and-build
