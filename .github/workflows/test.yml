@@ -42,21 +42,21 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: dotnet restore ${{ matrix.project }}/**/*.csproj
+        run: |
+            dotnet restore Client/MobileClient/MobileClient.csproj
+            dotnet restore Client/WebClient/WebClient.csproj
+            dotnet restore Server/App/App.csproj
 
       # Build the project
       - name: Build ${{ matrix.project }}
-        run: dotnet build ./${{ matrix.project }}/*.csproj --no-restore --configuration Release
+        run: |
+            dotnet build Client/MobileClient/MobileClient.csproj --no-restore --configuration Release -f net8.0-android
+            dotnet build Client/WebClient/WebClient.csproj --no-restore --configuration Release -f net8.0
+            dotnet build Server/App/App.csproj --no-restore --configuration Release
 
   test:
     needs: restore-and-build
     runs-on: windows-latest
-    strategy:
-      matrix:
-        project:
-          - MobileClient
-          - WebClient
-          - App
 
     steps:
       # Checkout the code
@@ -70,5 +70,5 @@ jobs:
           dotnet-version: '7.x'
 
       # Run tests
-      - name: Run tests for ${{ matrix.project }}
-        run: dotnet test ./${{ matrix.project }}/*.csproj --no-build --verbosity normal
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
