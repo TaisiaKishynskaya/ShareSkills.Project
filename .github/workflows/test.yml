@@ -19,6 +19,7 @@ jobs:
           - MobileClient
           - WebClient
           - App
+          - MobileClient.Tests
 
     steps:
       # Checkout the code
@@ -46,6 +47,7 @@ jobs:
             dotnet restore Client/MobileClient/MobileClient.csproj
             dotnet restore Client/WebClient/WebClient.csproj
             dotnet restore Server/App/App.csproj
+            dotnet restore MobileClient.Tests/MobileClient.Tests.csproj
 
       # Build the project
       - name: Build ${{ matrix.project }}
