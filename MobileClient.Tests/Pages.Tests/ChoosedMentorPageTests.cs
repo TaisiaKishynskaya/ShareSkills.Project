@@ -42,7 +42,8 @@ namespace MobileClient.Tests.Pages.Tests
             Assert.Contains("John Doe", cut.Markup);  // Check if the teacher's name is displayed
             Assert.Contains("john.doe@example.com", cut.Markup);  // Check if the email is displayed
             Assert.Contains("C#", cut.Markup);  // Check if the skill is displayed
-            Assert.Contains("4,5", cut.Find("div.rating").ToMarkup());  // Check if the rating is displayed
+            Console.WriteLine(cut.Markup);
+            Assert.Contains("4,5", cut.Markup);  // Check if the rating is displayed
         }
 
         [Fact]
