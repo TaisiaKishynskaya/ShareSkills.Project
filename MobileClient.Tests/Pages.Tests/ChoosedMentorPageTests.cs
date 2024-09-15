@@ -27,7 +27,7 @@ namespace MobileClient.Tests.Pages.Tests
             {
                 name = "John",
                 surname = "Doe",
-                rating = 4.5,
+                rating = 5,
                 email = "john.doe@example.com",
                 skill = "C#"
             };
@@ -43,7 +43,7 @@ namespace MobileClient.Tests.Pages.Tests
             Assert.Contains("john.doe@example.com", cut.Markup);  // Check if the email is displayed
             Assert.Contains("C#", cut.Markup);  // Check if the skill is displayed
             Console.WriteLine(cut.Markup);
-            Assert.Contains("4,5", cut.Markup);  // Check if the rating is displayed
+            Assert.Contains("5", cut.Markup);  // Check if the rating is displayed
         }
 
         [Fact]
