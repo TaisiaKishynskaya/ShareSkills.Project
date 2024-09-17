@@ -12,7 +12,7 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
 {
     public async Task<MeetingDto> TryToCreateAsync(MeetingForCreatingDto meetingForCreatingDto, CancellationToken cancellationToken = default)
     {
-        var isMeeting = await isMeetingExist(meetingForCreatingDto.OwnerId, meetingForCreatingDto.DateAndTime, cancellationToken);
+        var isMeeting = await IsMeetingExist(meetingForCreatingDto.OwnerId, meetingForCreatingDto.DateAndTime, cancellationToken);
         if (isMeeting)
         {
             throw new MeetingAlreadyExistsException("Meeting already exists");
@@ -103,7 +103,7 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
         };
     }
 
-    private async Task <bool> isMeetingExist(Guid entityId, DateTime dateTime, CancellationToken cancellationToken = default)
+    private async Task <bool> IsMeetingExist(Guid entityId, DateTime dateTime, CancellationToken cancellationToken = default)
     {
         return (await unitOfWork.MeetingRepository.GetExistedAsync(entityId, dateTime, cancellationToken) == null) ? false : true; 
     }
