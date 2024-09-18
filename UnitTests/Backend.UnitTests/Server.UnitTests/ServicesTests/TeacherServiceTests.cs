@@ -50,6 +50,10 @@ public class TeacherServiceTests
             .ReturnsAsync(new LevelEntity { Id = levelId, Name = "Intermediate" });
         _unitOfWorkMock.Setup(uow => uow.ClassTimeRepository.GetTeacherClassTimeAsync(teacherDto.ClassTime))
             .ReturnsAsync(new ClassTimeEntity { Id = classTimeId, Name = "Morning (7:00 - 12:00)" });
+        _unitOfWorkMock.Setup(uow => uow.TeacherRepository.Insert(new TeacherEntity
+        {
+            Id = default
+        }));
 
         _levelServiceMock.Setup(ls => ls.GetLevelNameAsync(levelId))
             .ReturnsAsync("Intermediate");

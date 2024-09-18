@@ -1,10 +1,15 @@
 using System.Text.Json;
 using App.Services.Abstract;
+using App.Services.Concrete;
 using Libraries.Contracts.Meeting;
+using Libraries.Data.UnitOfWork.Abstract;
+using Libraries.Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Server.UnitTests.EndpointsTests;
 
@@ -158,7 +163,7 @@ public class MeetingEndpointTests
     public async Task CreateMeeting_ReturnsCreatedResultWithMeeting()
     {
         // Arrange
-        var meetingDto = new MeetingForCreatingDto
+        var studentDto = new MeetingForCreatingDto
         {
             Name = null,
             DateAndTime = default,
@@ -166,75 +171,26 @@ public class MeetingEndpointTests
             ForeignId = default
         };
 
-        var createdMeeting = new MeetingDto
-        {
-            Id = Guid.NewGuid(),
-            Name = null,
-            DateTime = default,
-            OwnerId = default,
-            ForeignId = default
-        };
-
         var cancellationToken = new CancellationToken();
 
-        _meetingServiceMock.Setup(service => service.TryToCreateAsync(meetingDto, cancellationToken))
-            .ReturnsAsync(createdMeeting);
+        var ufMock = new Mock<IUnitOfWork>();
 
-        _httpContext.Request.Method = HttpMethods.Post;
-        _httpContext.Request.Path = "/meetings";
+        ufMock.Setup(x => x.MeetingRepository.Insert(It.IsAny<MeetingEntity>()));
 
-        using var requestBody = new MemoryStream();
-        await JsonSerializer.SerializeAsync(requestBody, meetingDto);
-        requestBody.Seek(0, SeekOrigin.Begin);
-        _httpContext.Request.Body = requestBody;
-
-        _httpContext.RequestServices = new ServiceCollection()
-            .AddSingleton(_meetingServiceMock.Object)
-            .BuildServiceProvider();
-
-        var responseBodyStream = new MemoryStream();
-        _httpContext.Response.Body = responseBodyStream;
-
-        RequestDelegate requestDelegate = async ctx =>
-        {
-            if (ctx.Request.Path == "/meetings" && ctx.Request.Method == HttpMethods.Post)
-            {
-                var dto = await JsonSerializer.DeserializeAsync<MeetingForCreatingDto>(ctx.Request.Body);
-                var service = ctx.RequestServices.GetRequiredService<IMeetingService>();
-
-                var meeting = await service.TryToCreateAsync(dto, CancellationToken.None);
-
-                ctx.Response.StatusCode = StatusCodes.Status201Created;
-                ctx.Response.Headers["Location"] = $"/meetings/{meeting.Id}";
-                await ctx.Response.WriteAsJsonAsync(meeting);
-            }
-        };
+        var service = new MeetingService(ufMock.Object);
 
         // Act
-        await requestDelegate(_httpContext);
 
+        var student = await service.TryToCreateAsync(studentDto, CancellationToken.None);
         // Assert
-        _meetingServiceMock.Verify(service => service.TryToCreateAsync(meetingDto, cancellationToken), Times.Once);
-        Assert.Equal(StatusCodes.Status201Created, _httpContext.Response.StatusCode);
-        Assert.Equal($"/meetings/{createdMeeting.Id}", _httpContext.Response.Headers["Location"]);
-
-        _httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
-        var responseBody = await new StreamReader(_httpContext.Response.Body).ReadToEndAsync();
-        var responseMeeting = JsonSerializer.Deserialize<MeetingDto>(responseBody);
-
-        Assert.NotNull(responseMeeting);
-        Assert.Equal(createdMeeting.Id, responseMeeting.Id);
-        Assert.Equal(createdMeeting.Name, responseMeeting.Name);
-        Assert.Equal(createdMeeting.DateTime, responseMeeting.DateTime);
-        Assert.Equal(createdMeeting.OwnerId, responseMeeting.OwnerId);
-        Assert.Equal(createdMeeting.ForeignId, responseMeeting.ForeignId);
+        Assert.NotNull(student);
     }
     
     [Fact]
     public async Task CreateMeeting_ReturnsBadRequest_OnException()
     {
         // Arrange
-        var meetingDto = new MeetingForCreatingDto
+        var gradeDto = new MeetingForCreatingDto
         {
             Name = null,
             DateAndTime = default,
@@ -248,11 +204,11 @@ public class MeetingEndpointTests
             .ThrowsAsync(new InvalidOperationException("Invalid data"));
 
         var context = new DefaultHttpContext();
-        context.Request.Path = "/meetings";
+        context.Request.Path = "/grades";
         context.Request.Method = HttpMethods.Post;
 
         var requestBodyStream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(requestBodyStream, meetingDto);
+        await JsonSerializer.SerializeAsync(requestBodyStream, gradeDto);
         requestBodyStream.Seek(0, SeekOrigin.Begin);
         context.Request.Body = requestBodyStream;
 
@@ -265,17 +221,17 @@ public class MeetingEndpointTests
 
         RequestDelegate requestDelegate = async ctx =>
         {
-            if (ctx.Request.Path == "/meetings" && ctx.Request.Method == HttpMethods.Post)
+            if (ctx.Request.Path == "/grades" && ctx.Request.Method == HttpMethods.Post)
             {
                 var dto = await JsonSerializer.DeserializeAsync<MeetingForCreatingDto>(ctx.Request.Body, cancellationToken: ctx.RequestAborted);
                 var service = ctx.RequestServices.GetRequiredService<IMeetingService>();
 
                 try
                 {
-                    var meeting = await service.TryToCreateAsync(dto, ctx.RequestAborted);
+                    var grade = await service.TryToCreateAsync(dto, ctx.RequestAborted);
                     ctx.Response.StatusCode = StatusCodes.Status201Created;
-                    ctx.Response.Headers["Location"] = $"/meetings/{meeting.Id}";
-                    await ctx.Response.WriteAsJsonAsync(meeting);
+                    ctx.Response.Headers["Location"] = $"/grades/{grade.Id}";
+                    await ctx.Response.WriteAsJsonAsync(grade);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -294,11 +250,11 @@ public class MeetingEndpointTests
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-        var responseJson = JsonSerializer.Deserialize<Dictionary<string, string>>(responseBody);
+        var responseJson = JsonConvert.DeserializeObject<ErrorRepresentation>(responseBody);
 
         Assert.NotNull(responseJson);
-        Assert.Equal("400", responseJson["StatusCode"]);
-        Assert.Equal("Invalid data", responseJson["Message"]);
+        Assert.Equal(400, responseJson.StatusCode);
+        Assert.Equal("Invalid data", responseJson.Message);
     }
     
     

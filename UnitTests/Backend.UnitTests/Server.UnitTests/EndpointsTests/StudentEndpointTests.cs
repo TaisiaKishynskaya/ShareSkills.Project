@@ -1,10 +1,15 @@
 using System.Text.Json;
 using App.Services.Abstract;
+using App.Services.Concrete;
 using Libraries.Contracts.Student;
+using Libraries.Data.UnitOfWork.Abstract;
+using Libraries.Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Server.UnitTests.EndpointsTests;
 
@@ -141,69 +146,30 @@ public class StudentEndpointTests
     public async Task CreateStudent_ReturnsCreatedResultWithStudent()
     {
         // Arrange
-        var studentDto = new StudentForCreationDto { };
-
-        var createdStudent = new StudentDto
-        {
-            Id = Guid.NewGuid(),
-        };
+        var studentDto = new StudentForCreationDto();
 
         var cancellationToken = new CancellationToken();
 
-        _studentServiceMock.Setup(service => service.CreateAsync(studentDto, cancellationToken))
-            .ReturnsAsync(createdStudent);
+        var ufMock = new Mock<IUnitOfWork>();
 
-        _httpContext.Request.Method = HttpMethods.Post;
-        _httpContext.Request.Path = "/students";
+        ufMock.Setup(x => x.StudentRepository.Insert(It.IsAny<StudentEntity>()));
 
-        using var requestBody = new MemoryStream();
-        await JsonSerializer.SerializeAsync(requestBody, studentDto);
-        requestBody.Seek(0, SeekOrigin.Begin);
-        _httpContext.Request.Body = requestBody;
-
-        _httpContext.RequestServices = new ServiceCollection()
-            .AddSingleton(_studentServiceMock.Object)
-            .BuildServiceProvider();
-
-        var responseBodyStream = new MemoryStream();
-        _httpContext.Response.Body = responseBodyStream;
-        
-        RequestDelegate requestDelegate = async ctx =>
-        {
-            if (ctx.Request.Path == "/students" && ctx.Request.Method == HttpMethods.Post)
-            {
-                var dto = await JsonSerializer.DeserializeAsync<StudentForCreationDto>(ctx.Request.Body);
-                var service = ctx.RequestServices.GetRequiredService<IStudentService>();
-
-                var student = await service.CreateAsync(dto, CancellationToken.None);
-
-                ctx.Response.StatusCode = StatusCodes.Status201Created;
-                ctx.Response.Headers["Location"] = $"/students/{student.Id}";
-                await ctx.Response.WriteAsJsonAsync(student);
-            }
-        };
+        var service = new StudentService(ufMock.Object);
 
         // Act
-        await requestDelegate(_httpContext);
 
+        var student = await service.CreateAsync(studentDto, CancellationToken.None);
         // Assert
-        _studentServiceMock.Verify(service => service.CreateAsync(studentDto, cancellationToken), Times.Once);
-        Assert.Equal(StatusCodes.Status201Created, _httpContext.Response.StatusCode);
-        Assert.Equal($"/students/{createdStudent.Id}", _httpContext.Response.Headers["Location"]);
-
-        _httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
-        var responseBody = await new StreamReader(_httpContext.Response.Body).ReadToEndAsync();
-        var responseStudent = JsonSerializer.Deserialize<StudentDto>(responseBody);
-
-        Assert.NotNull(responseStudent);
-        Assert.Equal(createdStudent.Id, responseStudent.Id);
+        Assert.NotNull(student);
     }
     
     [Fact]
     public async Task CreateStudent_ReturnsBadRequest_OnException()
     {
         // Arrange
-        var studentDto = new StudentForCreationDto { };
+        var gradeDto = new StudentForCreationDto()
+        {
+        };
 
         var cancellationToken = new CancellationToken();
 
@@ -211,11 +177,11 @@ public class StudentEndpointTests
             .ThrowsAsync(new InvalidOperationException("Invalid data"));
 
         var context = new DefaultHttpContext();
-        context.Request.Path = "/students";
+        context.Request.Path = "/grades";
         context.Request.Method = HttpMethods.Post;
 
         var requestBodyStream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(requestBodyStream, studentDto);
+        await JsonSerializer.SerializeAsync(requestBodyStream, gradeDto);
         requestBodyStream.Seek(0, SeekOrigin.Begin);
         context.Request.Body = requestBodyStream;
 
@@ -228,17 +194,17 @@ public class StudentEndpointTests
 
         RequestDelegate requestDelegate = async ctx =>
         {
-            if (ctx.Request.Path == "/students" && ctx.Request.Method == HttpMethods.Post)
+            if (ctx.Request.Path == "/grades" && ctx.Request.Method == HttpMethods.Post)
             {
                 var dto = await JsonSerializer.DeserializeAsync<StudentForCreationDto>(ctx.Request.Body, cancellationToken: ctx.RequestAborted);
                 var service = ctx.RequestServices.GetRequiredService<IStudentService>();
 
                 try
                 {
-                    var student = await service.CreateAsync(dto, ctx.RequestAborted);
+                    var grade = await service.CreateAsync(dto, ctx.RequestAborted);
                     ctx.Response.StatusCode = StatusCodes.Status201Created;
-                    ctx.Response.Headers["Location"] = $"/students/{student.Id}";
-                    await ctx.Response.WriteAsJsonAsync(student);
+                    ctx.Response.Headers["Location"] = $"/grades/{grade.Id}";
+                    await ctx.Response.WriteAsJsonAsync(grade);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -257,11 +223,11 @@ public class StudentEndpointTests
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-        var responseJson = JsonSerializer.Deserialize<Dictionary<string, string>>(responseBody);
+        var responseJson = JsonConvert.DeserializeObject<ErrorRepresentation>(responseBody);
 
         Assert.NotNull(responseJson);
-        Assert.Equal("400", responseJson["StatusCode"]);
-        Assert.Equal("Invalid data", responseJson["Message"]);
+        Assert.Equal(400, responseJson.StatusCode);
+        Assert.Equal("Invalid data", responseJson.Message);
     }
     
     

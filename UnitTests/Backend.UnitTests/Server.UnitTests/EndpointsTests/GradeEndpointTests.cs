@@ -1,15 +1,24 @@
 using System.Text.Json;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
 using App.Services.Abstract;
+using App.Services.Concrete;
 using Libraries.Contracts.Grade;
+using Libraries.Data;
+using Libraries.Data.UnitOfWork.Abstract;
+using Libraries.Data.UnitOfWork.Concrete;
+using Libraries.Entities.Concrete;
+using Libraries.Repositories.Concrete;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Server.UnitTests.EndpointsTests;
 
@@ -193,64 +202,28 @@ public class GradeEndpointTests
         Assert.Empty(responseBody);
     }
     
-    
     [Fact]
     public async Task CreateGrade_ReturnsCreatedResultWithGrade()
     {
         // Arrange
         var gradeDto = new GradeForCreatingDto { Grade = 0 };
+        Mock<IUnitOfWork> ufMock = new Mock<IUnitOfWork>();
+        Mock<ITeacherService> tsMock = new();
 
-        var createdGrade = new GradeDto { Id = Guid.NewGuid(), Grade = 1, };
-
-        var cancellationToken = new CancellationToken();
-
-        _gradeServiceMock.Setup(service => service.CreateAsync(gradeDto, cancellationToken))
-            .ReturnsAsync(createdGrade);
-
-        _httpContext.Request.Method = HttpMethods.Post;
-        _httpContext.Request.Path = "/grades";
-
-        using var requestBody = new MemoryStream();
-        await JsonSerializer.SerializeAsync(requestBody, gradeDto);
-        requestBody.Seek(0, SeekOrigin.Begin);
-        _httpContext.Request.Body = requestBody;
-
-        _httpContext.RequestServices = new ServiceCollection()
-            .AddSingleton(_gradeServiceMock.Object)
-            .BuildServiceProvider();
-
-        var responseBodyStream = new MemoryStream();
-        _httpContext.Response.Body = responseBodyStream;
-        
-        RequestDelegate requestDelegate = async ctx =>
+        ufMock.Setup(uow => uow.GradeRepository.Insert(new GradeEntity
         {
-            if (ctx.Request.Path == "/grades" && ctx.Request.Method == HttpMethods.Post)
-            {
-                var dto = await JsonSerializer.DeserializeAsync<GradeForCreatingDto>(ctx.Request.Body);
-                var service = ctx.RequestServices.GetRequiredService<IGradeService>();
-
-                var grade = await service.CreateAsync(dto, CancellationToken.None);
-
-                ctx.Response.StatusCode = StatusCodes.Status201Created;
-                ctx.Response.Headers["Location"] = $"/grades/{grade.Id}";
-                await ctx.Response.WriteAsJsonAsync(grade);
-            }
-        };
-
+            Id = default
+        }));
+        ufMock.Setup(x => x.TeacherRepository.GetScoresByTeacherIdAsync(It.IsAny<Guid>())).ReturnsAsync(new int[10]);
+        
+        var service = new GradeService(ufMock.Object, tsMock.Object);
         // Act
-        await requestDelegate(_httpContext);
 
+        var grade = await service.CreateAsync(gradeDto, CancellationToken.None);
         // Assert
-        _gradeServiceMock.Verify(service => service.CreateAsync(gradeDto, cancellationToken), Times.Once);
-        Assert.Equal(StatusCodes.Status201Created, _httpContext.Response.StatusCode);
-        Assert.Equal($"/grades/{createdGrade.Id}", _httpContext.Response.Headers["Location"]);
 
-        _httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
-        var responseBody = await new StreamReader(_httpContext.Response.Body).ReadToEndAsync();
-        var responseGrade = JsonSerializer.Deserialize<GradeDto>(responseBody);
-
-        Assert.NotNull(responseGrade);
-        Assert.Equal(createdGrade.Id, responseGrade.Id);
+        Assert.Equal(0, grade.Grade);
+        Assert.NotNull(grade);
     }
     
     [Fact]
@@ -311,11 +284,11 @@ public class GradeEndpointTests
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-        var responseJson = JsonSerializer.Deserialize<Dictionary<string, string>>(responseBody);
+        var responseJson = JsonConvert.DeserializeObject<ErrorRepresentation>(responseBody);
 
         Assert.NotNull(responseJson);
-        Assert.Equal("400", responseJson["StatusCode"]);
-        Assert.Equal("Invalid data", responseJson["Message"]);
+        Assert.Equal(400, responseJson.StatusCode);
+        Assert.Equal("Invalid data", responseJson.Message);
     }
     
     
@@ -349,4 +322,10 @@ public class GradeEndpointTests
         var noContentResult = Assert.IsType<NoContent>(result);
         Assert.Equal(StatusCodes.Status204NoContent, noContentResult.StatusCode);
     }
+}
+
+public class ErrorRepresentation
+{
+    public int StatusCode { get; set; }
+    public string Message { get; set; }
 }
