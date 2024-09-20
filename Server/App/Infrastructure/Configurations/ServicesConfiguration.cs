@@ -1,9 +1,12 @@
 using App.Services.Abstract;
 using App.Services.Concrete;
+using FluentValidation;
 using Libraries.Data.UnitOfWork.Abstract;
 using Libraries.Data.UnitOfWork.Concrete;
 using Libraries.Repositories.Abstract;
 using Libraries.Repositories.Concrete;
+using Libraries.Validators;
+using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace App.Infrastructure.Configurations;
 
@@ -44,7 +47,8 @@ public static class ServicesConfiguration
 
         //builder.Services.AddAutoMapper();
 
-        //builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>(); // OR one by one: builder.Services.AddScoped<IValidator<UserForCreationDto>, UserValidator>(); 
         //builder.Services.AddFluentValidationClientsideAdapters();
 
         //builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));

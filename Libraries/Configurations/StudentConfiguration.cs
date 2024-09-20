@@ -16,13 +16,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<StudentEntity>
             .IsRequired()
             .HasMaxLength(200); 
         
-        // 1-1
-        /*builder
-            .HasOne(x => x.User)
-            .WithOne(x => x.Student)
-            .HasForeignKey<UserEntity>(u => u.StudentId)
-            .OnDelete(DeleteBehavior.Cascade);  // Установка каскадного удаления;*/
-        
         // *-*
         builder
             .HasMany(x => x.Grades)

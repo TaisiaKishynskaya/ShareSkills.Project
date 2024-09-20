@@ -2,7 +2,8 @@ using MobileClient.Services;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
+
+namespace MobileClient.Services;
 
 public class CabinetService : ICabinetService
 {

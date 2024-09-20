@@ -1,5 +1,5 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Libraries.Validations;
 
 namespace Libraries.Entities.Concrete;
 
@@ -8,9 +8,9 @@ public class UserEntity
     public required Guid Id { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
-    
-    //[ContainsString("@", ErrorMessage = "Назва повинна містити '@'.")] - Для ContainsStringAttribute
     public string Email { get; set; }
+    
+    [PasswordPropertyText]
     public string Password { get; set; }
     
     // *-1
