@@ -22,11 +22,6 @@ jobs:
           - UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj
           - UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj
           - UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj
-        target:
-          - net8.0-android
-          - net8.0
-          - net8.0
-          - net8.0
 
     steps:
       # Checkout the code
@@ -50,13 +45,25 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: |
+        run:
             dotnet restore ${{ matrix.project }}
 
       # Build the project
       - name: Build ${{ matrix.project }}
         run: |
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f ${{ matrix.target }}
+          if [[ "${{ matrix.project }}" == "Client/MobileClient/MobileClient.csproj" ]]; then
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0-android
+          elif [[ "${{ matrix.project }}" == "Client/WebClient/WebClient.csproj" ]]; then
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
+          elif [[ "${{ matrix.project }}" == "Server/App/App.csproj" ]]; then
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
+          elif [[ "${{ matrix.project }}" == "UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj" ]]; then
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
+          elif [[ "${{ matrix.project }}" == "UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj" ]]; then
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
+          elif [[ "${{ matrix.project }}" == "UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj" ]]; then
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
+          fi
       # Run tests
       - name: Run tests
         run: dotnet test ${{ matrix.project }} --no-build --verbosity normal --configuration Release
