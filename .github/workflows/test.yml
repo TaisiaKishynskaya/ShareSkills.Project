@@ -16,12 +16,12 @@ jobs:
     strategy:
       matrix:
         project:
-          - Client/MobileClient/MobileClient.csproj
-          - Client/WebClient/WebClient.csproj
-          - Server/App/App.csproj
-          - UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj
-          - UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj
-          - UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj
+          - {project: Client/MobileClient/MobileClient.csproj, target: net8.0-android}
+          - {project: Client/WebClient/WebClient.csproj, target: net8.0}
+          - {project: Server/App/App.csproj, target: net8.0}
+          - {project: UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj, target: net8.0}
+          - {project: UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj, target: net8.0}
+          - {project: UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj, target: net8.0}
 
     steps:
       # Checkout the code
@@ -45,28 +45,16 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run:
-            dotnet restore ${{ matrix.project }}
+        run: |
+            dotnet restore ${{ matrix.project.project }}
 
       # Build the project
-      - name: Build ${{ matrix.project }}
+      - name: Build ${{ matrix.project.project }}
         run: |
-          if [[ "${{ matrix.project }}" == "Client/MobileClient/MobileClient.csproj" ]]; then
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0-android
-          elif [[ "${{ matrix.project }}" == "Client/WebClient/WebClient.csproj" ]]; then
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
-          elif [[ "${{ matrix.project }}" == "Server/App/App.csproj" ]]; then
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
-          elif [[ "${{ matrix.project }}" == "UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj" ]]; then
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
-          elif [[ "${{ matrix.project }}" == "UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj" ]]; then
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
-          elif [[ "${{ matrix.project }}" == "UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj" ]]; then
-            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f net8.0
-          fi
+            dotnet build ${{ matrix.project.project }} --no-restore --configuration Release -f ${{ matrix.project.target }}
       # Run tests
       - name: Run tests
-        run: dotnet test ${{ matrix.project }} --no-build --verbosity normal --configuration Release
+        run: dotnet test ${{ matrix.project.project }} --no-build --verbosity normal --configuration Release
 
   # test:
   #   needs: restore-and-build
