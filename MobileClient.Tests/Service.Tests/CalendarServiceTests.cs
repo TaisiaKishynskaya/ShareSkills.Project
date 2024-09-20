@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using MobileClient.Services;
 
 namespace MobileClient.Tests.Service.Tests
 {

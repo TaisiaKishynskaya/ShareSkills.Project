@@ -3,7 +3,7 @@ using RichardSzalay.MockHttp;
 using System.Net.Http.Json;
 using System.Net;
 using Newtonsoft.Json;
-
+using MobileClient.Services;
 namespace MobileClient.Tests.Service.Tests;
     public class CabinetServiceTests : TestsService
 {

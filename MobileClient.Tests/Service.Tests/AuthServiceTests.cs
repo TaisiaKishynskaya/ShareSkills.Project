@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using System.Net;
 using RichardSzalay.MockHttp;
+using MobileClient.Services;
 
 
 
