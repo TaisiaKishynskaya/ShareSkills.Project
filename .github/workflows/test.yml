@@ -16,10 +16,17 @@ jobs:
     strategy:
       matrix:
         project:
-          - MobileClient
-          - WebClient
-          - App
-          - MobileClient.Tests
+          - Client/MobileClient/MobileClient.csproj
+          - Client/WebClient/WebClient.csproj
+          - Server/App/App.csproj
+          - UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj
+          - UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj
+          - UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj
+        target:
+          - net8.0-android
+          - net8.0
+          - net8.0
+          - net8.0
 
     steps:
       # Checkout the code
@@ -44,21 +51,15 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: |
-            dotnet restore Client/MobileClient/MobileClient.csproj
-            dotnet restore Client/WebClient/WebClient.csproj
-            dotnet restore Server/App/App.csproj
-            dotnet restore MobileClient.Tests/MobileClient.Tests.csproj
+            dotnet restore ${{ matrix.project }}
 
       # Build the project
       - name: Build ${{ matrix.project }}
         run: |
-            dotnet build Client/MobileClient/MobileClient.csproj --no-restore --configuration Release -f net8.0-android
-            dotnet build Client/WebClient/WebClient.csproj --no-restore --configuration Release -f net8.0
-            dotnet build Server/App/App.csproj --no-restore --configuration Release
-            dotnet build MobileClient.Tests/MobileClient.Tests.csproj --no-restore --configuration Release
+            dotnet build ${{ matrix.project }} --no-restore --configuration Release -f ${{ matrix.target }}
       # Run tests
       - name: Run tests
-        run: dotnet test MobileClient.Tests/MobileClient.Tests.csproj --no-build --verbosity normal --configuration Release
+        run: dotnet test ${{ matrix.project }} --no-build --verbosity normal --configuration Release
 
   # test:
   #   needs: restore-and-build
