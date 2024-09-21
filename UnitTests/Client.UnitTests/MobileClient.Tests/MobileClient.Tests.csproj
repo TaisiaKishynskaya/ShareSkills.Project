@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\MobileClient\MobileClient.csproj" />
+    <ProjectReference Include="..\..\..\Client\MobileClient\MobileClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>
