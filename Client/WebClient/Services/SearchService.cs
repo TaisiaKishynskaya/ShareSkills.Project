@@ -1,3 +1,5 @@
+using Microsoft.JSInterop;
+using System.Net.Http.Json;
 namespace WebClient.Services;
 
 public class SearchService
