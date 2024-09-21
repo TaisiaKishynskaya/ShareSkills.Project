@@ -1,22 +1,27 @@
+using MobileClient.Services;
+using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace MobileClient.Services;
 
-public class CalendarService
+public class CalendarService : ICalendarService
 {
     private readonly HttpClient _httpClient;
+    private readonly IPreferencesService _preferencesService;
 
-    public CalendarService(HttpClient httpClient)
+    public CalendarService(HttpClient httpClient, IPreferencesService preferences)
     {
         _httpClient = httpClient;
+        _preferencesService = preferences;
     }
 
     public async Task<List<Meeting>?> UpdateCalendar()
     {
         try
         {
-            System.Diagnostics.Debug.Print("jwt: " + Preferences.Get("jwt", string.Empty));
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Preferences.Get("jwt", string.Empty));
+            System.Diagnostics.Debug.Print("jwt: " + _preferencesService.Get("jwt", string.Empty));
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
             var response = await _httpClient.GetAsync("http://localhost:5115/meetings");
             System.Diagnostics.Debug.Print("update response " + " " + response.StatusCode + await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
@@ -37,7 +42,7 @@ public class CalendarService
         }
     }
 
-    private async Task<string?> GetIdByEmail(string email)
+    public async Task<string?> GetIdByEmail(string email)
     {
         Console.WriteLine(email);
         try
@@ -71,7 +76,7 @@ public class CalendarService
         {
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-            ownerId = Preferences.Get("userId", string.Empty),
+            ownerId = _preferencesService.Get("userId", string.Empty),
             foreignId = id
         };
 

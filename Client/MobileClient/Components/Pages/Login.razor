@@ -3,7 +3,7 @@
 @layout NoMenuLayout
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
-@inject AuthService AuthService
+@inject IAuthService AuthService
 
 <div class="main">
     <h1>Skills Share</h1>
@@ -52,7 +52,7 @@
         }
     }
 
-    private async Task UserLogin()
+    public async Task UserLogin()
     {
         if (await AuthService.UserLogin(email, password))
         {
