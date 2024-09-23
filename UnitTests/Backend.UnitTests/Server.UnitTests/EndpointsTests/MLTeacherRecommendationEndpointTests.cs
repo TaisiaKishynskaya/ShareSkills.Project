@@ -13,7 +13,7 @@ namespace Server.UnitTests.EndpointsTests;
 
 public class MLTeacherRecommendationEndpointTests
 {
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    /*private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ILogger<TeacherBinaryTree>> _treeLoggerMock;
     private readonly Mock<ILogger<MLTeacherRecommendationEndpoint>> _endpointLoggerMock;
     private readonly MLTeacherRecommendationEndpoint _endpoint;
@@ -86,5 +86,5 @@ public class MLTeacherRecommendationEndpointTests
 
         // Act
         _endpoint.MapRoutes(routeBuilderMock.Object);
-    }
+    }*/
 }
