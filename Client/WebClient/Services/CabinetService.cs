@@ -1,3 +1,6 @@
+using Microsoft.JSInterop;
+using System.Net.Http.Json;
+using System.Text.Json;
 namespace WebClient.Services;
 
 public class CabinetService

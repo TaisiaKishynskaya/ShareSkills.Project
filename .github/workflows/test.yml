@@ -1,0 +1,77 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches:
+      - main
+      - '**/feature/*'
+  pull_request:
+    branches:
+      - main
+      - '**/feature/*'
+
+jobs:
+  restore-and-build-and-test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - {project: Client/MobileClient/MobileClient.csproj, target: net8.0-android}
+          - {project: Client/WebClient/WebClient.csproj, target: net8.0}
+          - {project: Server/App/App.csproj, target: net8.0}
+          - {project: UnitTests/Client.UnitTests/MobileClient.Tests/MobileClient.Tests.csproj, target: net8.0}
+          - {project: UnitTests/Backend.UnitTests/Server.UnitTests/Server.UnitTests.csproj, target: net8.0}
+          - {project: UnitTests/Backend.UnitTests/Libraries.UnitTests/Libraries.UnitTests.csproj, target: net8.0}
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Setup .NET Core SDK
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      # Cache NuGet packages
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+            dotnet restore ${{ matrix.project.project }}
+
+      # Build the project
+      - name: Build ${{ matrix.project.project }}
+        run: |
+            dotnet build ${{ matrix.project.project }} --no-restore --configuration Release -f ${{ matrix.project.target }}
+      # Run tests
+      - name: Run tests
+        run: dotnet test ${{ matrix.project.project }} --no-build --verbosity normal --configuration Release
+
+  # test:
+  #   needs: restore-and-build
+  #   runs-on: windows-latest
+
+  #   steps:
+  #     Checkout the code
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     #Setup .NET Core SDK
+  #     - name: Setup .NET Core SDK
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: '7.x'
+
+  #     #Run tests
+  #     - name: Run tests
+  #       run: dotnet test --no-build --verbosity normal --configuration Release
