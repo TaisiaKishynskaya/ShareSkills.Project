@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using Libraries.Configurations;
+﻿using Libraries.Configurations;
 using Libraries.Entities.Concrete;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Libraries.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<UserEntity, RoleEntity, Guid>
 {
-	public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+	public AppDbContext(DbContextOptions<AppDbContext> options)  : base(options)
 	{
 	}
 	

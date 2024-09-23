@@ -1,5 +1,7 @@
 using App.Infrastructure.Configurations;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
+using Libraries.Data;
+using Libraries.Entities.Concrete;
 
 //TODO: Need refactoring, add validation for registration
 namespace App;
@@ -13,6 +15,10 @@ internal class Program
         AuthenticationConfiguration.ConfigureAuthentication(builder);
         AuthorizationConfiguration.ConfigureAuthorization(builder); 
 
+        // add identity and opt-in to endpoints
+        builder.Services.AddIdentityCore<UserEntity>()
+            .AddEntityFrameworkStores<AppDbContext>();
+        
         builder.Services.AddSwagger(builder.Configuration); 
         
         PolicyConfiguration.ConfigureCors(builder);

@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Libraries.Entities.Concrete;
 
-public class RoleEntity
+public class RoleEntity : IdentityRole<Guid>
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
