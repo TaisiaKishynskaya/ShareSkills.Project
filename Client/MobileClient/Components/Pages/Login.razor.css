@@ -2,7 +2,7 @@
     background: linear-gradient(180deg, rgba(6,210,255,1) 0%, rgba(227,227,227,1) 100%);
     font-family: "Marmelad";
     padding-top: 60px;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 h1 {
