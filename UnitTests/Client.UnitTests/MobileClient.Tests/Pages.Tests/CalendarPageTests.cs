@@ -103,6 +103,32 @@ namespace MobileClient.Tests.Pages.Tests
         }
 
         [Fact]
+        public async Task ShouldNotAddMeeting_WhenFieldsEmpty()
+        {
+            // Arrange
+            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("90c08b8a-fa4c-445e-9f66-717bf2bfcf72"); // Simulate teacher role
+            mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(true); // Mock successful meeting creation
+
+            var component = RenderComponent<Calendar>();
+
+            // Act: Click the plus button to show the dialog
+            component.Find("div.plus-button").Click();
+
+            // Fill out the form fields
+            component.Find("input[placeholder='Email']").Change("test@example.com");
+            //component.Find("input[placeholder='Title']").Change(null);
+            component.Find("input[type='datetime-local']").Change(DateTime.Now.ToString("yyyy-MM-ddTHH:mm"));
+
+            // Submit the form
+            component.Find("button:contains('Create')").Click();
+
+            // Assert that the meeting was added
+            mockCalendarService.Verify(x => x.AddMeeting(It.IsAny<DateTime>(), "test@example.com", "New Meeting"), Times.Never);
+            component.Find("p.error").MarkupMatches("<p class=\"error\">all fields must be filled in</p>");
+        }
+
+        [Fact]
         public void ShouldNavigateToLessonDetails_WhenLessonIsClicked()
         {
             // Arrange

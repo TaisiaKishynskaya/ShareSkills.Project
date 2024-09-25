@@ -75,14 +75,42 @@ namespace MobileClient.Tests.Pages.Tests
             cut.Find("button.feedback").Click();
 
             // Act - Simulate user input
-            var nameInput = cut.Find("input[placeholder='Name']");
-            nameInput.Change("Jane");
+            cut.Find("input[placeholder='Name']").Change("Jane");
+            cut.Find("input[placeholder='Surname']").Change("White");
+            cut.Find("input[placeholder='Email']").Change("Jane@gmail.com");
+            cut.Find("input[placeholder='Password']").Change("Jane123");
 
             var button = cut.Find("button.next-btn");
             button.Click();
 
             // Assert
             mockCabinetService.Verify(service => service.ChangeInfo(It.Is<User>(u => u.Name == "Jane"), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ShouldNot_Change_Profile_Info_IfFieldsUnfilled()
+        {
+            // Arrange
+            var user = new User { Name = "John", Surname = "Doe", Email = "john.doe@example.com" };
+
+            mockCabinetService.Setup(service => service.GetUser()).ReturnsAsync(user);
+            mockCabinetService.Setup(service => service.ChangeInfo(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
+
+            var cut = RenderComponent<Cabinet>();
+            cut.Find("button.feedback").Click();
+
+            // Act - Simulate user input
+            cut.Find("input[placeholder='Name']").Change("Jane");
+            cut.Find("input[placeholder='Surname']").Change("");
+            cut.Find("input[placeholder='Email']").Change("Jane@gmail.com");
+            cut.Find("input[placeholder='Password']").Change("");
+
+            var button = cut.Find("button.next-btn");
+            button.Click();
+
+            // Assert
+            mockCabinetService.Verify(service => service.ChangeInfo(It.Is<User>(u => u.Name == "Jane"), It.IsAny<string>()), Times.Never);
+            cut.Find("p.error").MarkupMatches("<p class=\"error\">all field must be filed in</p>");
         }
 
         [Fact]
