@@ -11,6 +11,8 @@ namespace MobileClient.Tests.Pages.Tests
     {
         private Mock<ICalendarService> mockCalendarService;
         private Mock<IPreferencesService> mockPreferencesService;
+        DateTime startDate;
+        DateTime endDate;
 
         public CalendarPageTests()
         {
@@ -18,6 +20,8 @@ namespace MobileClient.Tests.Pages.Tests
             mockPreferencesService = new Mock<IPreferencesService>();
             Services.AddSingleton<ICalendarService>(mockCalendarService.Object);
             Services.AddSingleton<IPreferencesService>(mockPreferencesService.Object);
+            startDate = DateTime.Now.Date;
+            endDate = startDate.AddDays(7).Date;
         }
 
         [Fact]
@@ -38,13 +42,13 @@ namespace MobileClient.Tests.Pages.Tests
             var component = RenderComponent<Calendar>();
 
             // Simulate the initial load of meetings for the current week
-            mockCalendarService.Setup(x => x.UpdateCalendar()).ReturnsAsync(new List<Meeting>());
+            mockCalendarService.Setup(x => x.UpdateCalendar(It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(new List<Meeting>());
 
             // Act: Click the Next Week button
             component.Find("button:contains('Next Week')").Click();
 
             // Assert that the method to load the next week was called
-            mockCalendarService.Verify(x => x.UpdateCalendar(), Times.AtLeastOnce);
+            mockCalendarService.Verify(x => x.UpdateCalendar(It.IsAny<DateTime>(), It.IsAny<DateTime>()), Times.AtLeastOnce);
         }
 
         [Fact]
@@ -54,13 +58,13 @@ namespace MobileClient.Tests.Pages.Tests
             var component = RenderComponent<Calendar>();
 
             // Simulate the initial load of meetings for the current week
-            mockCalendarService.Setup(x => x.UpdateCalendar()).ReturnsAsync(new List<Meeting>());
+            mockCalendarService.Setup(x => x.UpdateCalendar(It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(new List<Meeting>());
 
             // Act: Click the Previous Week button
             component.Find("button:contains('Previous Week')").Click();
 
             // Assert that the method to load the previous week was called
-            mockCalendarService.Verify(x => x.UpdateCalendar(), Times.AtLeastOnce);
+            mockCalendarService.Verify(x => x.UpdateCalendar(It.IsAny<DateTime>(), It.IsAny<DateTime>()), Times.AtLeastOnce);
         }
 
         [Fact]
@@ -137,7 +141,7 @@ namespace MobileClient.Tests.Pages.Tests
             var OwnerId = Guid.NewGuid();
             var navMan = Services.GetRequiredService<FakeNavigationManager>();
             mockPreferencesService.Setup(x => x.Get("userId", string.Empty)).Returns(ForeignId.ToString());
-            mockCalendarService.Setup(x => x.UpdateCalendar()).ReturnsAsync(new List<Meeting>
+            mockCalendarService.Setup(x => x.UpdateCalendar(It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(new List<Meeting>
             {
                 new Meeting { Id = meetingId, Name = "Test Lesson", DateTime = DateTime.Now, Description="desc", ForeignId=ForeignId, OwnerId=OwnerId }
             });
