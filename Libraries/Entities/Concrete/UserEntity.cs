@@ -1,12 +1,10 @@
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
 namespace Libraries.Entities.Concrete;
 
-public class UserEntity : IdentityUser<Guid>
+public class UserEntity
 {
-    public  Guid Id { get; set; }
+    public required Guid Id { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
     public string Email { get; set; }

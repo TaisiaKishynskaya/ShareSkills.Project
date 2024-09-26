@@ -12,6 +12,9 @@ public static class PolicyConfiguration
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials(); // This is needed to allow cookies
+                /*builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();*/
             });
         });
     }
