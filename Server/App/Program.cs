@@ -2,8 +2,9 @@ using App.Infrastructure.Configurations;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
 using Libraries.Data;
 using Libraries.Entities.Concrete;
+using Microsoft.AspNetCore.Identity;
 
-//TODO: Need refactoring, add validation for registration
+//TODO: Need refactoring
 namespace App;
 
 internal class Program
@@ -16,8 +17,7 @@ internal class Program
         AuthorizationConfiguration.ConfigureAuthorization(builder); 
 
         // add identity and opt-in to endpoints
-        builder.Services.AddIdentityCore<UserEntity>()
-            .AddEntityFrameworkStores<AppDbContext>();
+        //builder.Services.AddIdentityCore<UserEntity>().AddEntityFrameworkStores<AppDbContext>().AddApiEndpoints();
         
         builder.Services.AddSwagger(builder.Configuration); 
         
@@ -46,6 +46,9 @@ internal class Program
         
         DatabaseConfiguration.SeedDatabase(app);
     
+        // create routes for the identity endpoints
+        //app.MapIdentityApi<UserEntity>();
+        
         app.Run();
     }
 }

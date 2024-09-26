@@ -6,11 +6,12 @@ public static class PolicyConfiguration
     {
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", builder =>
-            {
-                builder.AllowAnyOrigin()
+            options.AddPolicy("AllowAll", builder => 
+            { 
+                builder.WithOrigins("https://localhost:7281") // Update this with your Swagger domain
+                    .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowCredentials(); // This is needed to allow cookies
             });
         });
     }

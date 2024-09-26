@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -25,9 +26,12 @@ public static class AuthenticationConfiguration
         
         builder.Services.AddAuthentication(options =>
             {
+                // Устанавливаем JWT как основную схему аутентификации
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
+                
+                // Добавляем схему для работы с куки
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
             })
             .AddJwtBearer(options =>
             {
@@ -42,10 +46,26 @@ public static class AuthenticationConfiguration
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 };
             })
-            .AddCookie(IdentityConstants.ApplicationScheme, options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                // Настройки Cookie
+                options.LoginPath = "/login"; // Путь для перенаправления при необходимости входа
+                options.Cookie.Name = "YourAppCookie"; // Название куки
+                options.Cookie.HttpOnly = true; // Защита от XSS
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Использовать только через HTTPS
             });
-
     }
 }
+
+/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateActor = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            };
+        });*/

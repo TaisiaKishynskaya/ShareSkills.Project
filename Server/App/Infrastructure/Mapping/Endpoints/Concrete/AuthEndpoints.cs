@@ -5,6 +5,8 @@ using App.Infrastructure.Mapping.Endpoints.Abstract;
 using App.Services.Abstract;
 using FluentValidation;
 using Libraries.Contracts.User;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -45,7 +47,7 @@ public class AuthEndpoints : IMinimalEndpoint
             return Results.Ok(userId);
         });
         
-        routeBuilder.MapPost("/login", async (IUserService userService, IConfiguration configuration, string email, string password) =>
+        routeBuilder.MapPost("/login", async (IUserService userService, IConfiguration configuration, HttpContext httpContext, string email, string password) =>
         {
             var user = await userService.GetByEmailAsync(email);
 
@@ -88,6 +90,13 @@ public class AuthEndpoints : IMinimalEndpoint
             );
             
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            
+            // Create Cookie Authentication after successful login
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            // Sign in with cookie
+            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
             
             return Results.Ok(new { Token = tokenString, UserId = user.Id });
         });
