@@ -50,7 +50,7 @@ namespace MobileClient.Tests.Service.Tests
         }
 
         [Fact]
-        public async Task Register_ShouldReturnTrue_WhenSuccessful()
+        public async Task Register_ShouldReturnSuccesfulValidationResponse_WhenSuccessful()
         {
             // Arrange
             var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
@@ -65,17 +65,24 @@ namespace MobileClient.Tests.Service.Tests
             var result = await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123");
 
             // Assert
-            Assert.True(result);
+            Assert.True(result.Succesful);
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         }
 
         [Fact]
-        public async Task Register_ShouldReturnFalse_WhenUnsuccessful()
+        public async Task Register_ShouldReturnUnsuccesfulValidationResponse_WithErrors_WhenUnsuccessful()
         {
             // Arrange
             var expectedResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)
             {
-                
+                Content = JsonContent.Create(new ValidationResponse()
+                {
+                    Succesful = false,
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        { "Name", new List<string> { "name error" } }
+                    }
+                })
             };
             mockHttpMessageHandler
                 .When(HttpMethod.Post, "http://localhost:5115/register")
@@ -85,7 +92,25 @@ namespace MobileClient.Tests.Service.Tests
             var result = await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123");
 
             // Assert
-            Assert.False(result);
+            Assert.False(result.Succesful);
+            Assert.Equal("name error", result.Errors["Name"][0]);
+            mockHttpMessageHandler.VerifyNoOutstandingExpectation();
+        }
+
+        [Fact]
+        public async Task Register_ShouldReturnUnsuccesfulValidationResponse_WithoutErrors_WhenThrowError()
+        {
+            // Arrange
+            mockHttpMessageHandler
+                .When(HttpMethod.Post, "http://localhost:5115/register")
+                .Respond(req => throw new Exception());
+
+            // Act
+            var result = await authService.Register(true, "John", "Doe", "john.doe@example.com", "Password123");
+
+            // Assert
+            Assert.False(result.Succesful);
+            Assert.Null(result.Errors);
             mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         }
 
