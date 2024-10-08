@@ -7,6 +7,8 @@ using FluentValidation;
 using Libraries.Contracts.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -51,14 +53,11 @@ public class AuthEndpoints : IMinimalEndpoint
             {
                 return await LoginWithCookies(httpContext, userService);
             }
-            else
-            {
-                return await LoginWithJwt(userService, configuration, httpContext, email, password);
-            }
+
+            return await LoginWithJwt(userService, configuration, httpContext, email, password);
         });
 
-        // Метод для логина через JWT
-        async Task<IResult> LoginWithJwt(IUserService userService, IConfiguration configuration, HttpContext httpContext, string? email, string? password)
+        async Task<IResult> LoginWithJwt(IUserService userService, IConfiguration configuration, HttpContext httpContext, string email, string password)
         {
             var user = await userService.GetByEmailAsync(email);
 
@@ -89,7 +88,6 @@ public class AuthEndpoints : IMinimalEndpoint
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
-            // Генерация JWT-токена
             var token = new JwtSecurityToken(
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
@@ -116,22 +114,17 @@ public class AuthEndpoints : IMinimalEndpoint
             if (httpContext.User.Identity != null)
             {
                 var isAuthenticated = httpContext.User.Identity.IsAuthenticated;
-                // Логирование для отладки
                 Console.WriteLine($"User.Identity: {httpContext.User.Identity.Name}, IsAuthenticated: {isAuthenticated}");
 
-                // Логика для проверки состояния
                 if (isAuthenticated)
                 {
-                    // Получение email из клеймов
                     var email = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-                    // Получение пользователя по email
+                    
                     var user = await userService.GetByEmailAsync(email);
 
-                    if (user is not null)
-                    {
-                        return Results.Ok(new { Message = "Logged in with cookies", UserId = user.Id });
-                    }
-                    return Results.NotFound("User not found");
+                    return user is not null 
+                        ? Results.Ok(new { Message = "Logged in with cookies", UserId = user.Id }) 
+                        : Results.NotFound("User not found");
                 }
 
                 return Results.BadRequest("User is not authenticated with cookies.");
@@ -142,17 +135,14 @@ public class AuthEndpoints : IMinimalEndpoint
 
 
 
-        routeBuilder.MapGet("/dashboard", async (HttpContext httpContext) =>
+        routeBuilder.MapGet("/dashboard", 
+            [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
+            async (HttpContext httpContext) =>
         {
             // Проверяем, аутентифицирован ли пользователь через куки
-            if (httpContext.User.Identity.IsAuthenticated)
-            {
-                return Results.Ok(new { Message = "Welcome back, you are logged in with cookies!" });
-            }
-            else
-            {
-                return Results.Unauthorized();
-            }
+            return httpContext.User.Identity.IsAuthenticated 
+                ? Results.Ok(new { Message = "Welcome back, you are logged in with cookies!" }) 
+                : Results.Unauthorized();
         });
     }
 }
