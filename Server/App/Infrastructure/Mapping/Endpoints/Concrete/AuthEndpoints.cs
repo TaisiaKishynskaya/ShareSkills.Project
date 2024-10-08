@@ -7,8 +7,6 @@ using FluentValidation;
 using Libraries.Contracts.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -47,7 +45,20 @@ public class AuthEndpoints : IMinimalEndpoint
             return Results.Ok(userId);
         });
         
-        routeBuilder.MapPost("/login", async (IUserService userService, IConfiguration configuration, HttpContext httpContext, string email, string password) =>
+        routeBuilder.MapPost("/login", async (IUserService userService, IConfiguration configuration, HttpContext httpContext, string? email, string? password, bool authMethodCookie) =>
+        {
+            if (authMethodCookie)
+            {
+                return await LoginWithCookies(httpContext, userService);
+            }
+            else
+            {
+                return await LoginWithJwt(userService, configuration, httpContext, email, password);
+            }
+        });
+
+        // Метод для логина через JWT
+        async Task<IResult> LoginWithJwt(IUserService userService, IConfiguration configuration, HttpContext httpContext, string? email, string? password)
         {
             var user = await userService.GetByEmailAsync(email);
 
@@ -70,35 +81,78 @@ public class AuthEndpoints : IMinimalEndpoint
             {
                 return Results.BadRequest("Wrong password");
             }
-            
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Name), //TODO: claims should be extended
                 new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.Email, user.Email)
             };
 
-            var token = new JwtSecurityToken
-            (
+            // Генерация JWT-токена
+            var token = new JwtSecurityToken(
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(15), //TODO: should be changed
-                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddMinutes(15),
                 signingCredentials: new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
                     SecurityAlgorithms.HmacSha256)
             );
-            
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-            
-            // Create Cookie Authentication after successful login
+
+            // Сохранение куки для последующего входа
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            // Sign in with cookie
             await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
-            
+
             return Results.Ok(new { Token = tokenString, UserId = user.Id });
+        }
+
+        // Метод для логина через куки
+        async Task<IResult> LoginWithCookies(HttpContext httpContext, IUserService userService)
+        {
+            // Если куки уже установлены и валидны
+            if (httpContext.User.Identity != null)
+            {
+                var isAuthenticated = httpContext.User.Identity.IsAuthenticated;
+                // Логирование для отладки
+                Console.WriteLine($"User.Identity: {httpContext.User.Identity.Name}, IsAuthenticated: {isAuthenticated}");
+
+                // Логика для проверки состояния
+                if (isAuthenticated)
+                {
+                    // Получение email из клеймов
+                    var email = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+                    // Получение пользователя по email
+                    var user = await userService.GetByEmailAsync(email);
+
+                    if (user is not null)
+                    {
+                        return Results.Ok(new { Message = "Logged in with cookies", UserId = user.Id });
+                    }
+                    return Results.NotFound("User not found");
+                }
+
+                return Results.BadRequest("User is not authenticated with cookies.");
+            }
+
+            return Results.BadRequest("User identity is null.");
+        }
+
+
+
+        routeBuilder.MapGet("/dashboard", async (HttpContext httpContext) =>
+        {
+            // Проверяем, аутентифицирован ли пользователь через куки
+            if (httpContext.User.Identity.IsAuthenticated)
+            {
+                return Results.Ok(new { Message = "Welcome back, you are logged in with cookies!" });
+            }
+            else
+            {
+                return Results.Unauthorized();
+            }
         });
     }
 }

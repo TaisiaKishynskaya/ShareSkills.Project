@@ -11,12 +11,10 @@ public static class AuthenticationConfiguration
     {
         builder.Services.AddAuthentication(options =>
             {
-                // Устанавливаем JWT как основную схему аутентификации
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                
-                // Добавляем схему для работы с куки
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
+                // Default schemes
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Use cookies for sign-in
             })
             .AddJwtBearer(options =>
             {
@@ -37,6 +35,7 @@ public static class AuthenticationConfiguration
                 options.Cookie.Name = "ShareSkills_App_Cookie"; // Название куки
                 options.Cookie.HttpOnly = true; // Защита от XSS
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Использовать только через HTTPS
+                options.ExpireTimeSpan = TimeSpan.FromDays(30); // Кука действительна 30 дней
             });
     }
 }
