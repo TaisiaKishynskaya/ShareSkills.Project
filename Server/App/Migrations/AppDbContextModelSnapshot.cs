@@ -34,7 +34,7 @@ namespace App.Migrations
 
                     b.HasIndex("StudentsId");
 
-                    b.ToTable("GradeEntityStudentEntity", (string)null);
+                    b.ToTable("GradeEntityStudentEntity");
                 });
 
             modelBuilder.Entity("GradeEntityTeacherEntity", b =>
@@ -49,22 +49,7 @@ namespace App.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("GradeEntityTeacherEntity", (string)null);
-                });
-
-            modelBuilder.Entity("Libraries.Contracts.Skill.SkillDto", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Skill")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SkillDto", (string)null);
+                    b.ToTable("GradeEntityTeacherEntity");
                 });
 
             modelBuilder.Entity("Libraries.Entities.Concrete.ClassTimeEntity", b =>
@@ -248,8 +233,7 @@ namespace App.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -287,7 +271,7 @@ namespace App.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("SkillEntityUserEntity", (string)null);
+                    b.ToTable("SkillEntityUserEntity");
                 });
 
             modelBuilder.Entity("GradeEntityStudentEntity", b =>
@@ -356,7 +340,7 @@ namespace App.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Libraries.Contracts.Skill.SkillDto", "Skill")
+                    b.HasOne("Libraries.Entities.Concrete.SkillEntity", "Skill")
                         .WithMany()
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
