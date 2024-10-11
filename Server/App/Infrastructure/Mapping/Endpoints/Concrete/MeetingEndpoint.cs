@@ -62,12 +62,13 @@ public class MeetingEndpoint  : IMinimalEndpoint
             .WithOpenApi();
 
         routeBuilder.MapPut("/meetings/{id:guid}", 
-                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
-                {
-                    await servicem4.UpdateAsync(id, dto);
+            [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
+            async (Guid id, [FromBody] MeetingForUpdateDto dto, [FromServices] IMeetingService servicem4) =>
+            {
+                await servicem4.UpdateAsync(id, dto);
 
-                    return Results.NoContent();
-                })
+                return Results.NoContent();
+            })
             .WithOpenApi();
 
         routeBuilder.MapDelete("/meetings/{id:guid}", 
