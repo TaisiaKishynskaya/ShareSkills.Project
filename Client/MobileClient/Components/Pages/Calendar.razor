@@ -128,13 +128,13 @@
     @if (IsShowDialog)
     {
         <div class="dialog">
-            <svg @onclick="() => IsShowDialog=false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+            <svg @onclick="() => {IsShowDialog=false; isError = false;}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
             <input type="text" class="dialog-input" placeholder="Email" @bind="@Email">
             <input type="text" class="dialog-input" placeholder="Title" @bind = "@Title">
             <input type="datetime-local" class="dialog-input" placeholder="Date" @bind = "@Date">
             @if (isError)
             {
-                <p class="error">An error occurred</p>
+                <p class="error">@errorMessage</p>
             }
             <button class="next-btn" @onclick="AddMeeting">
                 Create
@@ -159,6 +159,7 @@
     private String Email;
     private String Title;
     private DateTime Date{get; set;} = DateTime.Now;
+    private string errorMessage;
     private bool IsShowDialog = false;
     private bool isError = false;
     private bool isTeacher;
@@ -192,15 +193,19 @@
 
     private async Task LoadMeetingsForCurrentWeek()
     {
-        var meetings = await CalendarService.UpdateCalendar();
-        System.Diagnostics.Debug.Print((meetings == null).ToString());
+        var meetings = await CalendarService.UpdateCalendar(currentWeekStartDate, currentWeekStartDate.AddDays(7));
+        var userId = Preferences.Get("userId", string.Empty);
         if (meetings != null)
         {
-            currentWeekEvents = meetings.Where(meeting =>
-                meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
-                (meeting.ForeignId.ToString() == Preferences.Get("userId", string.Empty) || meeting.OwnerId.ToString() == Preferences.Get("userId", string.Empty))
-            ).ToList();
+            currentWeekEvents = meetings.Where(meeting => meeting.ForeignId.ToString() == userId || meeting.OwnerId.ToString() == userId).ToList();
         }
+        // if (meetings != null)
+        // {
+        //     currentWeekEvents = meetings.Where(meeting =>
+        //         meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
+        //         (meeting.ForeignId.ToString() == Preferences.Get("userId", string.Empty) || meeting.OwnerId.ToString() == Preferences.Get("userId", string.Empty))
+        //     ).ToList();
+        // }
 
         PopulateDailyEvents();
     }
@@ -246,13 +251,19 @@
 
     private async Task AddMeeting()
     {
-        if (await CalendarService.AddMeeting(Date, Email, Title))
+        if (Email == null || Title == null || Date == null)
+        {
+            errorMessage = "all fields must be filled in";
+            isError = true;
+        }
+        else if (await CalendarService.AddMeeting(Date, Email, Title))
         {
             IsShowDialog = false;
             isError = false;
         }
         else
         {
+            errorMessage = "An error occurred";
             isError = true;
         }
     }

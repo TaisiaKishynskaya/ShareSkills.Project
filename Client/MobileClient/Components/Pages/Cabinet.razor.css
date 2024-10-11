@@ -115,3 +115,9 @@ hr {
   svg {
     width: 35px;
   }
+
+.error {
+    color: rgba(255, 0, 0, 0.5);
+    font-size: 0.7rem;
+    max-width: 80%;
+}

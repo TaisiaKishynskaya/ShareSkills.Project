@@ -24,13 +24,15 @@ namespace MobileClient.Tests.Service.Tests
         {
             var meetings = new List<Meeting>{ new Meeting { Id=new Guid(), Name="name", DateTime=DateTime.Now, Description="desc", OwnerId= new Guid(), ForeignId= new Guid() }};
             var expectedResponseJson = JsonContent.Create(meetings);
+            var startDate = DateTime.Now.Date;
+            var endDate = startDate.AddDays(7).Date;
             mockHttpMessageHandler
-                .When(HttpMethod.Get, $"{fakeBaseAddres}/meetings")
+                .When(HttpMethod.Get, $"{fakeBaseAddres}/meetings/{startDate.ToString("MM-dd-yyyy")}/{endDate.ToString("MM-dd-yyyy")}")
                 .Respond(req => new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = JsonContent.Create(meetings)
                 });
-            var response = await _calendarService.UpdateCalendar();
+            var response = await _calendarService.UpdateCalendar(startDate, endDate);
             var expectedResponse = await expectedResponseJson.ReadFromJsonAsync<List<Meeting>>();
             Assert.Equal(JsonConvert.SerializeObject(expectedResponse), JsonConvert.SerializeObject(response));
         }
@@ -43,7 +45,9 @@ namespace MobileClient.Tests.Service.Tests
                 .Respond(req => new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
                 });
-            var response = await _calendarService.UpdateCalendar();
+            var startDate = DateTime.Now.Date;
+            var endDate = startDate.AddDays(7).Date;
+            var response = await _calendarService.UpdateCalendar(startDate, endDate);
             Assert.Null(response);
         }
 

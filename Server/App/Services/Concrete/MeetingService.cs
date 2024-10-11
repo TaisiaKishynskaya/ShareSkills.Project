@@ -70,6 +70,28 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
         return meetingsDtos;
     }
 
+    public async Task<IEnumerable<MeetingDto>> GetAllByWeekAsync(DateTime startOfWeek, DateTime endOfWeek, CancellationToken cancellationToken = default)
+    {
+        var meetings = await unitOfWork.MeetingRepository
+            .GetAllAsync(cancellationToken);
+
+        var filteredMeetings = meetings
+            .Where(m => m.DateTime >= startOfWeek && m.DateTime <= endOfWeek);
+
+        var meetingsDtos = filteredMeetings.Select(entity => new MeetingDto
+        {
+            Id = entity.Id,
+            OwnerId = entity.OwnerId,
+            ForeignId = entity.ForeignId,
+            DateTime = entity.DateTime,
+            Description = entity.Description,
+            Name = entity.Name
+        });
+
+        return meetingsDtos;
+    }
+    
+    
     public async Task<MeetingDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var meeting = await unitOfWork.MeetingRepository
