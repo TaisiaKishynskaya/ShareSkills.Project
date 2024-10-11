@@ -36,6 +36,9 @@ public static class AuthenticationConfiguration
                 options.Cookie.HttpOnly = true; // Защита от XSS
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Использовать только через HTTPS
                 options.ExpireTimeSpan = TimeSpan.FromDays(30); // Кука действительна 30 дней
+                
+                // Явно указываем срок жизни куки на стороне клиента
+                options.Cookie.MaxAge = options.ExpireTimeSpan; // Эквивалентно 30 дням
             });
     }
 }
