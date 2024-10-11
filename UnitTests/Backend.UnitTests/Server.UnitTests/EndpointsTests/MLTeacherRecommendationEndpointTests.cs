@@ -87,4 +87,3 @@ public class MLTeacherRecommendationEndpointTests
         // Act
         _endpoint.MapRoutes(routeBuilderMock.Object);
     }*/
-}

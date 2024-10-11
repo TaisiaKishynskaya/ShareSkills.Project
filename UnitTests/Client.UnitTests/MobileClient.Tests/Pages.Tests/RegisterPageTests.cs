@@ -38,7 +38,14 @@ namespace MobileClient.Tests.Pages.Tests
         {
             // Arrange
             mockAuthService.Setup(x => x.Register(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
+                .ReturnsAsync(new ValidationResponse()
+                {
+                    Succesful = false,
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        { "Name", new List<string> { "name error" } }
+                    }
+                });
             var component = RenderComponent<Registration>();
 
             // Act
@@ -49,7 +56,7 @@ namespace MobileClient.Tests.Pages.Tests
             await component.Find("button").ClickAsync(null);
 
             // Assert
-            component.Find("p[class='error']").MarkupMatches("<p class=\"error\">An error occurred</p>");
+            component.Find("p[class='error']").MarkupMatches("<p class=\"error\">name error</p>");
         }
 
         [Fact]
@@ -57,7 +64,11 @@ namespace MobileClient.Tests.Pages.Tests
         {
             // Arrange
             mockAuthService.Setup(x => x.Register(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(new ValidationResponse()
+                {
+                    Succesful = true,
+                    Errors = null
+                });
             var navMan = Services.GetRequiredService<FakeNavigationManager>();
             var component = RenderComponent<Registration>();
 
@@ -80,7 +91,7 @@ namespace MobileClient.Tests.Pages.Tests
         {
             // Arrange
             mockAuthService.Setup(x => x.Register(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(true);
+                .ReturnsAsync(new ValidationResponse() { Succesful = true, Errors = null });
             var navMan = Services.GetRequiredService<FakeNavigationManager>();
             var component = RenderComponent<Registration>();
 

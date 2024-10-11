@@ -52,7 +52,7 @@ public class AuthService : IAuthService
         }
     }
 
-    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, String Email, string Password)
+    public async Task<ValidationResponse> Register(bool IsTeacher, string Name, string Surname, String Email, string Password)
     {
         var Role = IsTeacher ? "teacher" : "student";
         var requestData = new
@@ -71,18 +71,19 @@ public class AuthService : IAuthService
                 _preferencesService.Set("userId", userId);
                 Console.WriteLine(userId);
                 await UserLogin(Email, Password);
-                return true;
+                return new ValidationResponse() { Succesful=true, Errors=null};
             }
             else
             {
                 System.Diagnostics.Debug.Print("status: "+response.StatusCode.ToString());
-                return false;
+                var errors = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+                return new ValidationResponse() { Succesful = false, Errors = errors.Errors };
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.Print("error: " + ex.StackTrace);
-            return false;
+            return new ValidationResponse() { Succesful = false, Errors = null };
         }
     }
 
@@ -177,4 +178,18 @@ public class Skill
 {
     public string id {get; set;}
     public string skill {get; set;}
+}
+
+public class ValidationResponse
+{
+    public bool Succesful { get; set; }
+    public Dictionary<string, List<string>>? Errors { get; set; }
+}
+
+public class ValidationErrorResponse
+{
+    public string Type { get; set; }
+    public string Title { get; set; }
+    public int Status { get; set; }
+    public Dictionary<string, List<string>> Errors { get; set; }
 }

@@ -16,13 +16,13 @@ public class CalendarService : ICalendarService
         _preferencesService = preferences;
     }
 
-    public async Task<List<Meeting>?> UpdateCalendar()
+    public async Task<List<Meeting>?> UpdateCalendar(DateTime startDate, DateTime endDate)
     {
         try
         {
             System.Diagnostics.Debug.Print("jwt: " + _preferencesService.Get("jwt", string.Empty));
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
-            var response = await _httpClient.GetAsync("http://localhost:5115/meetings");
+            var response = await _httpClient.GetAsync($"http://localhost:5115/meetings/{startDate.ToString("MM-dd-yyyy")}/{endDate.ToString("MM-dd-yyyy")}");
             System.Diagnostics.Debug.Print("update response " + " " + response.StatusCode + await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {

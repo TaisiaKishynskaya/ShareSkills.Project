@@ -14,11 +14,21 @@ public class MeetingEndpoint  : IMinimalEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapGet("/meetings", 
+        routeBuilder.MapGet("/meetings",
                 [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
                 async ([FromServices]IMeetingService servicem1) => 
                 {
                     var meeting = await servicem1.GetAllAsync();
+
+                    return Results.Ok(meeting);
+                })
+            .WithOpenApi();
+        
+        routeBuilder.MapGet("/meetings/{startOfWeek:datetime}/{endOfWeek:datetime}", 
+                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                async (DateTime startOfWeek, DateTime endOfWeek, [FromServices]IMeetingService servicem1) => 
+                {
+                    var meeting = await servicem1.GetAllByWeekAsync(startOfWeek, endOfWeek);
 
                     return Results.Ok(meeting);
                 })
@@ -53,7 +63,6 @@ public class MeetingEndpoint  : IMinimalEndpoint
 
         routeBuilder.MapPut("/meetings/{id:guid}", 
                 [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
-                async (Guid id, [FromBody]MeetingForUpdateDto dto, [FromServices]IMeetingService servicem4) => 
                 {
                     await servicem4.UpdateAsync(id, dto);
 
