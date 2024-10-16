@@ -166,5 +166,24 @@ namespace MobileClient.Tests.Pages.Tests
                 Assert.NotNull(cut.FindAll("button.feedback").FirstOrDefault(btn => btn.TextContent.Contains("Leave feedback")));
             }
         }
+
+        [Fact]
+        public async Task Should_Change_UserAllowCookies()
+        {
+            var expectedUser = new User
+            {
+                Name = "John",
+                Surname = "Doe",
+                Email = "john@example.com",
+                PasswordHash = "passwordhash"
+            };
+            mockCabinetService.Setup(service => service.GetUser()).ReturnsAsync(expectedUser);
+            mockPreferencesService.Setup(s => s.Get("allowCookies", string.Empty)).Returns("false");
+            var component = RenderComponent<Cabinet>();
+            component.Find(".switch input").Change(true);
+            mockPreferencesService.Verify(s => s.Set("allowCookies", "true"));
+            component.Find(".switch input").Change(false);
+            mockPreferencesService.Verify(s => s.Set("allowCookies", "false"));
+        }
     }
 }

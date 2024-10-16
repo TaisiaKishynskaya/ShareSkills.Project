@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MobileClient.Services;
+using System.Net;
 
 namespace MobileClient
 {
@@ -16,9 +17,25 @@ namespace MobileClient
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler
+            {
+                CookieContainer = cookieContainer, // Управляем куки
+                UseCookies = true,
+                AllowAutoRedirect = true
+            };
+
+            // Регистрируем HttpClientHandler как singleton, чтобы использовать один экземпляр
+            builder.Services.AddSingleton(handler);
+
+            // Регистрируем HttpClient, используя тот же handler
+            builder.Services.AddHttpClient<AuthService>(client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:5115/");
+            }).ConfigurePrimaryHttpMessageHandler(() => handler);
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
             

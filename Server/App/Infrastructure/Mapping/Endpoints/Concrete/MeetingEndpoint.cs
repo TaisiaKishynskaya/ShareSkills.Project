@@ -25,7 +25,7 @@ public class MeetingEndpoint  : IMinimalEndpoint
             .WithOpenApi();
         
         routeBuilder.MapGet("/meetings/{startOfWeek:datetime}/{endOfWeek:datetime}", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
                 async (DateTime startOfWeek, DateTime endOfWeek, [FromServices]IMeetingService servicem1) => 
                 {
                     var meeting = await servicem1.GetAllByWeekAsync(startOfWeek, endOfWeek);

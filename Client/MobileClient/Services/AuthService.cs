@@ -1,5 +1,6 @@
 using MobileClient.Services;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 
@@ -21,19 +22,51 @@ public class AuthService : IAuthService
 
     public async Task<bool> UserLogin(string email, string password)
     {
-
+        await GetCookies();
         try {
-            Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
-            var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
-            Console.WriteLine(response);
+            System.Diagnostics.Debug.Print("headers from login method:");
+            foreach (var header in _httpClient.DefaultRequestHeaders)
+            {
+                System.Diagnostics.Debug.Print($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
+            System.Diagnostics.Debug.Print("isCookie: "+_httpClient.DefaultRequestHeaders.Contains("Cookie").ToString());
+            HttpResponseMessage ? response = null;
+            if (!_httpClient.DefaultRequestHeaders.Contains("Cookie"))
+            {
+                System.Diagnostics.Debug.Print("login with jwt");
+                response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=false", new { });
+            }
+            else
+            {
+                System.Diagnostics.Debug.Print("login with cookie");
+                response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=true", new { });
+            }
+            System.Diagnostics.Debug.Print("response headers: "+response.Headers);
             if (response.IsSuccessStatusCode)
             {
                 authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                System.Diagnostics.Debug.Print("userid: "+authResponse.userId);
                 _preferencesService.Set("userId", authResponse.userId);
 
                 // Preferences for saving data
-                _preferencesService.Set("jwt", authResponse.token);
                 Console.WriteLine("jwt: " + _preferencesService.Get("jwt", string.Empty));
+
+                if (_preferencesService.Get("allowCookies", String.Empty)=="true" && response.Headers.TryGetValues("Set-Cookie", out var cookieHeaders))
+                {
+                    string cookie = cookieHeaders.FirstOrDefault();
+                    if (cookie != null)
+                    {
+                        // Сохраняем куки
+                        _httpClient.DefaultRequestHeaders.Add("Cookie", cookie);
+                        _preferencesService.Set("cookie", cookie);
+                        System.Diagnostics.Debug.Print("Saved Cookie: " + cookie);
+                    }
+                }
+                else
+                {
+                    _preferencesService.Set("jwt", authResponse.token);
+                    _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
+                }
 
                 await getUserRole();
                 return true;
@@ -154,6 +187,35 @@ public class AuthService : IAuthService
             System.Diagnostics.Debug.Print(ex.StackTrace);
             return false;
         }
+    }
+
+    public async Task AllowCookies()
+    {
+        _preferencesService.Set("allowCookies", "true");
+
+    }
+
+    public async Task DenyCookies()
+    {
+        _preferencesService.Set("allowCookies", "false");
+
+    }
+
+    public async Task<string> GetCookiesPermission()
+    {
+        return _preferencesService.Get("allowCookies", string.Empty);
+    }
+
+    public async Task<bool> GetCookies()
+    {
+        var savedCookie = _preferencesService.Get("cookie", string.Empty);
+        if (!string.IsNullOrEmpty(savedCookie))
+        {
+            _httpClient.DefaultRequestHeaders.Add("Cookie", savedCookie);
+            System.Diagnostics.Debug.Print("Cookies were set");
+            return true;
+        }
+        return false;
     }
 }
 

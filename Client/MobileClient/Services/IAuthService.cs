@@ -13,5 +13,9 @@ namespace MobileClient.Services
         public Task getUserRole();
         public Task<List<Skill>?> GetSkills();
         public Task<bool> ChangeSkills(string id, string skill, string time, string level);
+        public Task AllowCookies();
+        public Task DenyCookies();
+        public Task<string> GetCookiesPermission();
+        public Task<bool> GetCookies();
     }
 }
