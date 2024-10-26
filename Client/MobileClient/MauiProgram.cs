@@ -50,6 +50,7 @@ namespace MobileClient
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ICabinetService, CabinetService>();
             builder.Services.AddScoped<ICalendarService, CalendarService>();
+            builder.Services.AddScoped<IFeedbackService, FeedbackService>();
             builder.Services.AddScoped<ISearchService, SearchService>();
 
             return builder.Build();
