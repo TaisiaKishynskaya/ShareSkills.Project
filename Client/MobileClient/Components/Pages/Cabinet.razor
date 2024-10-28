@@ -17,8 +17,8 @@
                     <p class="name">@user.Name @user.Surname</p>
                     <p class="email">@user.Email</p>
                 </div>
-            <hr>
-            @* <div class="block">
+            @*<hr>
+            <div class="block">
                 <p class="skills-text">Selected skill</p>
                 <div class="skills-cards">
                     @foreach (var skill in skills) 
@@ -30,6 +30,13 @@
                 </div>
             </div> *@
             <hr>
+            <div class="switch-btn">
+                <label class="switch">
+                    <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleInputClick">
+                    <span class="slider round"></span>
+                </label>
+                <p>Allow using Cookies</p>
+            </div>
             <button class="feedback" @onclick="() => IsShowDialog=true">Change profile information</button>
             @if (isTeacher)
             {
@@ -44,8 +51,8 @@
             {
                 <p>loading...</p>
             }
-            @* for debug *@
-            @* <button class="feedback" @onclick="ClearPreferences">clear Preferences</button> *@
+             @*for debug*@
+             <button class="feedback" @onclick="ClearPreferences">clear Preferences</button>
         </div>
         @if (IsShowDialog)
         {
@@ -82,6 +89,7 @@
     private bool IsShowDialog = false;
     private bool isTeacher;
     private bool isError = false;
+    private bool isAllowCookies = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -92,6 +100,10 @@
             userToChange.Surname = user.Surname;
             userToChange.Email = user.Email;
             userToChange.PasswordHash = user.PasswordHash;
+        }
+        if (Preferences.Get("allowCookies", string.Empty) == "true")
+        {
+            isAllowCookies = true;
         }
         StateHasChanged();
         isTeacher = (Preferences.Get("userRole", string.Empty) == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
@@ -118,6 +130,18 @@
             IsShowDialog = false;
             isError = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task HandleInputClick()
+    {
+        if (isAllowCookies)
+        {
+            Preferences.Set("allowCookies", "true");
+        }
+        else
+        {
+            Preferences.Set("allowCookies", "false");
         }
     }
 }

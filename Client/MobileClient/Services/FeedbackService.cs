@@ -3,13 +3,13 @@ using Microsoft.Extensions.Logging;
 
 namespace MobileClient.Services;
 
-public class FeedbackService
+public class FeedbackService: IFeedbackService
 {
     private readonly HttpClient _httpClient;
-    private readonly SearchService _searchService;
+    private readonly ISearchService _searchService;
     private readonly ILogger<FeedbackService> _logger;
 
-    public FeedbackService(HttpClient httpClient, SearchService searchService, ILogger<FeedbackService> logger)
+    public FeedbackService(HttpClient httpClient, ISearchService searchService, ILogger<FeedbackService> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _searchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
