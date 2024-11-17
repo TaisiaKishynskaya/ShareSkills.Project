@@ -10,9 +10,25 @@
     <div class="info">
         <div class="input-info">
             <input type="text" class="main-input" placeholder="Name" @bind="@Name">
+            @if (isNameError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Name"])</p>
+            }
             <input type="text" class="main-input" placeholder="Surname" @bind="@Surname">
-            <input type="email" class="main-input" placeholder="Email" @bind="@Email">
+            @if (isSurnameError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Surname"])</p>
+            }
+            <input type="email" class="main-input" placeholder="email" @bind="@Email">
+            @if (isEmailError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Email"])</p>
+            }
             <input type="password" class="main-input" placeholder="Password" @bind="@Password">
+            @if (isPasswordError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Password"])</p>
+            }
         </div>
         <div class="switch-btn">
             <p>Student</p>
@@ -41,17 +57,53 @@
     private string Password { get; set; }
     private bool IsTeacher;
     private bool isError = false;
+    private bool isNameError = false;
+    private bool isSurnameError = false;
+    private bool isEmailError = false;
+    private bool isPasswordError = false;
+    private ValidationResponse registerResponse;
 
     private async Task Register()
     {
-        if (await AuthService.Register(IsTeacher, Name, Surname, Email, Password))
+        isNameError = false;
+        isSurnameError = false;
+        isEmailError = false;
+        isPasswordError = false;
+        isError = false;
+        registerResponse = await AuthService.Register(IsTeacher, Name, Surname, Email, Password);
+        if (registerResponse.Succesful)
         {
             isError = false;
             nextNavigate();
         }
         else
         {
-            isError = true;
+            if (registerResponse.Errors != null && registerResponse.Errors.Count != 0)
+            {
+                if (registerResponse.Errors.ContainsKey("Name"))
+                {
+                    isNameError = true;
+                }
+
+                if (registerResponse.Errors.ContainsKey("Surname"))
+                {
+                    isSurnameError = true;
+                }
+
+                if (registerResponse.Errors.ContainsKey("Email"))
+                {
+                    isEmailError = true;
+                }
+
+                if (registerResponse.Errors.ContainsKey("Password"))
+                {
+                    isPasswordError = true;
+                }
+            }
+            else
+            {
+                isError = true;
+            }
         }
     }
 
@@ -59,7 +111,7 @@
     {
         if (IsTeacher)
         {
-        Navigation.NavigateTo("/chooseSkills");
+            Navigation.NavigateTo("/chooseSkills");
         }
         else
         {
@@ -71,4 +123,5 @@
     {
         Navigation.NavigateTo("/login");
     }
+
 }

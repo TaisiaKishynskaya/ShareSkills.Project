@@ -1,12 +1,13 @@
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
+
 namespace WebClient.Services;
 
 public class AuthService
 {
     private readonly HttpClient _httpClient;
     private readonly IJSRuntime _jsRuntime;
-    private AuthResponse authResponse; 
+    private AuthResponse authResponse;
     private User user;
 
     public AuthService(HttpClient httpClient, IJSRuntime jsRuntime)
@@ -17,10 +18,12 @@ public class AuthService
 
     public async Task<bool> UserLogin(string email, string password)
     {
-        try 
+        try
         {
             Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
-            var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}", new {});
+            var response =
+                await _httpClient.PostAsJsonAsync($"http://localhost:5115/login?email={email}&password={password}",
+                    new { });
 
             if (response.IsSuccessStatusCode)
             {
@@ -43,7 +46,8 @@ public class AuthService
         }
     }
 
-    public async Task<bool> Register(bool IsTeacher, string Name, string Surname, string Email, string Password)
+    public async Task<ValidationResponse> Register(bool IsTeacher, string Name, string Surname, string Email,
+        string Password)
     {
         var Role = IsTeacher ? "teacher" : "student";
         var requestData = new
@@ -54,7 +58,7 @@ public class AuthService
             Password,
             Role
         };
-        try 
+        try
         {
             var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/register", requestData);
             if (response.IsSuccessStatusCode)
@@ -63,17 +67,18 @@ public class AuthService
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userId", userId);
                 Console.WriteLine(userId);
                 await UserLogin(Email, Password);
-                return true;
+                return new ValidationResponse() { Succesful = true, Errors = null };
             }
             else
             {
-                return false;
+                var errors = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+                return new ValidationResponse() { Succesful = false, Errors = errors?.Errors };
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            return false;
+            return new ValidationResponse() { Succesful = false, Errors = null };
         }
     }
 
@@ -100,7 +105,8 @@ public class AuthService
         try
         {
             var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
             var response = await _httpClient.GetAsync("http://localhost:5115/skills");
             if (response.IsSuccessStatusCode)
             {
@@ -123,11 +129,11 @@ public class AuthService
     {
         var requestData = new
         {
-            userId=id,
-            rating=0,
-            classTime=time,
-            level=level,
-            skill=skill
+            userId = id,
+            rating = 0,
+            classTime = time,
+            level = level,
+            skill = skill
         };
         try
         {
@@ -137,6 +143,7 @@ public class AuthService
                 Console.WriteLine("teacher info updated");
                 return true;
             }
+
             return false;
         }
         catch (Exception ex)
@@ -167,4 +174,18 @@ public class Skill
 {
     public string id { get; set; }
     public string skill { get; set; }
+}
+
+public class ValidationResponse
+{
+    public bool Succesful { get; set; }
+    public Dictionary<string, List<string>>? Errors { get; set; }
+}
+
+public class ValidationErrorResponse
+{
+    public string Type { get; set; }
+    public string Title { get; set; }
+    public int Status { get; set; }
+    public Dictionary<string, List<string>> Errors { get; set; }
 }
