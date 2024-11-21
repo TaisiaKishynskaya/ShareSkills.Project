@@ -1,6 +1,7 @@
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
 using System.Text.Json;
+
 namespace WebClient.Services;
 
 public class CabinetService
@@ -25,6 +26,7 @@ public class CabinetService
             {
                 return await response.Content.ReadFromJsonAsync<User>();
             }
+
             return null;
         }
         catch (Exception ex)
@@ -34,8 +36,21 @@ public class CabinetService
         }
     }
 
-    public async Task<bool> ChangeInfo(User userToChange, string newPassword)
+    public async Task<(bool Success, string ErrorMessage)> ChangeInfo(User userToChange, string newPassword)
     {
+        if (string.IsNullOrWhiteSpace(userToChange.Name) ||
+            string.IsNullOrWhiteSpace(userToChange.Surname) ||
+            string.IsNullOrWhiteSpace(userToChange.Email) ||
+            string.IsNullOrWhiteSpace(newPassword))
+        {
+            return (false, "All fields must be filled.");
+        }
+
+        if (!new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(userToChange.Email))
+        {
+            return (false, "Invalid email format.");
+        }
+
         var userId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var requestData = new
         {
@@ -52,19 +67,21 @@ public class CabinetService
         try
         {
             var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
             var response = await _httpClient.PutAsync($"http://localhost:5115/users/{userId}", jsonContent);
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("User info changed");
-                return true;
+                return (true, string.Empty);
             }
-            return false;
+
+            return (false, $"Server error: {response.StatusCode}");
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            return false;
+            return (false, "An error occurred while changing user info.");
         }
     }
 }
