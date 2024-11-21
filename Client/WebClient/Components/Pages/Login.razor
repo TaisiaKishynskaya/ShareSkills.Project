@@ -14,9 +14,14 @@
             <input type="password" class="main-input" placeholder="Password" @bind="@password">
         </div>
 
-        @if (isError)
+        @if (errorMessages.Any())
         {
-            <p class="error">Incorrect email or password</p>
+            <ul class="error-messages">
+                @foreach (var message in errorMessages)
+                {
+                    <li>@message</li>
+                }
+            </ul>
         }
 
         <button class="login-btn" @onclick="UserLogin">Log in</button>
@@ -26,11 +31,11 @@
     </div>
 </div>
 
-@code 
+@code
 {
     private string email;
     private string password;
-    private bool isError = false;
+    private List<string> errorMessages = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,7 +47,7 @@
     {
         // Check if the JWT token is stored in Preferences
         var jwt = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
-        
+
         if (!string.IsNullOrEmpty(jwt))
         {
             // Optionally, you can validate the token with the server here
@@ -54,15 +59,28 @@
 
     private async Task UserLogin()
     {
-        if (await AuthService.UserLogin(email, password))
+        errorMessages.Clear();
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
-            isError = false;
-            // AuthService.GetUserRole(); 
+            errorMessages.Add("Email and password are required.");
+            return;
+        }
+
+        var result = await AuthService.UserLogin(email, password);
+        if (result.Succesful)
+        {
             NavigateToCalendar();
+        }
+        else if (result.Errors != null)
+        {
+            foreach (var error in result.Errors)
+            {
+                errorMessages.AddRange(error.Value);
+            }
         }
         else
         {
-            isError = true;
+            errorMessages.Add("An unknown error occurred.");
         }
     }
 

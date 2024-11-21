@@ -1,4 +1,5 @@
 using Microsoft.JSInterop;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace WebClient.Services;
@@ -16,7 +17,7 @@ public class AuthService
         _jsRuntime = jsRuntime;
     }
 
-    public async Task<bool> UserLogin(string email, string password)
+    public async Task<ValidationResponse> UserLogin(string email, string password)
     {
         try
         {
@@ -32,17 +33,32 @@ public class AuthService
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "jwt", authResponse.token);
                 Console.WriteLine("jwt: " + await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt"));
                 await GetUserRole();
-                return true;
+                return new ValidationResponse { Succesful = true, Errors = null };
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var errors = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+                return new ValidationResponse { Succesful = false, Errors = errors?.Errors };
             }
             else
             {
-                return false;
+                return new ValidationResponse
+                {
+                    Succesful = false,
+                    Errors = new Dictionary<string, List<string>>
+                        { { "General", new List<string> { "An unexpected error occurred." } } }
+                };
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            return false;
+            Console.WriteLine($"Error: {ex.Message}");
+            return new ValidationResponse
+            {
+                Succesful = false,
+                Errors = new Dictionary<string, List<string>>
+                    { { "General", new List<string> { "Unable to connect to the server." } } }
+            };
         }
     }
 
