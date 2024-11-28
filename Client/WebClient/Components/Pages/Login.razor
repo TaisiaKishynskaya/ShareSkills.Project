@@ -1,4 +1,4 @@
-@page "/login"
+@page "/"
 @using WebClient.Components.Layout
 @using WebClient.Services
 @inject NavigationManager Navigation
@@ -7,8 +7,9 @@
 @inject IJSRuntime JSRuntime
 
 <div class="main">
+
     <h1>Skills Share</h1>
-    <div class="info">
+
         <div class="input-info">
             <input type="email" class="main-input" placeholder="Email" @bind="@email">
             <input type="password" class="main-input" placeholder="Password" @bind="@password">
@@ -24,11 +25,22 @@
             </ul>
         }
 
-        <button class="login-btn" @onclick="UserLogin">Log in</button>
+        <button class="login-btn" disabled="@isCookiesBanner" @onclick="UserLogin">Log in</button>
+
         <div class="login-link">
-            <a @onclick="registrationNavigate">Register now</a>
+            <a @onclick="registrationNavigate" class="login-link">Register now</a>
         </div>
-    </div>
+
+    @if (isCookiesBanner)
+    {
+        <div class="cookie-banner">
+            <p>Do you allow us to use cookies for improving your experience?</p>
+            <div class="buttons">
+                <button @onclick="AllowCookies" class="cookie-btn">Yes</button>
+                <button @onclick="DenyCookies" class="cookie-btn no-btn">No</button>
+            </div>
+        </div>
+    }
 </div>
 
 @code
@@ -36,11 +48,17 @@
     private string email;
     private string password;
     private List<string> errorMessages = new();
+    private bool isCookiesBanner = true;
 
     protected override async Task OnInitializedAsync()
     {
         // to login automaticly, but jwt is expiring too fast
         @* await CheckExistingToken(); *@
+        var allowCookies = await AuthService.GetCookiesPermission();
+        if (allowCookies == "true")
+        {
+            await AuthService.GetCookies();
+        }
     }
 
     private async Task CheckExistingToken()
@@ -84,6 +102,18 @@
         }
     }
 
+    private async Task AllowCookies()
+    {
+        await AuthService.AllowCookies();
+        isCookiesBanner = false;
+    }
+
+    private async Task DenyCookies()
+    {
+        await AuthService.DenyCookies();
+        isCookiesBanner = false;
+    }
+
     private void NavigateToCalendar()
     {
         Navigation.NavigateTo("/calendar");
@@ -91,6 +121,6 @@
 
     private void registrationNavigate()
     {
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo("/registration");
     }
 }
