@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace WebClient.Services;
 
-public class CabinetService
+public class CabinetService : ICabinetService
 {
     private readonly HttpClient _httpClient;
     private readonly IJSRuntime _jsRuntime;

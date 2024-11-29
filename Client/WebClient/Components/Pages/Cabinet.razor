@@ -7,7 +7,7 @@
 
 <div class="main">
     <div class="title">
-        <p>Share</p>
+        <p>Skills Share</p>
     </div>
 
     <div class="content">
@@ -30,6 +30,13 @@
                 </div>
             </div> *@
             <hr>
+            <div class="switch-btn">
+                <label class="switch">
+                    <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleInputClick">
+                    <span class="slider round"></span>
+                </label>
+                <p>Allow using Cookies</p>
+            </div>
             <button class="feedback" @onclick="() => IsShowDialog = true">Change profile information</button>
             @if (isTeacher)
             {
@@ -87,6 +94,7 @@
     private bool IsShowDialog = false;
     private bool isTeacher;
     private string ErrorMessage = "";
+    private bool isAllowCookies = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,6 +106,9 @@
             userToChange.Email = user.Email;
             userToChange.PasswordHash = user.PasswordHash;
         }
+
+        var allowCookies = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "allowCookies");
+        isAllowCookies = allowCookies == "true";
 
         StateHasChanged();
         isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
@@ -124,6 +135,15 @@
 
     private async Task ChangeInfo()
     {
+        if (string.IsNullOrWhiteSpace(userToChange.Name) ||
+            string.IsNullOrWhiteSpace(userToChange.Surname) ||
+            string.IsNullOrWhiteSpace(userToChange.Email) ||
+            string.IsNullOrWhiteSpace(newPassword))
+        {
+            ErrorMessage = "All fields must be filled in.";
+            return;
+        }
+
         var (success, errorMessage) = await CabinetService.ChangeInfo(userToChange, newPassword);
         if (success)
         {
@@ -134,6 +154,18 @@
         else
         {
             ErrorMessage = errorMessage;
+        }
+    }
+
+    private async Task HandleInputClick()
+    {
+        if (isAllowCookies)
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "true");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "false");
         }
     }
 
