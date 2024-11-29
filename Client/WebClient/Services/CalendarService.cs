@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace WebClient.Services;
 
-public class CalendarService
+public class CalendarService : ICalendarService
 {
     private readonly HttpClient _httpClient;
     private readonly IJSRuntime _jsRuntime;
@@ -14,14 +14,20 @@ public class CalendarService
         _jsRuntime = jsRuntime;
     }
 
-    public async Task<List<Meeting>?> UpdateCalendar()
+    public async Task<List<Meeting>?> UpdateCalendar(DateTime startDate, DateTime endDate)
     {
         try
         {
             var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
-            var response = await _httpClient.GetAsync("http://localhost:5115/meetings");
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+            }
+
+            var url =
+                $"http://localhost:5115/meetings/{startDate.ToString("MM-dd-yyyy")}/{endDate.ToString("MM-dd-yyyy")}";
+            var response = await _httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 var meetings = await response.Content.ReadFromJsonAsync<List<Meeting>>();
@@ -47,7 +53,7 @@ public class CalendarService
         }
     }
 
-    private async Task<string?> GetIdByEmail(string email)
+    public async Task<string?> GetIdByEmail(string email)
     {
         Console.WriteLine(email);
         try
@@ -78,6 +84,11 @@ public class CalendarService
     {
         var ownerId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var id = await GetIdByEmail(Email);
+        if (id == null || ownerId == null)
+        {
+            return false;
+        }
+
         var postData = new
         {
             name = Title,
@@ -91,7 +102,7 @@ public class CalendarService
             var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/meetings", postData);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Meeting created");
+                Console.WriteLine("Meeting created successfully.");
                 return true;
             }
             else
@@ -116,7 +127,7 @@ public class CalendarService
             if (response.IsSuccessStatusCode)
             {
                 var meeting = await response.Content.ReadFromJsonAsync<Meeting>();
-                try
+                if (meeting != null)
                 {
                     var url = (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72")
                         ? $"http://localhost:5115/users/{meeting.ForeignId}"
@@ -127,13 +138,6 @@ public class CalendarService
                         var teacher = await response2.Content.ReadFromJsonAsync<User>();
                         return (meeting, teacher);
                     }
-
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    return null;
                 }
             }
 

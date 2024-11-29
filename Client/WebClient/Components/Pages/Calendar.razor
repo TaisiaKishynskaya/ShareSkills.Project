@@ -128,7 +128,7 @@
         @if (IsShowDialog)
         {
             <div class="dialog">
-                <svg @onclick="() => IsShowDialog = false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <svg @onclick="() => { IsShowDialog = false; isError = false; }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
                 </svg>
                 <input type="text" class="dialog-input" placeholder="Email" @bind="@Email">
@@ -171,32 +171,40 @@
 
     protected override async Task OnInitializedAsync()
     {
-        userRole = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
-        if (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72")
+        try
         {
-            isTeacher = true;
-        }
-        else
-        {
-            isTeacher = false;
-        }
+            userRole = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
+            if (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72")
+            {
+                isTeacher = true;
+            }
+            else
+            {
+                isTeacher = false;
+            }
 
-        currentWeekStartDate = FirstDayOfWeek(DateTime.Now);
-        await LoadMeetingsForCurrentWeek();
-        Console.WriteLine("userRole: " + userRole);
+            currentWeekStartDate = FirstDayOfWeek(DateTime.Now);
+            await LoadMeetingsForCurrentWeek();
+            Console.WriteLine("userRole: " + userRole);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.Print("Calendar Error occurred: " + ex.Message + " " + ex.StackTrace);
+        }
     }
 
     private async Task LoadMeetingsForCurrentWeek()
     {
         var userId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
-        var meetings = await CalendarService.UpdateCalendar();
+        var meetings = await CalendarService.UpdateCalendar(currentWeekStartDate, currentWeekStartDate.AddDays(7));
         Console.WriteLine(meetings.Count);
         if (meetings != null)
         {
-            currentWeekEvents = meetings.Where(meeting =>
-                meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
-                (meeting.ForeignId.ToString() == userId || meeting.OwnerId.ToString() == userId)
-            ).ToList();
+            currentWeekEvents = meetings.Where(meeting => meeting.ForeignId.ToString() == userId || meeting.OwnerId.ToString() == userId).ToList();
+            //currentWeekEvents = meetings.Where(meeting =>
+            //  meeting.DateTime >= currentWeekStartDate && meeting.DateTime < currentWeekStartDate.AddDays(7) &&
+            //(meeting.ForeignId.ToString() == userId || meeting.OwnerId.ToString() == userId)
+            //).ToList();
         }
 
         PopulateDailyEvents();

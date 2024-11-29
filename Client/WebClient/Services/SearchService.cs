@@ -1,8 +1,9 @@
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
+
 namespace WebClient.Services;
 
-public class SearchService
+public class SearchService : ISearchService
 {
     private readonly HttpClient _httpClient;
 
@@ -18,13 +19,15 @@ public class SearchService
             var encodedSkill = Uri.EscapeDataString(skill);
             var encodedLevel = Uri.EscapeDataString(level);
             var encodedTime = Uri.EscapeDataString(time);
-            var response = await _httpClient.GetAsync($"http://localhost:5115/get-teacher?skill={encodedSkill}&level={encodedLevel}&classTime={encodedTime}");
+            var response = await _httpClient.GetAsync(
+                $"http://localhost:5115/get-teacher?skill={encodedSkill}&level={encodedLevel}&classTime={encodedTime}");
             if (response.IsSuccessStatusCode)
             {
                 var teacherId = await response.Content.ReadFromJsonAsync<string>();
                 var Resteacher = await GetTeacherById(teacherId);
                 return Resteacher;
             }
+
             return null;
         }
         catch (Exception ex)
@@ -44,6 +47,7 @@ public class SearchService
                 var teacher = await response.Content.ReadFromJsonAsync<Teacher>();
                 return teacher;
             }
+
             return null;
         }
         catch (Exception ex)
@@ -63,6 +67,7 @@ public class SearchService
             {
                 return await response.Content.ReadFromJsonAsync<List<Teacher>>();
             }
+
             return null;
         }
         catch (Exception ex)
@@ -83,6 +88,7 @@ public class SearchService
                 var teacher = await GetTeacherById(teacherId);
                 return teacher;
             }
+
             return null;
         }
         catch (Exception ex)
