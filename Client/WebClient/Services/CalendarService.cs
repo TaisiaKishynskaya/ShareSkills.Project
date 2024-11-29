@@ -25,9 +25,19 @@ public class CalendarService : ICalendarService
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
             }
 
+            var cookies = await _jsRuntime.InvokeAsync<string>("eval", "document.cookie");
+            Console.WriteLine("Cookies: " + cookies);
+
+            Console.WriteLine("headers from update calendar:");
+            foreach (var header in _httpClient.DefaultRequestHeaders)
+            {
+                Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
+
             var url =
                 $"http://localhost:5115/meetings/{startDate.ToString("MM-dd-yyyy")}/{endDate.ToString("MM-dd-yyyy")}";
             var response = await _httpClient.GetAsync(url);
+            Console.WriteLine($"update response: {response.StatusCode}");
             if (response.IsSuccessStatusCode)
             {
                 var meetings = await response.Content.ReadFromJsonAsync<List<Meeting>>();
