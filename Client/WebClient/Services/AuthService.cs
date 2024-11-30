@@ -66,8 +66,12 @@ public class AuthService : IAuthService
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                var errors = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
-                return new ValidationResponse { Succesful = false, Errors = errors?.Errors };
+                var errors = await response.Content.ReadFromJsonAsync<string>();
+                return new ValidationResponse { Succesful = false, Errors = new Dictionary<string, List<string>>
+                    {
+                        { "error", new List<string> { errors } }
+                    }
+                };
             }
             else
             {
