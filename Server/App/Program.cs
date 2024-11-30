@@ -25,7 +25,7 @@ internal class Program
             });
         });
 
-        PolicyConfiguration.ConfigureCors(builder);
+        //PolicyConfiguration.ConfigureCors(builder);
 
         DatabaseConfiguration.ConfigureDatabase(builder);
 
