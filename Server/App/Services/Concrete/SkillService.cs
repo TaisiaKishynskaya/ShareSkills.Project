@@ -92,40 +92,67 @@
 
 using App.Services.Abstract;
 using Libraries.Contracts.Skill;
-using Libraries.Data.UnitOfWork.Concrete;
-using Libraries.Entities.Concrete;
 using Libraries.Repositories.Abstract;
+using System.Text.Json;
+using Libraries.Entities.Concrete;
 
 namespace App.Services.Concrete;
 
-public class SkillService(ISkillRepository skillRepository) : ISkillService
+public class SkillService : ISkillService
 {
+    private readonly ISkillRepository _skillRepository;
+    private readonly ICacheService _cacheService;
+
+    public SkillService(ISkillRepository skillRepository, ICacheService cacheService)
+    {
+        _skillRepository = skillRepository;
+        _cacheService = cacheService;
+    }
+
     public async Task AssignTeacherToSkillAsync(TeacherEntity teacher, string skill)
     {
-        teacher.Skill = await skillRepository.GetTeacherSkillAsync(skill) ?? throw new Exception("Skill doesn't exist");
+        teacher.Skill = await _skillRepository.GetTeacherSkillAsync(skill) ??
+                        throw new Exception("Skill doesn't exist");
     }
 
     public async Task<string> GetSkillNameAsync(Guid id)
     {
-        var skill = await skillRepository.GetSkillAsync(id) ?? throw new Exception("Skill doesn't exist");
+        var cacheKey = $"skill:{id}";
+        
+        var cachedSkill = await _cacheService.GetCacheValueAsync<string>(cacheKey);
+        if (cachedSkill != null)
+        {
+            return cachedSkill;
+        }
+        
+        var skill = await _skillRepository.GetSkillAsync(id) ?? throw new Exception("Skill doesn't exist");
+        
+        await _cacheService.SetCacheValueAsync(cacheKey, skill.Skill);
+
         return skill.Skill;
     }
 
     public async Task<IEnumerable<SkillDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var skills = await skillRepository.GetAllAsync(cancellationToken);
+        const string cacheKey = "skills";
+        
+        var cachedSkills = await _cacheService.GetCacheValueAsync<List<SkillDto>>(cacheKey);
 
-        var skillsDtos = new List<SkillDto>();
-
-        foreach (var skill in skills)
+        if (cachedSkills != null)
         {
-            skillsDtos.Add(new SkillDto
-            {
-                Id = skill.Id,
-                Skill = skill.Skill,
-            });
+            return cachedSkills;
         }
 
-        return skillsDtos;
+        var skills = await _skillRepository.GetAllAsync(cancellationToken);
+        
+        var skillDtos = skills.Select(skill => new SkillDto
+        {
+            Id = skill.Id,
+            Skill = skill.Skill
+        }).ToList();
+        
+        await _cacheService.SetCacheValueAsync(cacheKey, JsonSerializer.Serialize(skillDtos));
+
+        return skillDtos;
     }
 }
