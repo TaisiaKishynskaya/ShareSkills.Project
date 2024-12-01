@@ -1,3 +1,4 @@
+using App.Services.Abstract;
 using App.Services.Concrete;
 using Libraries.Entities.Concrete;
 using Libraries.Repositories.Abstract;
@@ -9,11 +10,13 @@ public class SkillServiceTests
 {
     private readonly Mock<ISkillRepository> _skillRepositoryMock;
     private readonly SkillService _service;
+    private readonly Mock<ICacheService> _cacheServiceMock;
 
     public SkillServiceTests()
     {
         _skillRepositoryMock = new Mock<ISkillRepository>();
-        _service = new SkillService(_skillRepositoryMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _service = new SkillService(_skillRepositoryMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]
