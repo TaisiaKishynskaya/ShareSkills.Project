@@ -14,7 +14,7 @@ internal class Program
         AuthorizationConfiguration.ConfigureAuthorization(builder);
 
         builder.Services.AddSwagger(builder.Configuration);
-
+        
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>
@@ -24,7 +24,7 @@ internal class Program
                     .AllowAnyHeader();
             });
         });
-
+        
         //PolicyConfiguration.ConfigureCors(builder);
 
         DatabaseConfiguration.ConfigureDatabase(builder);
@@ -35,7 +35,7 @@ internal class Program
 
 
         var app = builder.Build();
-
+        
         app.UseCors("AllowAll");
 
         app.UseAuthentication();

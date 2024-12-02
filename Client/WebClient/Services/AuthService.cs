@@ -28,7 +28,7 @@ public class AuthService : IAuthService
 
             if (allowCookies == "true")
             {
-                var savedCookie = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "cookie");
+                var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "ShareSkills_App_Cookie");
                 if (!string.IsNullOrEmpty(savedCookie))
                 {
                     _httpClient.DefaultRequestHeaders.Add("Cookie", savedCookie);
@@ -56,7 +56,7 @@ public class AuthService : IAuthService
                     var cookie = cookieHeaders.FirstOrDefault();
                     if (cookie != null)
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "cookie", cookie);
+                        await _jsRuntime.InvokeVoidAsync("setCookie", "ShareSkills_App_Cookie", cookie, 30);
                         Console.WriteLine("Saved Cookie: " + cookie);
                     }
                 }
@@ -64,24 +64,27 @@ public class AuthService : IAuthService
                 await GetUserRole();
                 return new ValidationResponse { Succesful = true, Errors = null };
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 var errors = await response.Content.ReadFromJsonAsync<string>();
-                return new ValidationResponse { Succesful = false, Errors = new Dictionary<string, List<string>>
+                return new ValidationResponse
+                {
+                    Succesful = false, Errors = new Dictionary<string, List<string>>
                     {
                         { "error", new List<string> { errors } }
                     }
                 };
             }
-            else
+
+            return new ValidationResponse
             {
-                return new ValidationResponse
+                Succesful = false,
+                Errors = new Dictionary<string, List<string>>
                 {
-                    Succesful = false,
-                    Errors = new Dictionary<string, List<string>>
-                        { { "General", new List<string> { "An unexpected error occurred." } } }
-                };
-            }
+                    { "General", new List<string> { "An unexpected error occurred." } }
+                }
+            };
         }
         catch (Exception ex)
         {
@@ -94,6 +97,7 @@ public class AuthService : IAuthService
             };
         }
     }
+
 
     public async Task<ValidationResponse> Register(bool IsTeacher, string Name, string Surname, string Email,
         string Password)
@@ -161,11 +165,9 @@ public class AuthService : IAuthService
             {
                 return await response.Content.ReadFromJsonAsync<List<Skill>>();
             }
-            else
-            {
-                Console.WriteLine($"Error: {response.ReasonPhrase}");
-                return null;
-            }
+
+            Console.WriteLine($"Error: {response.ReasonPhrase}");
+            return null;
         }
         catch (Exception ex)
         {
@@ -220,7 +222,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> GetCookies()
     {
-        var savedCookie = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "cookie");
+        var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "cookie");
         if (!string.IsNullOrEmpty(savedCookie))
         {
             _httpClient.DefaultRequestHeaders.Add("Cookie", savedCookie);
