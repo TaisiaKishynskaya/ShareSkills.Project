@@ -14,11 +14,11 @@ namespace Server.UnitTests.ConfigurationsTests;
 
 public class ServicesConfigurationTests
 {
-    public class RedisServiceMock : ICacheService
+    public class RedisCacheServiceMock : ICacheService
     {
-        public Task SetCacheValueAsync(string key, object value) 
+        public Task SetCacheValueAsync(string key, object value)
         {
-            return Task.CompletedTask;
+            return Task.CompletedTask; 
         }
 
         public Task<string> GetCacheValueAsync(string key)
@@ -31,9 +31,9 @@ public class ServicesConfigurationTests
             return Task.FromResult(default(T)); 
         }
 
-        public Task DeleteCacheValueAsync(string key) 
+        public Task DeleteCacheValueAsync(string key)
         {
-            return Task.CompletedTask;
+            return Task.CompletedTask; 
         }
 
         public Task SetCacheValueAsync<T>(string key, T value)
@@ -43,9 +43,10 @@ public class ServicesConfigurationTests
 
         public Task SetCacheValueAsync(string key, string value)
         {
-            return Task.CompletedTask;
+            return Task.CompletedTask; 
         }
     }
+
 
     
     [Fact]
@@ -53,13 +54,12 @@ public class ServicesConfigurationTests
     {
         // Arrange
         var builder = WebApplication.CreateBuilder();
+        
+        builder.Services.AddScoped<ICacheService, RedisCacheServiceMock>();
 
         // Register an in-memory database for testing
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase("TestDatabase"));
-        
-        builder.Services.AddSingleton<ICacheService, RedisServiceMock>();
-
         
         // Act
         ServicesConfiguration.ConfigureServices(builder);
@@ -108,5 +108,6 @@ public class ServicesConfigurationTests
         Assert.IsType<LevelRepository>(serviceProvider.GetService<ILevelRepository>());
         Assert.IsType<LevelService>(serviceProvider.GetService<ILevelService>());
         Assert.IsType<TeacherBinaryTree>(serviceProvider.GetService<TeacherBinaryTree>());
+        Assert.IsType<RedisCacheServiceMock>(serviceProvider.GetService<ICacheService>());
     }
 }
