@@ -58,6 +58,25 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService, ICach
         unitOfWork.UserRepository.Insert(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var roleName = await roleService.GetRoleNameAsync(user.RoleId);
+        var userDto = new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Surname = user.Surname,
+            Email = user.Email,
+            PasswordHash = user.Password,
+            Role = roleName
+        };
+        
+        var cacheKeyByEmail = $"user:{user.Email}";
+        var cacheKeyById = $"user:{user.Id}";
+        await cacheService.SetCacheValueAsync(cacheKeyByEmail, userDto);
+        await cacheService.SetCacheValueAsync(cacheKeyById, userDto);
+        
+        const string allUsersCacheKey = "all_users";
+        await cacheService.DeleteCacheValueAsync(allUsersCacheKey);
+        
         return user.Id;
     }
 
