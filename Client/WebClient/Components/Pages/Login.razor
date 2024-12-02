@@ -10,26 +10,26 @@
 
     <h1>Skills Share</h1>
 
-        <div class="input-info">
-            <input type="email" class="main-input" placeholder="Email" @bind="@email">
-            <input type="password" class="main-input" placeholder="Password" @bind="@password">
-        </div>
+    <div class="input-info">
+        <input type="email" class="main-input" placeholder="Email" @bind="@email">
+        <input type="password" class="main-input" placeholder="Password" @bind="@password">
+    </div>
 
-        @if (errorMessages.Any())
-        {
-            <ul class="error-messages">
-                @foreach (var message in errorMessages)
-                {
-                    <li>@message</li>
-                }
-            </ul>
-        }
+    @if (errorMessages.Any())
+    {
+        <ul class="error-messages">
+            @foreach (var message in errorMessages)
+            {
+                <li>@message</li>
+            }
+        </ul>
+    }
 
-        <button class="login-btn" disabled="@isCookiesBanner" @onclick="UserLogin">Log in</button>
+    <button class="login-btn" disabled="@isCookiesBanner" @onclick="UserLogin">Log in</button>
 
-        <div class="login-link">
-            <a @onclick="registrationNavigate" class="login-link">Register now</a>
-        </div>
+    <div class="login-link">
+        <a @onclick="registrationNavigate" class="login-link">Register now</a>
+    </div>
 
     @if (isCookiesBanner)
     {
@@ -57,6 +57,7 @@
         var allowCookies = await AuthService.GetCookiesPermission();
         if (allowCookies == "true")
         {
+            isCookiesBanner = false;
             await AuthService.GetCookies();
         }
     }

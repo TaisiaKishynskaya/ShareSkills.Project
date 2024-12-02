@@ -1,6 +1,7 @@
 using Microsoft.JSInterop;
 using System.Net;
 using System.Net.Http.Json;
+using static System.Net.WebRequestMethods;
 
 namespace WebClient.Services;
 
@@ -26,7 +27,7 @@ public class AuthService : IAuthService
             var allowCookies = await GetCookiesPermission();
             HttpResponseMessage response = null;
 
-            if (allowCookies == "true")
+            if (allowCookies == "true" && _httpClient.DefaultRequestHeaders.Contains("Cookie"))
             {
                 var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "ShareSkills_App_Cookie");
                 if (!string.IsNullOrEmpty(savedCookie))
