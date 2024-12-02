@@ -14,6 +14,40 @@ namespace Server.UnitTests.ConfigurationsTests;
 
 public class ServicesConfigurationTests
 {
+    public class RedisServiceMock : ICacheService
+    {
+        public Task SetCacheValueAsync(string key, object value) 
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetCacheValueAsync(string key)
+        {
+            return Task.FromResult(string.Empty); 
+        }
+
+        public Task<T> GetCacheValueAsync<T>(string key)
+        {
+            return Task.FromResult(default(T)); 
+        }
+
+        public Task DeleteCacheValueAsync(string key) 
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SetCacheValueAsync<T>(string key, T value)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SetCacheValueAsync(string key, string value)
+        {
+            return Task.CompletedTask;
+        }
+    }
+
+    
     [Fact]
     public void ConfigureServices_ShouldRegisterAllServices()
     {
@@ -23,6 +57,9 @@ public class ServicesConfigurationTests
         // Register an in-memory database for testing
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase("TestDatabase"));
+        
+        builder.Services.AddSingleton<ICacheService, RedisServiceMock>();
+
         
         // Act
         ServicesConfiguration.ConfigureServices(builder);
