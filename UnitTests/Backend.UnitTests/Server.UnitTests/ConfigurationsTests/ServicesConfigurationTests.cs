@@ -54,8 +54,6 @@ public class ServicesConfigurationTests
     {
         // Arrange
         var builder = WebApplication.CreateBuilder();
-        
-        builder.Services.AddScoped<ICacheService, RedisCacheServiceMock>();
 
         // Register an in-memory database for testing
         builder.Services.AddDbContext<AppDbContext>(options =>
@@ -63,6 +61,10 @@ public class ServicesConfigurationTests
         
         // Act
         ServicesConfiguration.ConfigureServices(builder);
+        
+        // Override the ICacheService registration with a mock
+        builder.Services.AddScoped<ICacheService, RedisCacheServiceMock>();
+        
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         // Assert
