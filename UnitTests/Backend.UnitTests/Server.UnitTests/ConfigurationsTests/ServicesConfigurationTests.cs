@@ -9,6 +9,8 @@ using Libraries.Repositories.Concrete;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 
 namespace Server.UnitTests.ConfigurationsTests;
 
@@ -54,6 +56,8 @@ public class ServicesConfigurationTests
     {
         // Arrange
         var builder = WebApplication.CreateBuilder();
+        
+        builder.Configuration["Redis:ConnectionString"] = string.Empty;
 
         // Register an in-memory database for testing
         builder.Services.AddDbContext<AppDbContext>(options =>
@@ -62,7 +66,8 @@ public class ServicesConfigurationTests
         // Act
         ServicesConfiguration.ConfigureServices(builder);
         
-        // Override the ICacheService registration with a mock
+        builder.Services.RemoveAll<IConnectionMultiplexer>();
+        builder.Services.RemoveAll<ICacheService>();
         builder.Services.AddScoped<ICacheService, RedisCacheServiceMock>();
         
         var serviceProvider = builder.Services.BuildServiceProvider();
