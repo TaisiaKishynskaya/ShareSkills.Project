@@ -45,5 +45,14 @@ public class UserEndpoint : IMinimalEndpoint
             var user = await UserService.GetByEmailAsync(email);
             return Results.Ok(new {userId = user.Id});
         });
+        
+        routeBuilder.MapGet("/users/{id:guid}/role", async (Guid id, IUserService service) =>
+            {
+                var user = await service.GetByIdAsync(id);
+                var role = user.Role;
+                
+                return Results.Ok(new { Role = role });
+            })
+            .WithOpenApi();
     }
 }
