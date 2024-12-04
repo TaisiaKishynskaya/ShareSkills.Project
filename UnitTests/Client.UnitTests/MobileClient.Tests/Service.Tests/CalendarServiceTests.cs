@@ -112,7 +112,7 @@ namespace MobileClient.Tests.Service.Tests
         public async Task GetMeetingInfo_ShouldReturnInfo_WithForeignId_WhenSuccesful()
         {
             var fakeId = "1";
-            var fakeRole = "90c08b8a-fa4c-445e-9f66-717bf2bfcf72";
+            var fakeRole = "Teacher";
             var meeting = new Meeting { Id = new Guid(), Name = "name", DateTime = DateTime.Now, Description = "desc", OwnerId = new Guid(), ForeignId = new Guid() };
             var user = new User { Email = "email", Id = "1", Name = "name", Surname = "surname", PasswordHash = "pass", Role = "student" };
             var expectedMeetingResponse = new HttpResponseMessage(HttpStatusCode.OK)
@@ -168,7 +168,7 @@ namespace MobileClient.Tests.Service.Tests
         public async Task GetMeetingInfo_ShouldReturnNull_WhenUnsuccesful()
         {
             var fakeId = "1";
-            var fakeRole = "90c08b8a-fa4c-445e-9f66-717bf2bfcf72";
+            var fakeRole = "Teacher";
             var meeting = new Meeting { Id = new Guid(), Name = "name", DateTime = DateTime.Now, Description = "desc", OwnerId = new Guid(), ForeignId = new Guid() };
             var user = new User { Email = "email", Id = "1", Name = "name", Surname = "surname", PasswordHash = "pass", Role = "student" };
             var expectedMeetingResponse = new HttpResponseMessage(HttpStatusCode.BadRequest)

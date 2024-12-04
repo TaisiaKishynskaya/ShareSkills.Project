@@ -71,7 +71,7 @@ namespace MobileClient.Tests.Pages.Tests
         public void ShouldDisplayAddMeetingDialog_WhenPlusButtonIsClicked()
         {
             // Arrange
-            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("90c08b8a-fa4c-445e-9f66-717bf2bfcf72"); // Simulate teacher role
+            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("Teacher"); // Simulate teacher role
             var component = RenderComponent<Calendar>();
 
             // Act: Click the plus button
@@ -85,7 +85,7 @@ namespace MobileClient.Tests.Pages.Tests
         public async Task ShouldAddMeeting_WhenDialogIsSubmitted()
         {
             // Arrange
-            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("90c08b8a-fa4c-445e-9f66-717bf2bfcf72"); // Simulate teacher role
+            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("Teacher"); // Simulate teacher role
             mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true); // Mock successful meeting creation
 
@@ -110,7 +110,7 @@ namespace MobileClient.Tests.Pages.Tests
         public async Task ShouldNotAddMeeting_WhenFieldsEmpty()
         {
             // Arrange
-            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("90c08b8a-fa4c-445e-9f66-717bf2bfcf72"); // Simulate teacher role
+            mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("Teacher"); // Simulate teacher role
             mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(true); // Mock successful meeting creation
 

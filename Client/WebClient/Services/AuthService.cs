@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
+using System.Text.Json;
 namespace WebClient.Services;
 
 public class AuthService
@@ -82,11 +83,12 @@ public class AuthService
         var userId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         try
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5115/users/{userId}");
+            var response = await _httpClient.GetAsync($"http://localhost:5115/users/{userId}/role");
             if (response.IsSuccessStatusCode)
             {
-                user = await response.Content.ReadFromJsonAsync<User>();
-                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userRole", user.Role);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                string role = JsonSerializer.Deserialize<Dictionary<string, string>>(responseContent)["role"];
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userRole", role);
             }
         }
         catch (Exception ex)

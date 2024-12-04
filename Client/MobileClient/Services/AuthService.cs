@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace MobileClient.Services;
 
@@ -125,12 +126,13 @@ public class AuthService : IAuthService
         var userId = _preferencesService.Get("userId", string.Empty);
         try
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5115/users/{userId}");
+            var response = await _httpClient.GetAsync($"http://localhost:5115/users/{userId}/role");
             if (response.IsSuccessStatusCode)
             {
-                user = await response.Content.ReadFromJsonAsync<User>();
-                _preferencesService.Set("userRole", user.Role);
-                System.Diagnostics.Debug.Print("role was set " + user.Role);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                string role = JsonSerializer.Deserialize<Dictionary<string, string>>(responseContent)["role"];
+                _preferencesService.Set("userRole", role);
+                System.Diagnostics.Debug.Print("role was set " + role);
             }
         }
         catch (Exception ex)
