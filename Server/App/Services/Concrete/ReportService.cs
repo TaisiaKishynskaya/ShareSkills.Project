@@ -25,7 +25,10 @@ public class ReportService : IReportService
                 Themes = group.Select(m => m.Theme).Distinct().ToList(), 
                 TeacherId = group.FirstOrDefault().OwnerId == userId 
                     ? group.FirstOrDefault().ForeignId 
-                    : group.FirstOrDefault().OwnerId, 
+                    : group.FirstOrDefault().OwnerId,
+                StudentId = group.FirstOrDefault().OwnerId == userId 
+                    ? group.FirstOrDefault().OwnerId 
+                    : group.FirstOrDefault().ForeignId
             })
             .Join(
                 _dbContext.Users, 
@@ -34,16 +37,24 @@ public class ReportService : IReportService
                 (g, u) => new { g, Teacher = u }
             )
             .Join(
+                _dbContext.Users,
+                g => g.g.StudentId,
+                u => u.Id,
+                (g, u) => new { g, Student = u }
+            )
+            .Join(
                 _dbContext.Skills,
-                g => g.g.SkillId,
+                g => g.g.g.SkillId,
                 s => s.Id,
                 (g, s) => new ReportDto
                 {
-                    TeacherName = g.Teacher.Role.Name == "Teacher" ? g.Teacher.Name : "",
-                    TeacherSurname = g.Teacher.Role.Name == "Teacher" ? g.Teacher.Surname : "",
+                    TeacherName = g.g.Teacher.Role.Name == "Teacher" ? g.g.Teacher.Name : "",
+                    TeacherSurname = g.g.Teacher.Role.Name == "Teacher" ? g.g.Teacher.Surname : "",
+                    StudentName = g.Student.Name, 
+                    StudentSurname = g.Student.Surname, 
                     SkillName = s.Skill ?? "Unknown",
-                    TotalTime = g.g.TotalTime,
-                    Themes = g.g.Themes
+                    TotalTime = g.g.g.TotalTime,
+                    Themes = g.g.g.Themes
                 }
             )
             .ToListAsync();
