@@ -24,7 +24,9 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             OwnerId = meetingForCreatingDto.OwnerId,
             ForeignId = meetingForCreatingDto.ForeignId,
             DateTime = meetingForCreatingDto.DateAndTime,
-            Name = meetingForCreatingDto.Name
+            Name = meetingForCreatingDto.Name,
+            Theme = meetingForCreatingDto.Theme,
+            SkillId = meetingForCreatingDto.SkillId
         };
 
         unitOfWork.MeetingRepository.Insert(meeting);
@@ -37,7 +39,9 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             ForeignId = meeting.ForeignId,
             DateTime = meeting.DateTime,
             Description = meeting.Description,
-            Name = meeting.Name
+            Name = meeting.Name,
+            Theme = meeting.Theme,
+            SkillId = meeting.SkillId
         };
     }
 
@@ -64,7 +68,9 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             ForeignId = entity.ForeignId,
             DateTime = entity.DateTime,
             Description = entity.Description,
-            Name = entity.Name
+            Name = entity.Name,
+            Theme = entity.Theme,
+            SkillId = entity.SkillId
         });
         
         return meetingsDtos;
@@ -85,7 +91,9 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             ForeignId = entity.ForeignId,
             DateTime = entity.DateTime,
             Description = entity.Description,
-            Name = entity.Name
+            Name = entity.Name,
+            Theme = entity.Theme,
+            SkillId = entity.SkillId
         });
 
         return meetingsDtos;
@@ -105,7 +113,9 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             ForeignId = meeting.ForeignId,
             DateTime = meeting.DateTime,
             Description = meeting.Description,
-            Name = meeting.Name
+            Name = meeting.Name,
+            Theme = meeting.Theme,
+            SkillId = meeting.SkillId
         };
     }
 
@@ -121,7 +131,9 @@ public class MeetingService(IUnitOfWork unitOfWork) : IMeetingService
             ForeignId = meeting.ForeignId,
             DateTime = meeting.DateTime,
             Description = meeting.Description,
-            Name = meeting.Name
+            Name = meeting.Name,
+            Theme = meeting.Theme,
+            SkillId = meeting.SkillId
         };
     }
 
