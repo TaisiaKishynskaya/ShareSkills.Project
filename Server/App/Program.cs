@@ -20,8 +20,10 @@ internal class Program
             options.AddPolicy("AllowAll", policy =>
             {
                 policy.AllowAnyOrigin()
+                //policy.WithOrigins("http://localhost:7163")
                     .AllowAnyMethod()
                     .AllowAnyHeader();
+                //.AllowCredentials();
             });
         });
         
@@ -40,6 +42,8 @@ internal class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        //app.UseCookiePolicy();
 
         app.UseHttpsRedirection();
 

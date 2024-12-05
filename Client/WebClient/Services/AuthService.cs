@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using static System.Net.WebRequestMethods;
 
@@ -16,6 +17,7 @@ public class AuthService : IAuthService
     {
         _httpClient = httpClient;
         _jsRuntime = jsRuntime;
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     public async Task<ValidationResponse> UserLogin(string email, string password)
@@ -25,9 +27,9 @@ public class AuthService : IAuthService
             Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
 
             var allowCookies = await GetCookiesPermission();
-            HttpResponseMessage response = null;
+            //HttpResponseMessage response = null;
 
-            if (allowCookies == "true" && _httpClient.DefaultRequestHeaders.Contains("Cookie"))
+            if (allowCookies == "true")
             {
                 var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "ShareSkills_App_Cookie");
                 if (!string.IsNullOrEmpty(savedCookie))
@@ -35,14 +37,15 @@ public class AuthService : IAuthService
                     _httpClient.DefaultRequestHeaders.Add("Cookie", savedCookie);
                 }
 
-                response = await _httpClient.PostAsJsonAsync(
-                    $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=true", new { });
+                //response = await _httpClient.PostAsJsonAsync(
+                //   $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=true", new { });
             }
-            else
-            {
-                response = await _httpClient.PostAsJsonAsync(
-                    $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=false", new { });
-            }
+
+            //else
+            //{
+            var response = await _httpClient.PostAsJsonAsync(
+                $"http://localhost:5115/login?email={email}&password={password}", new { });
+            //}
 
             if (response.IsSuccessStatusCode)
             {
@@ -66,26 +69,7 @@ public class AuthService : IAuthService
                 return new ValidationResponse { Succesful = true, Errors = null };
             }
 
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-            {
-                var errors = await response.Content.ReadFromJsonAsync<string>();
-                return new ValidationResponse
-                {
-                    Succesful = false, Errors = new Dictionary<string, List<string>>
-                    {
-                        { "error", new List<string> { errors } }
-                    }
-                };
-            }
-
-            return new ValidationResponse
-            {
-                Succesful = false,
-                Errors = new Dictionary<string, List<string>>
-                {
-                    { "General", new List<string> { "An unexpected error occurred." } }
-                }
-            };
+            return await HandleErrorResponse(response);
         }
         catch (Exception ex)
         {
@@ -134,6 +118,16 @@ public class AuthService : IAuthService
             Console.WriteLine(ex);
             return new ValidationResponse() { Succesful = false, Errors = null };
         }
+    }
+
+    private async Task<ValidationResponse> HandleErrorResponse(HttpResponseMessage response)
+    {
+        var errors = await response.Content.ReadFromJsonAsync<string>();
+        return new ValidationResponse
+        {
+            Succesful = false,
+            Errors = new Dictionary<string, List<string>> { { "error", new List<string> { errors } } }
+        };
     }
 
     public async Task GetUserRole()
@@ -207,23 +201,26 @@ public class AuthService : IAuthService
 
     public async Task AllowCookies()
     {
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "true");
+        await _jsRuntime.InvokeVoidAsync("setCookie", "allowCookies", "true", 30);
+        //await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "true");
+        await _jsRuntime.InvokeVoidAsync("setCookie", "ShareSkills_App_Cookie", "cookie_value", 30);
     }
 
     public async Task DenyCookies()
     {
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "false");
+        await _jsRuntime.InvokeVoidAsync("setCookie", "allowCookies", "false", 30);
+        //await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "false");
     }
 
     public async Task<string> GetCookiesPermission()
     {
-        var allowCookies = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "allowCookies");
+        var allowCookies = await _jsRuntime.InvokeAsync<string>("getCookie", "allowCookies");
         return allowCookies ?? string.Empty;
     }
 
     public async Task<bool> GetCookies()
     {
-        var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "cookie");
+        var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "ShareSkills_App_Cookie");
         if (!string.IsNullOrEmpty(savedCookie))
         {
             _httpClient.DefaultRequestHeaders.Add("Cookie", savedCookie);
