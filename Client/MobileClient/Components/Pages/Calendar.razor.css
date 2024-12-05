@@ -80,6 +80,7 @@ hr {
       background: none;
       border: none;
       border-bottom: 1px solid black;
+      width: 90%;
   }
   
   .dialog-input:focus {
@@ -116,5 +117,11 @@ hr {
     flex-direction: row;
     gap: 10px;
   }
+
+.dialog-select {
+    border: none;
+    border-bottom: 1px solid black;
+    width: 90%;
+}
 
   

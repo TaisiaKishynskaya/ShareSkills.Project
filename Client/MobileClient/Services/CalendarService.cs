@@ -74,15 +74,18 @@ public class CalendarService : ICalendarService
         
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string Email, String Title)
+    public async Task<bool> AddMeeting(DateTime Date, string Email, String Title, String theme, String skillId)
     {
         var id = await GetIdByEmail(Email);
+        System.Diagnostics.Debug.Print(skillId);
         var postData = new
         {
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ownerId = _preferencesService.Get("userId", string.Empty),
-            foreignId = id
+            foreignId = id,
+            theme = theme,
+            skillId = skillId
         };
 
         try
@@ -121,7 +124,7 @@ public class CalendarService : ICalendarService
                 var meeting = await response.Content.ReadFromJsonAsync<Meeting>();
                 try 
                 {
-                    var url = (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? $"http://localhost:5115/users/{meeting.ForeignId}" : $"http://localhost:5115/users/{meeting.OwnerId}";
+                    var url = (_preferencesService.Get("userRole", string.Empty) == "Teacher") ? $"http://localhost:5115/users/{meeting.ForeignId}" : $"http://localhost:5115/users/{meeting.OwnerId}";
                     var response2 = await _httpClient.GetAsync(url);
                     if (response2.IsSuccessStatusCode)
                     {

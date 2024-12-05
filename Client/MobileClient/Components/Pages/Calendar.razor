@@ -4,142 +4,161 @@
 @inject HttpClient httpClient
 @inject IPreferencesService Preferences
 @inject ICalendarService CalendarService
+@inject IAuthService AuthService
 
 <div class="main">
     <div class="nav-buttons">
         @if (isTeacher)
         {
-            <div class="plus-button" @onclick="() => IsShowDialog=true">
+            <div class="plus-button" @onclick="() => {IsShowDialog=true; GetSkillsList();}">
                 <p>+</p>
             </div>
         }
         <div class="week-navigation">
-                <button class="next-btn" @onclick="PreviousWeek">Previous Week</button>
-                <button class="next-btn" @onclick="NextWeek">Next Week</button>
+            <button class="next-btn" @onclick="PreviousWeek">Previous Week</button>
+            <button class="next-btn" @onclick="NextWeek">Next Week</button>
         </div>
     </div>
     @if (weekDates.ContainsKey(DayOfWeek.Monday))
     {
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Monday].ToString("dd.MM") Monday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Monday].ToString("dd.MM") Monday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in mondayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in mondayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Tuesday].ToString("dd.MM") Tuesday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Tuesday].ToString("dd.MM") Tuesday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in tuesdayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in tuesdayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Wednesday].ToString("dd.MM") Wednesday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Wednesday].ToString("dd.MM") Wednesday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in wednesdayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in wednesdayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Thursday].ToString("dd.MM") Thursday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Thursday].ToString("dd.MM") Thursday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in thursdayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in thursdayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Friday].ToString("dd.MM") Friday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Friday].ToString("dd.MM") Friday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in fridayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in fridayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Saturday].ToString("dd.MM") Saturday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Saturday].ToString("dd.MM") Saturday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in saturdayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in saturdayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    <div class="day">
-        <div class="day-info">
-            <p>@weekDates[DayOfWeek.Sunday].ToString("dd.MM") Sunday</p>
-            <hr>
+        <div class="day">
+            <div class="day-info">
+                <p>@weekDates[DayOfWeek.Sunday].ToString("dd.MM") Sunday</p>
+                <hr>
+            </div>
+            <div class="cards">
+                @foreach (var lesson in sundayEvents) 
+                {
+                    <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
+                        <p>@lesson.Name</p>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="cards">
-            @foreach (var lesson in sundayEvents) 
-            {
-                <div class="lesson-card" @onclick="() => OpenLessonDetails(lesson.Id)">
-                    <p>@lesson.Name</p>
-                </div>
-            }
-        </div>
-    </div>
 
-    @if (IsShowDialog)
-    {
-        <div class="dialog">
-            <svg @onclick="() => {IsShowDialog=false; isError = false;}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-            <input type="text" class="dialog-input" placeholder="Email" @bind="@Email">
-            <input type="text" class="dialog-input" placeholder="Title" @bind = "@Title">
-            <input type="datetime-local" class="dialog-input" placeholder="Date" @bind = "@Date">
-            @if (isError)
-            {
-                <p class="error">@errorMessage</p>
-            }
-            <button class="next-btn" @onclick="AddMeeting">
-                Create
-            </button>
-        </div>
+        @if (IsShowDialog)
+        {
+            <div class="dialog">
+                <svg @onclick="() => {IsShowDialog=false; isError = false;}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+                <input type="text" class="dialog-input" placeholder="Email" @bind="@Email">
+                <input type="text" class="dialog-input" placeholder="Title" @bind = "@Title">
+                <input type="datetime-local" class="dialog-input" placeholder="Date" @bind = "@Date">
+                <input type="text" class="dialog-input" placeholder="Theme" @bind = "@Theme">
+                @if (Skills != null && Skills.Any())
+                {
+                    <select class="dialog-select" @bind="skillId">
+                        @foreach (var skill in Skills)
+                        {
+                            <option value="@skill.id">@skill.skill</option>
+                        }
+                    </select>
+                }
+                else if (IsShowDialog && Skills != null && !Skills.Any())
+                {
+                    <p>skills list is empty</p>
+                }
+                else if (IsShowDialog && Skills == null)
+                {
+                    <p>loading</p>
+                }
+                @if (isError)
+                {
+                    <p class="error">@errorMessage</p>
+                }
+                <button class="next-btn" @onclick="AddMeeting">
+                    Create
+                </button>
+            </div>
         }
     }
 </div>
@@ -159,6 +178,9 @@
     private String Email;
     private String Title;
     private DateTime Date{get; set;} = DateTime.Now;
+    private String Theme;
+    private List<Skill> Skills;
+    private String skillId;
     private string errorMessage;
     private bool IsShowDialog = false;
     private bool isError = false;
@@ -172,7 +194,7 @@
         try
         {
             userRole = Preferences.Get("userRole", string.Empty);
-            if (userRole == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72")
+            if (userRole == "Teacher")
             {
                 isTeacher = true;
             }
@@ -251,12 +273,12 @@
 
     private async Task AddMeeting()
     {
-        if (Email == null || Title == null || Date == null)
+        if (Email == null || Title == null || Date == null || Theme == null || skillId == null)
         {
             errorMessage = "all fields must be filled in";
             isError = true;
         }
-        else if (await CalendarService.AddMeeting(Date, Email, Title))
+        else if (await CalendarService.AddMeeting(Date, Email, Title, Theme, skillId))
         {
             IsShowDialog = false;
             isError = false;
@@ -266,6 +288,12 @@
             errorMessage = "An error occurred";
             isError = true;
         }
+    }
+
+    private async Task GetSkillsList()
+    {
+        Skills = await AuthService.GetSkills();
+        StateHasChanged();
     }
 
     private void ShowAddDialog()

@@ -45,7 +45,7 @@ namespace MobileClient.Tests.Pages.Tests
             mockAuthService.Setup(service => service.GetSkills()).ReturnsAsync(new List<Skill>());
             mockAuthService.Setup(service => service.getUserRole()).Returns(Task.CompletedTask);
             mockPreferencesService.Setup(p => p.Get("userRole", string.Empty))
-                .Returns("90c08b8a-fa4c-445e-9f66-717bf2bfcf72");  // Role that identifies user as a teacher
+                .Returns("Teacher");  // Role that identifies user as a teacher
 
             var cut = RenderComponent<ChooseSkills>();
 
