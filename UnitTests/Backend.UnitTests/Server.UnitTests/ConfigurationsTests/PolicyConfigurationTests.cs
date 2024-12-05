@@ -30,8 +30,9 @@ public class PolicyConfigurationTests
         Assert.NotNull(corsPolicy);
 
         // Validate the settings of the "AllowAll" policy
-        Assert.True(corsPolicy.Origins.Contains("*"));  // Check if all origins are allowed
-        Assert.True(corsPolicy.Methods.Contains("*"));  // Check if all methods are allowed
-        Assert.True(corsPolicy.Headers.Contains("*"));  // Check if all headers are allowed
+        Assert.Contains("https://localhost:7281", corsPolicy.Origins);  // Проверить, что разрешён конкретный домен
+        Assert.True(corsPolicy.AllowAnyMethod);  // Проверить, что разрешены любые методы
+        Assert.True(corsPolicy.AllowAnyHeader);  // Проверить, что разрешены любые заголовки
+        Assert.True(corsPolicy.SupportsCredentials);  // Проверить, что разрешены куки
     }
 }

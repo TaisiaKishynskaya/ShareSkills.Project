@@ -2,6 +2,7 @@ using App.Infrastructure.Mapping.Endpoints.Abstract;
 using App.Services.Abstract;
 using Libraries.Contracts.Grade;
 using Libraries.Contracts.User;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,18 +14,18 @@ public class GradeEndpoint : IMinimalEndpoint
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/grades", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
-                async ([FromServices]IGradeService service) =>
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Student)] 
+                async ([FromServices]IGradeService service) => 
                 {
                     var grade = await service.GetAllAsync();
-
+                
                     return Results.Ok(grade);
                 })
             .WithOpenApi();
 
-        routeBuilder.MapGet("/grades/{id:guid}",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
-                async (Guid id, [FromServices]IGradeService service) =>
+        routeBuilder.MapGet("/grades/{id:guid}", 
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Student)] 
+                async (Guid id, [FromServices]IGradeService service) => 
                 {
                     var grade = await service.GetByIdAsync(id);
 
@@ -33,7 +34,7 @@ public class GradeEndpoint : IMinimalEndpoint
             .WithOpenApi();
 
         routeBuilder.MapPost("/grades",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Student)] 
                 async (GradeForCreatingDto dto, [FromServices]IGradeService service) =>
                 {
                     var grade = await service.CreateAsync(dto);
@@ -43,7 +44,7 @@ public class GradeEndpoint : IMinimalEndpoint
             .WithOpenApi();
 
         routeBuilder.MapPut("/grades/{id:guid}", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Student)] 
                 async (Guid id, GradeForUpdateDto dto, [FromServices]IGradeService service) =>
                 {
                     await service.UpdateAsync(id, dto);
@@ -53,7 +54,7 @@ public class GradeEndpoint : IMinimalEndpoint
             .WithOpenApi();
 
         routeBuilder.MapDelete("/grades/{id:guid}", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Student)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Student)] 
                 async (Guid id, [FromServices]IGradeService service) =>
                 {
                     await service.DeleteAsync(id);

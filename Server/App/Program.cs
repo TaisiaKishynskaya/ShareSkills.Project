@@ -1,7 +1,7 @@
 using App.Infrastructure.Configurations;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
 
-//TODO: Need refactoring, add validation for registration
+//TODO: Need refactoring
 namespace App;
 
 internal class Program
@@ -12,7 +12,7 @@ internal class Program
         
         AuthenticationConfiguration.ConfigureAuthentication(builder);
         AuthorizationConfiguration.ConfigureAuthorization(builder); 
-
+        
         builder.Services.AddSwagger(builder.Configuration); 
         
         PolicyConfiguration.ConfigureCors(builder);
@@ -39,7 +39,7 @@ internal class Program
         AppConfiguration.ConfigureApp(app);
         
         DatabaseConfiguration.SeedDatabase(app);
-    
+        
         app.Run();
     }
 }

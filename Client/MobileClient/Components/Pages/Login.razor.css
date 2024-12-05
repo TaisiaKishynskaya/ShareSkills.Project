@@ -74,3 +74,59 @@ h1 {
     color: rgba(255, 0, 0, 0.5);
     margin: 0;
 }
+
+.cookie-banner {
+    font-family: "Marmelad";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    padding: 50px;
+    box-shadow: 0px 0px 0px 1000px rgba(0,0,0,0.5)
+}
+
+.cookie-banner svg {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    height: 25%;
+    fill: rgb(150, 234, 253);
+}
+
+.cookie-banner .buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+}
+
+.cookie-btn {
+    font-family: "Marmelad";
+    background-color: rgba(6,210,255,1);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.no-btn {
+    background: rgb(194, 236, 245);
+}
+
+.overlay {
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}

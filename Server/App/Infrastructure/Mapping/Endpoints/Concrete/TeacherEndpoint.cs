@@ -2,6 +2,7 @@ using App.Infrastructure.Mapping.Endpoints.Abstract;
 using App.Services.Abstract;
 using Libraries.Contracts.Teacher;
 using Libraries.Contracts.User;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
@@ -12,27 +13,27 @@ public class TeacherEndpoint : IMinimalEndpoint
     public void MapRoutes(IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/teachers", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
                 async (ITeacherService service) =>
-            {
-                var teacher = await service.GetAllAsync();
+                {
+                    var teacher = await service.GetAllAsync();
 
-                return Results.Ok(teacher);
-            })
+                    return Results.Ok(teacher);
+                })
             .WithOpenApi();
 
         routeBuilder.MapGet("/teachers/{id:guid}",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
                 async (Guid id, ITeacherService service) =>
-            {
-                var teacher = await service.GetByIdAsync(id);
+                {
+                    var teacher = await service.GetByIdAsync(id);
 
-                return Results.Ok(teacher);
-            })
+                    return Results.Ok(teacher);
+                })
             .WithOpenApi();
 
         routeBuilder.MapPost("/teachers",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Teacher)]
                 async (TeacherForCreationDto dto, ITeacherService service) =>
                 {
                     try
@@ -49,24 +50,24 @@ public class TeacherEndpoint : IMinimalEndpoint
 
 
         routeBuilder.MapDelete("/teachers/{id:guid}", 
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Teacher)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}", Roles = UserRoles.Teacher)]
                 async (Guid id, ITeacherService service) =>
-            {
-                await service.DeleteAsync(id);
+                {
+                    await service.DeleteAsync(id);
 
-                return Results.NoContent();
-            })
+                    return Results.NoContent();
+                })
             .WithOpenApi();
 
         routeBuilder.MapGet("/teachers/get-by-email/{email}",
-                [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+                [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},{CookieAuthenticationDefaults.AuthenticationScheme}")]
                 async (ITeacherService service, string email) =>
-            {
-                var TeacherId = await service.GetByEmailAsync(email);
-                Console.WriteLine("id from endpoint:"+TeacherId);
+                {
+                    var TeacherId = await service.GetByEmailAsync(email);
+                    Console.WriteLine("id from endpoint:"+TeacherId);
 
-                return Results.Ok(TeacherId.ToString());
-            })
+                    return Results.Ok(TeacherId.ToString());
+                })
             .WithOpenApi();
     }
 }

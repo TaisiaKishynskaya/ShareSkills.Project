@@ -20,8 +20,13 @@ public class CalendarService : ICalendarService
     {
         try
         {
+            System.Diagnostics.Debug.Print("headers from update calendar:");
+            foreach (var header in _httpClient.DefaultRequestHeaders)
+            {
+                System.Diagnostics.Debug.Print($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
             System.Diagnostics.Debug.Print("jwt: " + _preferencesService.Get("jwt", string.Empty));
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
+            System.Diagnostics.Debug.Print("isCookie from calendar: " + _httpClient.DefaultRequestHeaders.Contains("Cookie").ToString());
             var response = await _httpClient.GetAsync($"http://localhost:5115/meetings/{startDate.ToString("MM-dd-yyyy")}/{endDate.ToString("MM-dd-yyyy")}");
             System.Diagnostics.Debug.Print("update response " + " " + response.StatusCode + await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
@@ -105,6 +110,11 @@ public class CalendarService : ICalendarService
     {
         try
         {
+            System.Diagnostics.Debug.Print("headers: ");
+            foreach (var header in _httpClient.DefaultRequestHeaders)
+            {
+                System.Diagnostics.Debug.Print($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
             var response = await _httpClient.GetAsync($"http://localhost:5115/meetings/{Id}");
             if (response.IsSuccessStatusCode)
             {

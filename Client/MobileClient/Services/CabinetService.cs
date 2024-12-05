@@ -53,7 +53,6 @@ public class CabinetService : ICabinetService
         );
         try
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _preferencesService.Get("jwt", string.Empty));
             var response = await _httpClient.PutAsync($"http://localhost:5115/users/{userId}", jsonContent);
             System.Diagnostics.Debug.Print(response.StatusCode.ToString());
             if (response.IsSuccessStatusCode)
