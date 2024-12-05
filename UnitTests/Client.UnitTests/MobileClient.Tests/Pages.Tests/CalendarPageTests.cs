@@ -11,6 +11,7 @@ namespace MobileClient.Tests.Pages.Tests
     {
         private Mock<ICalendarService> mockCalendarService;
         private Mock<IPreferencesService> mockPreferencesService;
+        private Mock<IAuthService> mockAuthService;
         DateTime startDate;
         DateTime endDate;
 
@@ -18,8 +19,10 @@ namespace MobileClient.Tests.Pages.Tests
         {
             mockCalendarService = new Mock<ICalendarService>();
             mockPreferencesService = new Mock<IPreferencesService>();
+            mockAuthService = new Mock<IAuthService>();
             Services.AddSingleton<ICalendarService>(mockCalendarService.Object);
             Services.AddSingleton<IPreferencesService>(mockPreferencesService.Object);
+            Services.AddSingleton<IAuthService>(mockAuthService.Object);
             startDate = DateTime.Now.Date;
             endDate = startDate.AddDays(7).Date;
         }
@@ -86,8 +89,9 @@ namespace MobileClient.Tests.Pages.Tests
         {
             // Arrange
             mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("Teacher"); // Simulate teacher role
-            mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<String>(), It.IsAny<String>()))
                 .ReturnsAsync(true); // Mock successful meeting creation
+            mockAuthService.Setup(x => x.GetSkills()).ReturnsAsync(new List<Skill> { new Skill() });
 
             var component = RenderComponent<Calendar>();
 
@@ -98,12 +102,14 @@ namespace MobileClient.Tests.Pages.Tests
             component.Find("input[placeholder='Email']").Change("test@example.com");
             component.Find("input[placeholder='Title']").Change("New Meeting");
             component.Find("input[type='datetime-local']").Change(DateTime.Now.ToString("yyyy-MM-ddTHH:mm"));
+            component.Find("input[placeholder='Theme']").Change("Theme");
+            component.Find("select").Change("SQL");
 
             // Submit the form
             component.Find("button:contains('Create')").Click();
 
             // Assert that the meeting was added
-            mockCalendarService.Verify(x => x.AddMeeting(It.IsAny<DateTime>(), "test@example.com", "New Meeting"), Times.Once);
+            mockCalendarService.Verify(x => x.AddMeeting(It.IsAny<DateTime>(), "test@example.com", "New Meeting", "Theme", "SQL"), Times.Once);
         }
 
         [Fact]
@@ -111,7 +117,7 @@ namespace MobileClient.Tests.Pages.Tests
         {
             // Arrange
             mockPreferencesService.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>())).Returns("Teacher"); // Simulate teacher role
-            mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockCalendarService.Setup(x => x.AddMeeting(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<String>(), It.IsAny<String>()))
                 .ReturnsAsync(true); // Mock successful meeting creation
 
             var component = RenderComponent<Calendar>();
@@ -128,7 +134,7 @@ namespace MobileClient.Tests.Pages.Tests
             component.Find("button:contains('Create')").Click();
 
             // Assert that the meeting was added
-            mockCalendarService.Verify(x => x.AddMeeting(It.IsAny<DateTime>(), "test@example.com", "New Meeting"), Times.Never);
+            mockCalendarService.Verify(x => x.AddMeeting(It.IsAny<DateTime>(), "test@example.com", "New Meeting", "theme", "skillId"), Times.Never);
             component.Find("p.error").MarkupMatches("<p class=\"error\">all fields must be filled in</p>");
         }
 

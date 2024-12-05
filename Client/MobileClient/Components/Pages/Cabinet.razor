@@ -45,6 +45,7 @@
             @if (!isTeacher)
             {
                 <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
+                <button class="feedback" @onclick="goToReportsPage">See reports</button>
             }
             }
             else
@@ -111,6 +112,11 @@
 
     private void goToFeedbackPage() {
         Navigation.NavigateTo("/feedback");
+    }
+
+    private void goToReportsPage()
+    {
+        Navigation.NavigateTo("/reports");
     }
 
     //for debug

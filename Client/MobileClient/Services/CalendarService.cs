@@ -74,15 +74,18 @@ public class CalendarService : ICalendarService
         
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string Email, String Title)
+    public async Task<bool> AddMeeting(DateTime Date, string Email, String Title, String theme, String skillId)
     {
         var id = await GetIdByEmail(Email);
+        System.Diagnostics.Debug.Print(skillId);
         var postData = new
         {
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ownerId = _preferencesService.Get("userId", string.Empty),
-            foreignId = id
+            foreignId = id,
+            theme = theme,
+            skillId = skillId
         };
 
         try

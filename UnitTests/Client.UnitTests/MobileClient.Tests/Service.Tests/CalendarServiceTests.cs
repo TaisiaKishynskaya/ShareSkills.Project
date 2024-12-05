@@ -91,7 +91,7 @@ namespace MobileClient.Tests.Service.Tests
             mockHttpMessageHandler
                 .When(HttpMethod.Post, $"{fakeBaseAddres}/meetings")
                 .Respond(req => expectedResponse);
-            var response = await _calendarService.AddMeeting(date, "email", "title");
+            var response = await _calendarService.AddMeeting(date, "email", "title", "theme", "skillId");
             Assert.True(response);
         }
 
@@ -104,7 +104,7 @@ namespace MobileClient.Tests.Service.Tests
             mockHttpMessageHandler
                 .When(HttpMethod.Post, $"{fakeBaseAddres}/meetings")
                 .Respond(req => expectedResponse);
-            var response = await _calendarService.AddMeeting(DateTime.Now, "email", "title");
+            var response = await _calendarService.AddMeeting(DateTime.Now, "email", "title", "theme", "skillId");
             Assert.False(response);
         }
 
