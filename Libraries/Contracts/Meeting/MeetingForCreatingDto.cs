@@ -6,4 +6,6 @@ public class MeetingForCreatingDto
     public required DateTime DateAndTime { get; set; }
     public required Guid OwnerId { get; set; }
     public required Guid ForeignId { get; set; }
+    public required string Theme { get; set; }
+    public required Guid SkillId { get; set; }
 }

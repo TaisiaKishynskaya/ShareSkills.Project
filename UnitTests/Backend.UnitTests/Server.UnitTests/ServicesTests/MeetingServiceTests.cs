@@ -30,7 +30,9 @@ public class MeetingServiceTests
             OwnerId = ownerId,
             ForeignId = Guid.NewGuid(),
             DateAndTime = dateAndTime,
-            Name = "Test Meeting"
+            Name = "Test Meeting",
+            Theme = "Test Theme", 
+            SkillId = Guid.NewGuid()
         };
 
         // Настроить, чтобы метод GetExistedAsync возвращал существующее собрание
@@ -41,7 +43,9 @@ public class MeetingServiceTests
                            Name = null,
                            DateTime = default,
                            OwnerId = default,
-                           ForeignId = default
+                           ForeignId = default,
+                           Theme = null, 
+                           SkillId = Guid.Empty
                        });
 
         // Act & Assert
@@ -60,7 +64,9 @@ public class MeetingServiceTests
             OwnerId = ownerId,
             ForeignId = foreignId,
             DateAndTime = dateAndTime,
-            Name = "Test Meeting"
+            Name = "Test Meeting",
+            Theme = "Test Theme", 
+            SkillId = Guid.NewGuid() 
         };
 
         // Настроить, чтобы метод GetExistedAsync возвращал null, что означает, что встречи не существует
@@ -78,6 +84,8 @@ public class MeetingServiceTests
         Assert.Equal(meetingDto.ForeignId, result.ForeignId);
         Assert.Equal(meetingDto.DateAndTime, result.DateTime);
         Assert.Equal(meetingDto.Name, result.Name);
+        Assert.Equal(meetingDto.Theme, result.Theme);
+        Assert.Equal(meetingDto.SkillId, result.SkillId); 
 
         _unitOfWorkMock.Verify(uow => uow.MeetingRepository.Insert(It.IsAny<MeetingEntity>()), Times.Once);
         _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -90,7 +98,7 @@ public class MeetingServiceTests
     {
         // Arrange
         var meetingId = Guid.NewGuid();
-        var meeting = new MeetingEntity { Id = meetingId, Name = "Math Lesson", DateTime = default, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting = new MeetingEntity { Id = meetingId, Name = "Math Lesson", DateTime = default, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid(), Theme = "Theme", SkillId = Guid.NewGuid()};
 
         _unitOfWorkMock.Setup(uow => uow.MeetingRepository.GetByIdAsync(meetingId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(meeting);
@@ -134,7 +142,9 @@ public class MeetingServiceTests
                 ForeignId = Guid.NewGuid(),
                 DateTime = DateTime.UtcNow,
                 Name = "Meeting 1",
-                Description = "Description 1"
+                Description = "Description 1",
+                Theme = "Theme 1", 
+                SkillId = Guid.NewGuid()
             },
             new MeetingEntity
             {
@@ -143,7 +153,9 @@ public class MeetingServiceTests
                 ForeignId = Guid.NewGuid(),
                 DateTime = DateTime.UtcNow.AddDays(1),
                 Name = "Meeting 2",
-                Description = "Description 2"
+                Description = "Description 2",
+                Theme = "Theme 2",
+                SkillId = Guid.NewGuid()
             }
         };
 
@@ -166,6 +178,8 @@ public class MeetingServiceTests
             Assert.Equal(meeting.DateTime, dto.DateTime);
             Assert.Equal(meeting.Name, dto.Name);
             Assert.Equal(meeting.Description, dto.Description);
+            Assert.Equal(meeting.Theme, dto.Theme);
+            Assert.Equal(meeting.SkillId, dto.SkillId);
         }
     }
 
@@ -197,7 +211,9 @@ public class MeetingServiceTests
             ForeignId = Guid.NewGuid(),
             DateTime = DateTime.UtcNow,
             Name = "Meeting Name",
-            Description = "Meeting Description"
+            Description = "Meeting Description",
+            Theme = "Theme",
+            SkillId = Guid.Empty
         };
 
         _unitOfWorkMock.Setup(uow => uow.MeetingRepository.GetByIdAsync(meetingId, It.IsAny<CancellationToken>()))
@@ -214,6 +230,8 @@ public class MeetingServiceTests
         Assert.Equal(meeting.DateTime, result.DateTime);
         Assert.Equal(meeting.Name, result.Name);
         Assert.Equal(meeting.Description, result.Description);
+        Assert.Equal(meeting.Theme, result.Theme);
+        Assert.Equal(meeting.SkillId, result.SkillId);
     }
 
     [Fact]
@@ -244,7 +262,9 @@ public class MeetingServiceTests
             ForeignId = Guid.NewGuid(),
             DateTime = dateTime,
             Name = "Meeting Name",
-            Description = "Meeting Description"
+            Description = "Meeting Description",
+            Theme = "Theme",
+            SkillId = Guid.Empty
         };
 
         _unitOfWorkMock.Setup(uow => uow.MeetingRepository.GetExistedAsync(entityId, dateTime, It.IsAny<CancellationToken>()))
@@ -261,6 +281,8 @@ public class MeetingServiceTests
         Assert.Equal(meeting.DateTime, result.DateTime);
         Assert.Equal(meeting.Name, result.Name);
         Assert.Equal(meeting.Description, result.Description);
+        Assert.Equal(meeting.Theme, result.Theme);
+        Assert.Equal(meeting.SkillId, result.SkillId);
     }
 
     [Fact]
@@ -291,7 +313,9 @@ public class MeetingServiceTests
             DateTime = DateTime.UtcNow,
             Name = null,
             OwnerId = default,
-            ForeignId = default
+            ForeignId = default,
+            Theme = null,
+            SkillId = Guid.Empty
         };
 
         var updateDto = new MeetingForUpdateDto

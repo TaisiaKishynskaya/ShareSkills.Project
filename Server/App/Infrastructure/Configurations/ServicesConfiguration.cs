@@ -44,7 +44,12 @@ public static class ServicesConfiguration
         builder.Services.AddScoped<ILevelService, LevelService>();
 
         builder.Services.AddScoped<TeacherBinaryTree>();
+        
+        builder.Services.AddScoped<ICacheService, RedisCacheService>();
+        builder.Services.AddRedisCache(builder.Configuration);
 
+        builder.Services.AddScoped<IReportService, ReportService>();
+        
         //builder.Services.AddAutoMapper();
 
         builder.Services.AddFluentValidationAutoValidation();

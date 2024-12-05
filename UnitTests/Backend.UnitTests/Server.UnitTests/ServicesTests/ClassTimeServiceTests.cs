@@ -1,3 +1,4 @@
+using App.Services.Abstract;
 using App.Services.Concrete;
 using Libraries.Entities.Concrete;
 using Libraries.Repositories.Abstract;
@@ -9,11 +10,13 @@ public class ClassTimeServiceTests
 {
     private readonly Mock<IClassTimeRepository> _classTimeRepositoryMock;
     private readonly ClassTimeService _service;
+    private readonly Mock<ICacheService> _cacheServiceMock;
 
     public ClassTimeServiceTests()
     {
         _classTimeRepositoryMock = new Mock<IClassTimeRepository>();
-        _service = new ClassTimeService(_classTimeRepositoryMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _service = new ClassTimeService(_classTimeRepositoryMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]

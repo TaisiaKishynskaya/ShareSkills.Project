@@ -43,7 +43,9 @@ public class MeetingEndpointTests
                 Name = null,
                 DateTime = default,
                 OwnerId = default,
-                ForeignId = default
+                ForeignId = default,
+                Theme = null,
+                SkillId = default
             }
         };
         
@@ -96,6 +98,8 @@ public class MeetingEndpointTests
         Assert.Equal(expectedMeeting.DateTime, actualMeeting.DateTime);
         Assert.Equal(expectedMeeting.OwnerId, actualMeeting.OwnerId);
         Assert.Equal(expectedMeeting.ForeignId, actualMeeting.ForeignId);
+        Assert.Equal(expectedMeeting.Theme, actualMeeting.Theme);
+        Assert.Equal(expectedMeeting.SkillId, actualMeeting.SkillId);
     }
     
     [Fact]
@@ -109,7 +113,9 @@ public class MeetingEndpointTests
             Name = "Morning",
             DateTime = default,
             OwnerId = default,
-            ForeignId = default
+            ForeignId = default,
+            Theme = null,
+            SkillId = default
         };
         
         var cancellationToken = new CancellationToken();
@@ -156,6 +162,8 @@ public class MeetingEndpointTests
         Assert.Equal(expectedMeeting.OwnerId, responseMeeting.OwnerId);
         Assert.Equal(expectedMeeting.ForeignId, responseMeeting.ForeignId);
         Assert.Equal(expectedMeeting.Name, responseMeeting.Name);
+        Assert.Equal(expectedMeeting.Theme, responseMeeting.Theme);
+        Assert.Equal(expectedMeeting.SkillId, responseMeeting.SkillId);
     }
     
 
@@ -168,7 +176,9 @@ public class MeetingEndpointTests
             Name = null,
             DateAndTime = default,
             OwnerId = default,
-            ForeignId = default
+            ForeignId = default,
+            Theme = null,
+            SkillId = default
         };
 
         var cancellationToken = new CancellationToken();
@@ -195,7 +205,9 @@ public class MeetingEndpointTests
             Name = null,
             DateAndTime = default,
             OwnerId = default,
-            ForeignId = default
+            ForeignId = default,
+            Theme = null,
+            SkillId = default
         };
 
         var cancellationToken = new CancellationToken();
