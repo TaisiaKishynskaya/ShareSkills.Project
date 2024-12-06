@@ -1,48 +1,72 @@
-@page "/login"
+@page "/"
 @using WebClient.Components.Layout
 @using WebClient.Services
 @inject NavigationManager Navigation
 @layout NoMenuLayout
-@inject AuthService AuthService
+@inject IAuthService AuthService
 @inject IJSRuntime JSRuntime
 
 <div class="main">
+
     <h1>Skills Share</h1>
-    <div class="info">
-        <div class="input-info">
-            <input type="email" class="main-input" placeholder="Email" @bind="@email">
-            <input type="password" class="main-input" placeholder="Password" @bind="@password">
-        </div>
 
-        @if (isError)
-        {
-            <p class="error">Incorrect email or password</p>
-        }
-
-        <button class="login-btn" @onclick="UserLogin">Log in</button>
-        <div class="login-link">
-            <a @onclick="registrationNavigate">Register now</a>
-        </div>
+    <div class="input-info">
+        <input type="email" class="main-input" placeholder="Email" @bind="@email">
+        <input type="password" class="main-input" placeholder="Password" @bind="@password">
     </div>
+
+    @if (errorMessages.Any())
+    {
+        <ul class="error-messages">
+            @foreach (var message in errorMessages)
+            {
+                <li>@message</li>
+            }
+        </ul>
+    }
+
+    <button class="login-btn" disabled="@isCookiesBanner" @onclick="UserLogin">Log in</button>
+
+    <div class="login-link">
+        <a @onclick="registrationNavigate" class="login-link">Register now</a>
+    </div>
+
+    @if (isCookiesBanner)
+    {
+        <div class="cookie-banner">
+            <p>Do you allow us to use cookies for improving your experience?</p>
+            <div class="buttons">
+                <button @onclick="AllowCookies" class="cookie-btn">Yes</button>
+                <button @onclick="DenyCookies" class="cookie-btn no-btn">No</button>
+            </div>
+        </div>
+    }
 </div>
 
-@code 
+@code
 {
     private string email;
     private string password;
-    private bool isError = false;
+    private List<string> errorMessages = new();
+    private bool isCookiesBanner = true;
 
     protected override async Task OnInitializedAsync()
     {
         // to login automaticly, but jwt is expiring too fast
         @* await CheckExistingToken(); *@
+        var allowCookies = await AuthService.GetCookiesPermission();
+        if (allowCookies == "true")
+        {
+            isCookiesBanner = false;
+            await AuthService.GetCookies();
+        }
     }
 
     private async Task CheckExistingToken()
     {
         // Check if the JWT token is stored in Preferences
         var jwt = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
-        
+
         if (!string.IsNullOrEmpty(jwt))
         {
             // Optionally, you can validate the token with the server here
@@ -54,16 +78,41 @@
 
     private async Task UserLogin()
     {
-        if (await AuthService.UserLogin(email, password))
+        errorMessages.Clear();
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
-            isError = false;
-            // AuthService.GetUserRole(); 
+            errorMessages.Add("Email and password are required.");
+            return;
+        }
+
+        var result = await AuthService.UserLogin(email, password);
+        if (result.Succesful)
+        {
             NavigateToCalendar();
+        }
+        else if (result.Errors != null)
+        {
+            foreach (var error in result.Errors)
+            {
+                errorMessages.AddRange(error.Value);
+            }
         }
         else
         {
-            isError = true;
+            errorMessages.Add("An unknown error occurred.");
         }
+    }
+
+    private async Task AllowCookies()
+    {
+        await AuthService.AllowCookies();
+        isCookiesBanner = false;
+    }
+
+    private async Task DenyCookies()
+    {
+        await AuthService.DenyCookies();
+        isCookiesBanner = false;
     }
 
     private void NavigateToCalendar()
@@ -73,6 +122,6 @@
 
     private void registrationNavigate()
     {
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo("/registration");
     }
 }

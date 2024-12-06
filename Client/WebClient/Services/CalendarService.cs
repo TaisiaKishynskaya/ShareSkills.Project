@@ -1,8 +1,9 @@
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
+
 namespace WebClient.Services;
 
-public class CalendarService
+public class CalendarService : ICalendarService
 {
     private readonly HttpClient _httpClient;
     private readonly IJSRuntime _jsRuntime;
@@ -13,13 +14,30 @@ public class CalendarService
         _jsRuntime = jsRuntime;
     }
 
-    public async Task<List<Meeting>?> UpdateCalendar()
+    public async Task<List<Meeting>?> UpdateCalendar(DateTime startDate, DateTime endDate)
     {
         try
         {
             var jwt = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
-            var response = await _httpClient.GetAsync("http://localhost:5115/meetings");
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwt);
+            }
+
+            var cookies = await _jsRuntime.InvokeAsync<string>("eval", "document.cookie");
+            Console.WriteLine("Cookies: " + cookies);
+
+            Console.WriteLine("headers from update calendar:");
+            foreach (var header in _httpClient.DefaultRequestHeaders)
+            {
+                Console.WriteLine($"{header.Key}: {string.Join(", ", header.Value)}");
+            }
+
+            var url =
+                $"http://localhost:5115/meetings/{startDate.ToString("MM-dd-yyyy")}/{endDate.ToString("MM-dd-yyyy")}";
+            var response = await _httpClient.GetAsync(url);
+            Console.WriteLine($"update response: {response.StatusCode}");
             if (response.IsSuccessStatusCode)
             {
                 var meetings = await response.Content.ReadFromJsonAsync<List<Meeting>>();
@@ -27,24 +45,31 @@ public class CalendarService
                 {
                     return meetings;
                 }
+
                 return null;
             }
+
+            return null;
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Network error: {ex.Message}");
             return null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine($"Unexpected error: {ex.Message}");
             return null;
         }
     }
-    
-    private async Task<string?> GetIdByEmail(string email)
+
+    public async Task<string?> GetIdByEmail(string email)
     {
         Console.WriteLine(email);
         try
         {
-            var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/getId?email={email}", new {});
-            Console.WriteLine("content: "+await response.Content.ReadAsStringAsync());
+            var response = await _httpClient.PostAsJsonAsync($"http://localhost:5115/getId?email={email}", new { });
+            Console.WriteLine("content: " + await response.Content.ReadAsStringAsync());
 
             if (response.IsSuccessStatusCode)
             {
@@ -55,6 +80,7 @@ public class CalendarService
             {
                 Console.WriteLine($"Error: {response.ReasonPhrase}");
             }
+
             return null;
         }
         catch (Exception ex)
@@ -62,19 +88,26 @@ public class CalendarService
             Console.WriteLine(ex);
             return null;
         }
-        
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string Email, string Title)
+    public async Task<bool> AddMeeting(DateTime Date, string Email, string Title, String theme, String skillId)
     {
         var ownerId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var id = await GetIdByEmail(Email);
+        System.Diagnostics.Debug.Print(skillId);
+        if (id == null || ownerId == null)
+        {
+            return false;
+        }
+
         var postData = new
         {
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ownerId,
-            foreignId = id
+            foreignId = id,
+            theme = theme,
+            skillId = skillId
         };
 
         try
@@ -82,13 +115,14 @@ public class CalendarService
             var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/meetings", postData);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Meeting created");
+                Console.WriteLine("Meeting created successfully.");
                 return true;
             }
             else
             {
                 Console.WriteLine($"Error: {response.ReasonPhrase}");
             }
+
             return false;
         }
         catch (Exception ex)
@@ -106,26 +140,20 @@ public class CalendarService
             if (response.IsSuccessStatusCode)
             {
                 var meeting = await response.Content.ReadFromJsonAsync<Meeting>();
-                try 
+                if (meeting != null)
                 {
-                    var url = (await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "Teacher") ? $"http://localhost:5115/users/{meeting.ForeignId}" : $"http://localhost:5115/users/{meeting.OwnerId}";
+                    var url = (await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userRole")== "Teacher") ?
+                        $"http://localhost:5115/users/{meeting.ForeignId}" : $"http://localhost:5115/users/{meeting.OwnerId}";
                     var response2 = await _httpClient.GetAsync(url);
                     if (response2.IsSuccessStatusCode)
                     {
                         var teacher = await response2.Content.ReadFromJsonAsync<User>();
                         return (meeting, teacher);
                     }
-                    return null;
-                    
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    return null;
                 }
             }
-            return null;
 
+            return null;
         }
         catch (Exception ex)
         {

@@ -2,12 +2,12 @@
 @using WebClient.Services
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
-@inject CabinetService CabinetService
+@inject ICabinetService CabinetService
 @inject IJSRuntime JSRuntime
 
 <div class="main">
     <div class="title">
-        <p>Share</p>
+        <p>Skills Share</p>
     </div>
 
     <div class="content">
@@ -17,8 +17,9 @@
                 <p class="name">@user.Name @user.Surname</p>
                 <p class="email">@user.Email</p>
             </div>
+            @*
             <hr>
-            @* <div class="block">
+             <div class="block">
                 <p class="skills-text">Choosed skills</p>
                 <div class="skills-cards">
                     @foreach (var skill in skills)
@@ -30,14 +31,23 @@
                 </div>
             </div> *@
             <hr>
-            <button class="feedback" @onclick="() => IsShowDialog=true">Change profile information</button>
+            <div class="switch-btn">
+                <label class="switch">
+                    <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleInputClick">
+                    <span class="slider round"></span>
+                </label>
+                <p>Allow using Cookies</p>
+            </div>
+            <button class="feedback" @onclick="() => IsShowDialog = true">Change profile information</button>
             @if (isTeacher)
             {
                 <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>Change skills</button>
             }
+
             @if (!isTeacher)
             {
                 <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
+                <button class="feedback" @onclick="goToReportsPage">See reports</button>
             }
         }
         else
@@ -50,11 +60,17 @@
     @if (IsShowDialog)
     {
         <div class="dialog">
-            <svg @onclick="() => IsShowDialog=false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+            <svg @onclick="() => { IsShowDialog = false; ErrorMessage = string.Empty; }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+            </svg>
             <input type="text" class="dialog-input" placeholder="Name" @bind="@userToChange.Name">
-            <input type="text" class="dialog-input" placeholder="Surname" @bind = "@userToChange.Surname">
-            <input type="text" class="dialog-input" placeholder="Email" @bind = "@userToChange.Email">
-            <input type="text" class="dialog-input" placeholder="Password" @bind = "@newPassword">
+            <input type="text" class="dialog-input" placeholder="Surname" @bind="@userToChange.Surname">
+            <input type="text" class="dialog-input" placeholder="Email" @bind="@userToChange.Email">
+            <input type="text" class="dialog-input" placeholder="Password" @bind="@newPassword">
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <p class="error">@ErrorMessage</p>
+            }
             <button class="next-btn" @onclick="ChangeInfo">
                 Change
             </button>
@@ -64,6 +80,7 @@
 
 @code {
     private User user;
+
     private User userToChange = new User
     {
         Id = "",
@@ -73,10 +90,13 @@
         PasswordHash = "",
         Role = "",
     };
+
     private String newPassword = "";
-    private string[] skills = {"Python", "Java", "C#", "HTML", "C++"};
+    private string[] skills = { "Python", "Java", "C#", "HTML", "C++" };
     private bool IsShowDialog = false;
     private bool isTeacher;
+    private string ErrorMessage = "";
+    private bool isAllowCookies = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,6 +108,10 @@
             userToChange.Email = user.Email;
             userToChange.PasswordHash = user.PasswordHash;
         }
+
+        var allowCookies = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "allowCookies");
+        isAllowCookies = allowCookies == "true";
+
         StateHasChanged();
         isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "Teacher") ? true : false;
     }
@@ -95,6 +119,11 @@
     private void goToFeedbackPage()
     {
         Navigation.NavigateTo("/feedback");
+    }
+    
+    private void goToReportsPage()
+    {
+        Navigation.NavigateTo("/reports");
     }
 
     // for debug
@@ -113,10 +142,38 @@
 
     private async Task ChangeInfo()
     {
-        if (await CabinetService.ChangeInfo(userToChange, newPassword))
+        if (string.IsNullOrWhiteSpace(userToChange.Name) ||
+            string.IsNullOrWhiteSpace(userToChange.Surname) ||
+            string.IsNullOrWhiteSpace(userToChange.Email) ||
+            string.IsNullOrWhiteSpace(newPassword))
+        {
+            ErrorMessage = "All fields must be filled in.";
+            return;
+        }
+
+        var (success, errorMessage) = await CabinetService.ChangeInfo(userToChange, newPassword);
+        if (success)
         {
             IsShowDialog = false;
+            ErrorMessage = "";
             StateHasChanged();
         }
+        else
+        {
+            ErrorMessage = errorMessage;
+        }
     }
+
+    private async Task HandleInputClick()
+    {
+        if (isAllowCookies)
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "true");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "false");
+        }
+    }
+
 }

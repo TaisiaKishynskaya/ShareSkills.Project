@@ -1,0 +1,10 @@
+namespace WebClient.Services
+{
+    public interface ICalendarService
+    {
+        public Task<List<Meeting>?> UpdateCalendar(DateTime startDate, DateTime endDate);
+        public Task<string?> GetIdByEmail(string email);
+        public Task<bool> AddMeeting(DateTime Date, string Email, String Title, String theme, String skillId);
+        public Task<(Meeting meeting, User teacher)?> GetMeetingInfo(string Id, String userRole);
+    }
+}

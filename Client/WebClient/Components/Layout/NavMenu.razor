@@ -1,6 +1,6 @@
 ﻿@inject IJSRuntime JSRuntime
 @using WebClient.Services
-@inject AuthService AuthService
+@inject IAuthService AuthService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -15,7 +15,7 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="cabinet" Match="NavLinkMatch.All">
-                <span class="bi bi-cabinet-fill-nav-menu" aria-hidden="true"></span>  Cabinet
+                <span class="bi bi-cabinet-fill-nav-menu" aria-hidden="true"></span> Cabinet
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -25,13 +25,13 @@
         </div>
         @if (!isTeacher)
         {
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="search">
-                <span class="bi bi-search-fill-nav-menu" aria-hidden="true"></span> Search mentor
-            </NavLink>
-        </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="search">
+                    <span class="bi bi-search-fill-nav-menu" aria-hidden="true"></span> Search mentor
+                </NavLink>
+            </div>
         }
-       
+
     </nav>
 </div>
 
@@ -51,4 +51,5 @@
         await AuthService.GetUserRole();
         isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "Teacher") ? true : false;
     }
+
 }
