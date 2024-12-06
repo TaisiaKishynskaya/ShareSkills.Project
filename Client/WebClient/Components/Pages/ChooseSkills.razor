@@ -95,7 +95,7 @@
     {
         skills = await AuthService.GetSkills();
         await AuthService.GetUserRole();
-        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "90c08b8a-fa4c-445e-9f66-717bf2bfcf72") ? true : false;
+        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "Teacher") ? true : false;
     }
 
 }
