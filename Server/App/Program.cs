@@ -20,7 +20,7 @@ internal class Program
             options.AddPolicy("AllowAll", policy =>
             {
                 //policy.AllowAnyOrigin()
-                policy.WithOrigins("http://localhost:7163")
+                policy.WithOrigins("http://localhost:5139")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();

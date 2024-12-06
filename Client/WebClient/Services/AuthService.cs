@@ -54,6 +54,10 @@ public class AuthService : IAuthService
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userId", authResponse.userId);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "jwt", authResponse.token);
                 Console.WriteLine("jwt: " + await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt"));
+                if (response.Headers.Contains("Set-Cookie"))
+                {
+                    Console.WriteLine("header contains cookies");
+                }
 
                 if (allowCookies == "true" && response.Headers.Contains("Set-Cookie"))
                 {

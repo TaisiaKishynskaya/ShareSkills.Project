@@ -9,8 +9,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<CalendarService, CalendarService>();
-builder.Services.AddScoped<CabinetService, CabinetService>();
+builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<ICabinetService, CabinetService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
