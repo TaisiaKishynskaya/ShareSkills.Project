@@ -17,5 +17,7 @@ public class MeetingConfiguration : IEntityTypeConfiguration<MeetingEntity>
         builder.Property(x => x.ForeignId).IsRequired();
         builder.Property(x => x.DateTime).IsRequired();
         builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Theme);
+        builder.Property(x => x.SkillId).IsRequired();
     }
 }

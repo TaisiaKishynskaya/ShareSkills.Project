@@ -1,3 +1,4 @@
+using App.Services.Abstract;
 using App.Services.Concrete;
 using Libraries.Entities.Concrete;
 using Libraries.Repositories.Abstract;
@@ -9,11 +10,14 @@ public class LevelServiceTests
 {
     private readonly Mock<ILevelRepository> _levelRepositoryMock;
     private readonly LevelService _service;
-
+    private readonly Mock<ICacheService> _cacheServiceMock;
+    
     public LevelServiceTests()
     {
         _levelRepositoryMock = new Mock<ILevelRepository>();
-        _service = new LevelService(_levelRepositoryMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _service = new LevelService(_levelRepositoryMock.Object, _cacheServiceMock.Object);
+        
     }
     
     [Fact]

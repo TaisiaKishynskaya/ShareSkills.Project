@@ -8,4 +8,6 @@ public class MeetingDto
     public string? Description { get; set; }
     public required Guid OwnerId { get; set; }
     public required Guid ForeignId { get; set; }
+    public required string Theme { get; set; }
+    public required Guid SkillId { get; set; }
 }

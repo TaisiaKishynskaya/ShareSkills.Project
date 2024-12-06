@@ -139,7 +139,7 @@ namespace MobileClient.Tests.Pages.Tests
         }
 
         [Theory]
-        [InlineData("90c08b8a-fa4c-445e-9f66-717bf2bfcf72", true)]  // Teacher
+        [InlineData("Teacher", true)]  // Teacher
         [InlineData("some-other-role", false)]                    // Non-Teacher
         public async Task Should_Display_Teacher_NonTeacher_Options(string role, bool isTeacher)
         {

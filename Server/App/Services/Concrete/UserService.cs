@@ -7,10 +7,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace App.Services.Concrete;
 
-public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUserService
+public class UserService(IUnitOfWork unitOfWork, IRoleService roleService, ICacheService cacheService) : IUserService
 {
+
     public async Task<UserDto?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
+        var cacheKey = $"user:{email}";
+        
+        var cachedUser = await cacheService.GetCacheValueAsync<UserDto>(cacheKey);
+        if (cachedUser != null)
+        {
+            return cachedUser;
+        }
+        
         var user = await unitOfWork.UserRepository
             .GetByEmailAsync(email, cancellationToken);
         
@@ -18,8 +27,7 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
         {
             //TODO: need to be replaced by EF mapping mechanism for map it automatically
             var roleName = await roleService.GetRoleNameAsync(user.RoleId);
-            
-            return new UserDto
+            var userDto = new UserDto
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -28,6 +36,9 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
                 Email = user.Email,
                 Role = roleName
             };
+            
+            await cacheService.SetCacheValueAsync(cacheKey, userDto);
+            return userDto;
         }
 
         return null;
@@ -47,6 +58,25 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
         unitOfWork.UserRepository.Insert(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var roleName = await roleService.GetRoleNameAsync(user.RoleId);
+        var userDto = new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Surname = user.Surname,
+            Email = user.Email,
+            PasswordHash = user.Password,
+            Role = roleName
+        };
+        
+        var cacheKeyByEmail = $"user:{user.Email}";
+        var cacheKeyById = $"user:{user.Id}";
+        await cacheService.SetCacheValueAsync(cacheKeyByEmail, userDto);
+        await cacheService.SetCacheValueAsync(cacheKeyById, userDto);
+        
+        const string allUsersCacheKey = "all_users";
+        await cacheService.DeleteCacheValueAsync(allUsersCacheKey);
+        
         return user.Id;
     }
 
@@ -59,38 +89,55 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
         unitOfWork.UserRepository.Remove(user);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        var cacheKeyById = $"user:{id}";
+        var cacheKeyAllUsers = "all_users";
+
+        await cacheService.DeleteCacheValueAsync(cacheKeyById);
+        await cacheService.DeleteCacheValueAsync(cacheKeyAllUsers);
     }
 
     public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var users = await unitOfWork.UserRepository
-            .GetAllAsync(cancellationToken);
-
-        var teachersDtos = new List<UserDto>();
-
-        foreach (var user in users)
+        const string cacheKey = "all_users";
+    
+        var cachedUsers = await cacheService.GetCacheValueAsync<List<UserDto>>(cacheKey);
+        if (cachedUsers != null)
         {
-            teachersDtos.Add(new UserDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Surname = user.Surname,
-                Email = user.Email,
-                PasswordHash = user.Password,
-                Role = user.RoleId.ToString()
-            });
+            return cachedUsers;
         }
 
-        return teachersDtos;
+        var users = await unitOfWork.UserRepository.GetAllAsync(cancellationToken);
+
+        var userDtos = users.Select(user => new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Surname = user.Surname,
+            Email = user.Email,
+            PasswordHash = user.Password,
+            Role = user.RoleId.ToString()
+        }).ToList();
+        
+        await cacheService.SetCacheValueAsync(cacheKey, userDtos);
+        return userDtos;
     }
 
     public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        var cacheKey = $"user:{id}";
+        
+        var cachedUser = await cacheService.GetCacheValueAsync<UserDto>(cacheKey);
+        if (cachedUser != null)
+        {
+            return cachedUser;
+        }
+        
         var user = await unitOfWork.UserRepository
            .GetByIdAsync(id, cancellationToken)
             ?? throw new UserNotFoundException(id);
 
-        return new UserDto
+        var userDto = new UserDto
         {
             Id = user.Id,
             Name = user.Name,
@@ -99,6 +146,9 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
             PasswordHash = user.Password,
             Role = user.RoleId.ToString()
         };
+        
+        await cacheService.SetCacheValueAsync(cacheKey, userDto);
+        return userDto;
     }
 
     public async Task UpdateAsync(Guid id, UserForUpdateDto userForUpdateDto, CancellationToken cancellationToken = default)
@@ -119,5 +169,8 @@ public class UserService(IUnitOfWork unitOfWork, IRoleService roleService) : IUs
         user.Password = passwordHash;
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await cacheService.DeleteCacheValueAsync($"user:{id}");
+        await cacheService.DeleteCacheValueAsync($"user:{user.Email}");
     }
 }

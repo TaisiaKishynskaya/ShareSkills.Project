@@ -16,6 +16,7 @@ public class UserServiceTests
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IRoleService> _mockRoleService;
     private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     //private readonly Mock<IMapper> _mockMapper;
     //private readonly Mock<ILogger<UserService>> _mockLogger;
     
@@ -27,9 +28,10 @@ public class UserServiceTests
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockRoleService = new Mock<IRoleService>();
         _mockUserRepository = new Mock<IUserRepository>();
+        _cacheServiceMock = new Mock<ICacheService>();
         //_mockMapper = new(); _mockLogger = new();
 
-        _service = new UserService(_mockUnitOfWork.Object, _mockRoleService.Object);
+        _service = new UserService(_mockUnitOfWork.Object, _mockRoleService.Object, _cacheServiceMock.Object);
         
         //_testId = Guid.NewGuid();
     }
@@ -80,7 +82,7 @@ public class UserServiceTests
         _mockUnitOfWork.Setup(uow => uow.UserRepository).Returns(_mockUserRepository.Object);
 
         //Act
-        await Assert.ThrowsAsync<NullReferenceException>(() => _service.GetAllAsync());
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _service.GetAllAsync());
 
         //Assert
         _mockUserRepository.Verify(repo => repo.GetAllAsync(CancellationToken.None), Times.Once);
@@ -347,7 +349,7 @@ public class UserServiceTests
         _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var userService = new UserService(_mockUnitOfWork.Object, new Mock<IRoleService>().Object);
+        var userService = new UserService(_mockUnitOfWork.Object, new Mock<IRoleService>().Object, _cacheServiceMock.Object);
 
         // Act
         await userService.DeleteAsync(testId);
@@ -370,7 +372,7 @@ public class UserServiceTests
         _mockUnitOfWork.Setup(uow => uow.UserRepository)
             .Returns(_mockUserRepository.Object);
 
-        var userService = new UserService(_mockUnitOfWork.Object, new Mock<IRoleService>().Object);
+        var userService = new UserService(_mockUnitOfWork.Object, new Mock<IRoleService>().Object, _cacheServiceMock.Object);
 
         // Act & Assert: Проверяем, что вызов метода выбрасывает исключение UserNotFoundException
         var exception = await Assert.ThrowsAsync<UserNotFoundException>(() => userService.DeleteAsync(testId));
