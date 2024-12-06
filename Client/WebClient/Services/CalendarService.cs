@@ -90,10 +90,11 @@ public class CalendarService : ICalendarService
         }
     }
 
-    public async Task<bool> AddMeeting(DateTime Date, string Email, string Title)
+    public async Task<bool> AddMeeting(DateTime Date, string Email, string Title, String theme, String skillId)
     {
         var ownerId = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "userId");
         var id = await GetIdByEmail(Email);
+        System.Diagnostics.Debug.Print(skillId);
         if (id == null || ownerId == null)
         {
             return false;
@@ -104,7 +105,9 @@ public class CalendarService : ICalendarService
             name = Title,
             dateAndTime = Date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ownerId,
-            foreignId = id
+            foreignId = id,
+            theme = theme,
+            skillId = skillId
         };
 
         try

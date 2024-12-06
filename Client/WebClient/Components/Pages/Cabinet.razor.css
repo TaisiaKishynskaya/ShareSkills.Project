@@ -110,6 +110,11 @@ hr {
     outline: none;
 }
 
+.dialog-select {
+    border: none;
+    border-bottom: 1px solid black;
+    width: 90%;
+}
 
 .next-btn {
     width: 150px;

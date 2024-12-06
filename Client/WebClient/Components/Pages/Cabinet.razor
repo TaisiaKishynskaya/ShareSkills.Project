@@ -17,8 +17,9 @@
                 <p class="name">@user.Name @user.Surname</p>
                 <p class="email">@user.Email</p>
             </div>
+            @*
             <hr>
-            @* <div class="block">
+             <div class="block">
                 <p class="skills-text">Choosed skills</p>
                 <div class="skills-cards">
                     @foreach (var skill in skills)
@@ -46,6 +47,7 @@
             @if (!isTeacher)
             {
                 <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
+                <button class="feedback" @onclick="goToReportsPage">See reports</button>
             }
         }
         else
@@ -117,6 +119,11 @@
     private void goToFeedbackPage()
     {
         Navigation.NavigateTo("/feedback");
+    }
+    
+    private void goToReportsPage()
+    {
+        Navigation.NavigateTo("/reports");
     }
 
     // for debug
