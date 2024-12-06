@@ -27,7 +27,10 @@ public class AuthService : IAuthService
             Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
 
             var allowCookies = await GetCookiesPermission();
-            //HttpResponseMessage response = null;
+            HttpResponseMessage response;
+
+            string loginUrl =
+                $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie={(allowCookies == "true" ? "true" : "false")}";
 
             if (allowCookies == "true")
             {
@@ -43,8 +46,7 @@ public class AuthService : IAuthService
 
             //else
             //{
-            var response = await _httpClient.PostAsJsonAsync(
-                $"http://localhost:5115/login?email={email}&password={password}", new { });
+            response = await _httpClient.PostAsJsonAsync(loginUrl, new { });
             //}
 
             if (response.IsSuccessStatusCode)
@@ -60,7 +62,8 @@ public class AuthService : IAuthService
                     var cookie = cookieHeaders.FirstOrDefault();
                     if (cookie != null)
                     {
-                        await _jsRuntime.InvokeVoidAsync("setCookie", "ShareSkills_App_Cookie", cookie, 30);
+                        await _jsRuntime.InvokeVoidAsync("setCookie", "ShareSkills_App_Cookie",
+                            ExtractCookieValue(cookie), 30);
                         Console.WriteLine("Saved Cookie: " + cookie);
                     }
                 }
@@ -81,6 +84,19 @@ public class AuthService : IAuthService
                     { { "General", new List<string> { "Unable to connect to the server." } } }
             };
         }
+    }
+
+    private string ExtractCookieValue(string setCookieHeader)
+    {
+        var cookieParts = setCookieHeader.Split(';')[0];
+        var keyValue = cookieParts.Split('=');
+
+        if (keyValue.Length == 2)
+        {
+            return keyValue[1];
+        }
+
+        return string.Empty;
     }
 
 
