@@ -23,53 +23,58 @@ public class AuthService : IAuthService
     {
         try
         {
-            Console.WriteLine($"http://localhost:5115/login?email={email}&password={password}");
-
-            var allowCookies = await GetCookiesPermission();
             HttpResponseMessage response;
+            string cookieKey = "ShareSkills_App_Cookie";
 
-            string loginUrl =
-                $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie={(allowCookies == "true" ? "true" : "false")}";
+            // Check user permission for cookies
+            var allowCookies = await GetCookiesPermission();
 
             if (allowCookies == "true")
             {
-                var savedCookie = await _jsRuntime.InvokeAsync<string>("getCookie", "ShareSkills_App_Cookie");
-                if (!string.IsNullOrEmpty(savedCookie))
+                // Check if cookie exists in default headers
+                var hasCookie = _httpClient.DefaultRequestHeaders.Contains("Cookie");
+
+                // If cookie exists, use it with authMethodCookie=true
+                if (hasCookie)
                 {
-                    _httpClient.DefaultRequestHeaders.Add("Cookie", savedCookie);
+                    string loginUrl = $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=true";
+                    response = await _httpClient.PostAsJsonAsync(loginUrl, new { });
                 }
+                else
+                {
+                    // If no cookie, request with authMethodCookie=false and save cookies if available
+                    string loginUrl = $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=false";
+                    response = await _httpClient.PostAsJsonAsync(loginUrl, new { });
 
-                //response = await _httpClient.PostAsJsonAsync(
-                //   $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=true", new { });
+                    if (response.Headers.Contains("Set-Cookie"))
+                    {
+                        var cookieHeaders = response.Headers.GetValues("Set-Cookie");
+                        var cookie = cookieHeaders.FirstOrDefault();
+                        if (cookie != null)
+                        {
+                            string extractedCookie = ExtractCookieValue(cookie);
+                            _httpClient.DefaultRequestHeaders.Add("Cookie", extractedCookie);
+
+                            // Optionally save cookie in local storage or JS runtime
+                            await _jsRuntime.InvokeVoidAsync("setCookie", cookieKey, extractedCookie, 30);
+                            Console.WriteLine("Saved Cookie: " + extractedCookie);
+                        }
+                    }
+                }
             }
-
-            //else
-            //{
-            response = await _httpClient.PostAsJsonAsync(loginUrl, new { });
-            //}
+            else
+            {
+                // User did not allow cookies, always use authMethodCookie=false
+                string loginUrl = $"http://localhost:5115/login?email={email}&password={password}&authMethodCookie=false";
+                response = await _httpClient.PostAsJsonAsync(loginUrl, new { });
+            }
 
             if (response.IsSuccessStatusCode)
             {
-                authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "userId", authResponse.userId);
                 await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "jwt", authResponse.token);
                 Console.WriteLine("jwt: " + await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "jwt"));
-                if (response.Headers.Contains("Set-Cookie"))
-                {
-                    Console.WriteLine("header contains cookies");
-                }
-
-                if (allowCookies == "true" && response.Headers.Contains("Set-Cookie"))
-                {
-                    var cookieHeaders = response.Headers.GetValues("Set-Cookie");
-                    var cookie = cookieHeaders.FirstOrDefault();
-                    if (cookie != null)
-                    {
-                        await _jsRuntime.InvokeVoidAsync("setCookie", "ShareSkills_App_Cookie",
-                            ExtractCookieValue(cookie), 30);
-                        Console.WriteLine("Saved Cookie: " + cookie);
-                    }
-                }
 
                 await GetUserRole();
                 return new ValidationResponse { Succesful = true, Errors = null };
@@ -84,7 +89,7 @@ public class AuthService : IAuthService
             {
                 Succesful = false,
                 Errors = new Dictionary<string, List<string>>
-                    { { "General", new List<string> { "Unable to connect to the server." } } }
+                { { "General", new List<string> { "Unable to connect to the server." } } }
             };
         }
     }
