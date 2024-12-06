@@ -7,10 +7,10 @@ public class FeedbackService : IFeedbackService
 {
     private readonly HttpClient _httpClient;
     private readonly IJSRuntime _jsRuntime;
-    private readonly SearchService _searchService;
+    private readonly ISearchService _searchService;
     private readonly ILogger<FeedbackService> _logger;
 
-    public FeedbackService(HttpClient httpClient, IJSRuntime jsRuntime, SearchService searchService,
+    public FeedbackService(HttpClient httpClient, IJSRuntime jsRuntime, ISearchService searchService,
         ILogger<FeedbackService> logger)
     {
         _httpClient = httpClient;
