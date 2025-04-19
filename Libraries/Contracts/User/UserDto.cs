@@ -9,7 +9,7 @@ public class UserDto
         get { return _id; }
         set
         {
-            if (Guid.TryParse(value.ToString(), out Guid result))
+            if (Guid.TryParse(value.ToString(), out var result))
             {
                 _id = result;
             }
