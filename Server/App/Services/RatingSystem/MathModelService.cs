@@ -4,84 +4,24 @@ using Microsoft.ML;
 
 namespace App.Services.RatingSystem;
 
-public class Recommender// : IMathModelService
-{/*
-    private readonly MLContext _mlContext;
-    private readonly AppDbContext _dbContext;
-    private ITransformer _model;
-    
-    public MathModelService(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-        _mlContext = new MLContext();
-    }
-
-    public async Task Train()
-    {
-        // Завантажуємо всі оцінки (GradeEntity)
-        var flatRatings = await _dbContext.Grades
-            .SelectMany(g => g.Students.Select(u => new RatingInput {
-                UserId = u.Id.ToString(),
-                CourseId = g.Courses.First().Id.ToString(),
-                Label = g.Grade
-            }))
-            .ToListAsync();
-
-        // Створюємо IDataView
-        var data = _mlContext.Data.LoadFromEnumerable(flatRatings);
-
-        // Конвеєр перетворень:
-        // 1) MapValueToKey для Guid
-        // 2) Matrix Factorization
-        var pipeline = _mlContext.Transforms.Conversion
-            .MapValueToKey("userKey", nameof(RatingInput.UserId))
-            .Append(_mlContext.Transforms.Conversion.MapValueToKey("courseKey", nameof(RatingInput.CourseId)))
-            .Append(_mlContext.Recommendation().Trainers.MatrixFactorization(
-                new Microsoft.ML.Trainers.MatrixFactorizationTrainer.Options
-                {
-                    MatrixColumnIndexColumnName = "userKey",
-                    MatrixRowIndexColumnName = "courseKey",
-                    LabelColumnName = nameof(RatingInput.Label),
-                    NumberOfIterations = 20,
-                    ApproximationRank = 50
-                }))
-            .Append(_mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel", "Score"));
-
-        _model = pipeline.Fit(data);
-    }
-
-    public float Predict(Guid userId, Guid courseId)
-    {
-        var engine = _mlContext.Model.CreatePredictionEngine<RatingInput, CoursePrediction>(_model);
-        var input = new RatingInput { UserId = userId.ToString(), CourseId = courseId.ToString() };
-        var pred = engine.Predict(input);
-        return pred.Score;
-    }
-
-    public async Task<IEnumerable<CourseEntity>> RecommendCourses(Guid userId, int topN = 5)
-    {
-        var courses = await _dbContext.Courses.ToListAsync();
-        var scored = courses.Select(c => new { Course = c, Score = Predict(userId, c.Id) })
-            .OrderByDescending(x => x.Score)
-            .Take(topN)
-            .Select(x => x.Course);
-        return scored;
-    }*/
-    
-    
+public class Recommender
+{
     protected readonly MLContext _mlContext;
     protected readonly AppDbContext _dbContext;
     protected ITransformer _model = null!;
+    protected readonly string _modelPath;
     protected string _columnUser = nameof(RatingInput.UserId);
     protected string _columnItem = nameof(RatingInput.ItemId);
     protected string _columnLabel = nameof(RatingInput.Label);
 
-    public Recommender(AppDbContext dbContext)
+    public Recommender(AppDbContext dbContext, string modelFileName)
     {
+        _modelPath = modelFileName;
         _dbContext = dbContext;
         _mlContext = new MLContext();
     }
 
+    //TODO: этот метод использовать в случае, если вы хотите каждый раз пересчитывать модель. Это будет очень долго, поэтому я б рекомендовала этого избегать, если к данным очень частое обращение
     protected void TrainModel(IEnumerable<RatingInput> dataInputs)
     {
         var dataView = _mlContext.Data.LoadFromEnumerable(dataInputs);
@@ -101,10 +41,45 @@ public class Recommender// : IMathModelService
 
         _model = pipeline.Fit(dataView);
     }
+    
+    //TODO: этот метод использовать в случае, если вы хотите 1 раз посчитать модель, а потом использовать уже готовую, сохраненную в файл, модель
+    // Этот метод можно поместить в бекграунд процесс, который будет фоном рестартовать и пересчитывать модель раз в час\день что б пользователи имели данные как можно актуальнее
+    // Если учителя и курсы не будут меняться со временем, то можно тогда просто сгенерировать модели и использовать их
+    protected void TrainAndSave(IEnumerable<RatingInput> inputs)
+    {
+        var dataView = _mlContext.Data.LoadFromEnumerable(inputs);
+        var pipeline = _mlContext.Transforms.Conversion
+            .MapValueToKey("userKey", _columnUser)
+            .Append(_mlContext.Transforms.Conversion.MapValueToKey("itemKey", _columnItem))
+            .Append(_mlContext.Recommendation().Trainers.MatrixFactorization(
+                new Microsoft.ML.Trainers.MatrixFactorizationTrainer.Options
+                {
+                    MatrixColumnIndexColumnName = "userKey",
+                    MatrixRowIndexColumnName = "itemKey",
+                    LabelColumnName = _columnLabel,
+                    NumberOfIterations = 20,
+                    ApproximationRank = 50
+                }))
+            .Append(_mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel", "Score"));
+
+        _model = pipeline.Fit(dataView);
+        _mlContext.Model.Save(_model, dataView.Schema, _modelPath);
+    }
 
     protected float PredictScore(RatingInput input)
     {
+        if (_model == null)
+            throw new InvalidOperationException("Model is not trained or loaded.");
         var engine = _mlContext.Model.CreatePredictionEngine<RatingInput, PredictionResult>(_model);
         return engine.Predict(input).Score;
+    }
+
+    private void LoadModel()
+    {
+        if (File.Exists(_modelPath))
+        {
+            DataViewSchema schema;
+            _model = _mlContext.Model.Load(_modelPath, out schema);
+        }
     }
 }
