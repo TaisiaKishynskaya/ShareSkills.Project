@@ -1,7 +1,3 @@
-using Libraries.Contracts.ClassTime;
-using Libraries.Contracts.Level;
-using Libraries.Contracts.Skill;
-
 namespace Libraries.Entities.Concrete;
 
 public class TeacherEntity
@@ -25,4 +21,7 @@ public class TeacherEntity
     
     // *-*
     public ICollection<GradeEntity> Grades { get; set; } = new List<GradeEntity>();
+    
+    // *-*
+    public ICollection<CourseEntity> Courses { get; set; } = new List<CourseEntity>();
 }

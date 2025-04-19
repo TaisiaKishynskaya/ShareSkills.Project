@@ -9,14 +9,14 @@ namespace App.Services.Concrete;
 
 public class MentorMatchingService
 {
-    private readonly RecommendationService _recommendationService;
+    private readonly IRecommendationService _recommendationService;
     private readonly ITeacherRepository _teacherRepository;
     private readonly IClassTimeService _classTimeService;
     private readonly ISkillService _skillService;
     private readonly ILevelService _levelService;
     private readonly IUnitOfWork _unitOfWork;
 
-    public MentorMatchingService(RecommendationService recommendationService, ITeacherRepository teacherRepository, IClassTimeService classTimeService, ISkillService skillService, ILevelService levelService, IUnitOfWork unitOfWork)
+    public MentorMatchingService(IRecommendationService recommendationService, ITeacherRepository teacherRepository, IClassTimeService classTimeService, ISkillService skillService, ILevelService levelService, IUnitOfWork unitOfWork)
     {
         _recommendationService = recommendationService;
         _teacherRepository = teacherRepository;
@@ -34,7 +34,8 @@ public class MentorMatchingService
 
         var userNumericId = (uint)userId.GetHashCode();
         var allTeachers = await _teacherRepository.GetAllAsync();
-        var top = _recommendationService.RecommendTopTeachers(userNumericId, allTeachers.ToList());
+        //var top = _recommendationService.RecommendTopTeachers(userNumericId, allTeachers.ToList());
+        var top = await _recommendationService.RecommendTopTeachers(userId);
 
         var levelName = await _levelService.GetLevelNameAsync(teacher.LevelId);
         var classTimeName = await _classTimeService.GetClassTimeNameAsync(teacher.ClassTimeId);
@@ -44,9 +45,9 @@ public class MentorMatchingService
         return top.Select(t => new TeacherDto
         {
             // Assuming TeacherDto has properties similar to TeacherEntity
-            Id = t.Teacher.Id,
-            UserId = t.Teacher.UserId,
-            Rating = t.Teacher.Rating,
+            Id = t.Id,
+            UserId = t.UserId,
+            Rating = t.Rating,
             ClassTime = classTimeName,
             Level = levelName,
             Skill = skillName

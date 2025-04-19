@@ -1,6 +1,5 @@
 ﻿using Libraries.Configurations;
 using Libraries.Entities.Concrete;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Libraries.Data;
@@ -20,6 +19,7 @@ public class AppDbContext : DbContext
 	public DbSet<RoleEntity> Roles { get; set; }
 	public DbSet<ClassTimeEntity> ClassTimes { get; set; }
 	public DbSet<LevelEntity> Levels { get; set; }
+	public DbSet<CourseEntity> Courses { get; set; }
 	
 	protected override void OnModelCreating(ModelBuilder builder)
 	{

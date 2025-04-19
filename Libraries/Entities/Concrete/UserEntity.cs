@@ -26,4 +26,6 @@ public class UserEntity
     public ICollection<MeetingEntity> Meetings { get; set; } = new List<MeetingEntity>();
     // *-*
     public ICollection<SkillEntity> Skills { get; set; } = new List<SkillEntity>();
+    // *-*
+    public ICollection<CourseEntity> Courses { get; set; } = new List<CourseEntity>();
 }

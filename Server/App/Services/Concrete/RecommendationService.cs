@@ -1,41 +1,28 @@
-﻿using Libraries.Contracts;
-using Microsoft.ML;
+﻿using App.Services.Abstract;
 using Libraries.Entities.Concrete;
 
 namespace App.Services.Concrete;
 
-public class RecommendationService
+public class RecommendationService : IRecommendationService
 {
-    private readonly MLContext _mlContext;
-    private readonly ITransformer _model;
+    private readonly CourseRecommender _courseRec;
+    private readonly TeacherRecommender _teacherRec;
 
-    public RecommendationService()
+    public RecommendationService(CourseRecommender courseRec, TeacherRecommender teacherRec)
     {
-        _mlContext = new MLContext();
-        _model = _mlContext.Model.Load("MLModels/TeacherRecommendationModel.zip", out _);
+        _courseRec = courseRec;
+        _teacherRec = teacherRec;
     }
 
-    public float PredictRating(uint userId, uint teacherId)
+    public Task<IEnumerable<CourseEntity>> GetRecommendedCourses(Guid userId, int count = 5)
     {
-        var predictionEngine = _mlContext.Model.CreatePredictionEngine<TeacherRatingData, TeacherPrediction>(_model);
-        var input = new TeacherRatingData { UserId = userId, TeacherId = teacherId };
-        var prediction = predictionEngine.Predict(input);
-        return prediction.Score;
+        _courseRec.Train();
+        return _courseRec.Recommend(userId, count);
     }
 
-    public List<(TeacherEntity Teacher, float Score)> RecommendTopTeachers(uint userId, List<TeacherEntity> teachers)
+    public Task<IEnumerable<TeacherEntity>> RecommendTopTeachers(Guid userId, int count = 5)
     {
-        var top = teachers
-            .Select(t => new
-            {
-                Teacher = t,
-                Score = PredictRating(userId, (uint)t.Id.GetHashCode()) // або збережене числове ID
-            })
-            .OrderByDescending(t => t.Score)
-            .Take(5)
-            .Select(t => (t.Teacher, t.Score))
-            .ToList();
-
-        return top;
+        _teacherRec.Train();
+        return _teacherRec.Recommend(userId, count);
     }
 }

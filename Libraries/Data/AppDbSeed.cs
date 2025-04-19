@@ -1,5 +1,4 @@
 using Libraries.Entities.Concrete;
-using Microsoft.EntityFrameworkCore;
 
 namespace Libraries.Data;
 
@@ -49,6 +48,25 @@ public class AppDbSeed
                 new LevelEntity { Id = Guid.NewGuid(), Name = "Introductory" },
                 new LevelEntity { Id = Guid.NewGuid(), Name = "Intermediate" },
                 new LevelEntity { Id = Guid.NewGuid(), Name = "Advanced" }
+            );
+
+            context.SaveChanges();
+        }
+
+        if (!context.Courses.Any())
+        {
+            context.Courses.AddRange(
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course1" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course2" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course3" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course4" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course5" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course6" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course7" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course8" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course9" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course10" },
+                new CourseEntity { Id = Guid.NewGuid(), Name = "Course11" }
             );
 
             context.SaveChanges();
