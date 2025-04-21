@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 	}
 	
 	public DbSet<UserEntity> Users { get; set; }
+	public DbSet<TeacherRatingEntity> TeacherRatings { get; set; }
 	public DbSet<StudentEntity> Students { get; set; }
 	public DbSet<TeacherEntity> Teachers { get; set; }
 	public DbSet<MeetingEntity> Meetings { get; set; }

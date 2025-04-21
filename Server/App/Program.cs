@@ -1,5 +1,7 @@
 using App.Infrastructure.Configurations;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
+using App.Services.RecommendationSystem.Abstract;
+using App.Services.RecommendationSystem.Concret;
 
 //TODO: Need refactoring
 namespace App;
@@ -34,6 +36,7 @@ internal class Program
         ServicesConfiguration.ConfigureServices(builder);
 
         builder.Services.AddMinimalEndpoints();
+        builder.Services.AddScoped<ITeacherRecommendationService, TeacherRecommendationService>();
 
 
         var app = builder.Build();
@@ -48,6 +51,7 @@ internal class Program
         app.UseHttpsRedirection();
 
         app.RegisterStudentEndpoint();
+        app.RegisterRecommendationEndpoint();
         app.RegisterMinimalEndpoints();
 
         AppConfiguration.ConfigureApp(app);

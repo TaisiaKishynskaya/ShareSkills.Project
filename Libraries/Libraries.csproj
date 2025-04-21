@@ -30,4 +30,12 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Repositories\Models\MentorRatingModel.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Repositories\Models\" />
+    </ItemGroup>
+
 </Project>

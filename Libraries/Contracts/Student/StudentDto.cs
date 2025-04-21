@@ -4,4 +4,5 @@ public class StudentDto
 {
     public required Guid Id { get; set; }
     public string Purpose { get; set; }
+    public Guid UserId { get; set; }
 }

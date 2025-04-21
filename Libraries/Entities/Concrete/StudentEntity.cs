@@ -14,4 +14,7 @@ public class StudentEntity
     
     // *-*
     public ICollection<GradeEntity> Grades { get; set; } = new List<GradeEntity>();
+    
+    // *-*
+    public ICollection<CourseEntity> Courses { get; set; } = new List<CourseEntity>();
 }
