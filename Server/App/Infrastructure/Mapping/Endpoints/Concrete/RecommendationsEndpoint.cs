@@ -26,7 +26,7 @@ public static class RecommendationsEndpoint
         routeBuilder.MapGet("/rec-teachers", () =>
             {
                 // Инициализация фейковых данных
-                var context = new FakeAppDbContext2();
+                var context = new FakeAppDbContext();
 
                 // Студент, которого мы явно создавали
                 var studentId = Guid.Parse("99999999-9999-9999-9999-999999999999");
@@ -42,11 +42,10 @@ public static class RecommendationsEndpoint
             })
             .WithOpenApi();
         
-        
         routeBuilder.MapGet("/rec-courses", () =>
             {
                 // Инициализация фейковых данных
-                var context = new CourseRecommendationService.FakeAppDbContext2();
+                var context = new FakeAppDbContext();
 
                 // Студент, которого мы явно создавали
                 var studentId = Guid.Parse("99999999-9999-9999-9999-999999999999");
