@@ -23,10 +23,10 @@ public static class RecommendationsEndpoint
             .WithOpenApi();*/
         
         
-        routeBuilder.MapGet("/rec", () =>
+        routeBuilder.MapGet("/rec-teachers", () =>
             {
                 // Инициализация фейковых данных
-                var context = new FakeAppDbContext();
+                var context = new FakeAppDbContext2();
 
                 // Студент, которого мы явно создавали
                 var studentId = Guid.Parse("99999999-9999-9999-9999-999999999999");
@@ -37,7 +37,28 @@ public static class RecommendationsEndpoint
                 // Получение топ-3 рекомендованных преподавателей
                 var recommendedTeachers = service.GetRecommendedTeachers(studentId, 3);
 
-                return Results.Ok(recommendedTeachers);
+                var teachersIds = recommendedTeachers.Select(x =>x.Id).ToList();
+                return Results.Ok(teachersIds);
+            })
+            .WithOpenApi();
+        
+        
+        routeBuilder.MapGet("/rec-courses", () =>
+            {
+                // Инициализация фейковых данных
+                var context = new CourseRecommendationService.FakeAppDbContext2();
+
+                // Студент, которого мы явно создавали
+                var studentId = Guid.Parse("99999999-9999-9999-9999-999999999999");
+
+                // Инициализация сервиса рекомендаций
+                var service = new CourseRecommendationService(context);
+
+                // Получение топ-3 рекомендованных преподавателей
+                var recommendedTeachers = service.GetRecommendedCourses(studentId, 3);
+
+                var teachersIds = recommendedTeachers.Select(x =>x.Name).ToList();
+                return Results.Ok(teachersIds);
             })
             .WithOpenApi();
     }
