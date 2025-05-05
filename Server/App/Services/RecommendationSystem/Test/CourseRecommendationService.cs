@@ -33,11 +33,13 @@ public class CourseRecommendationService
     private ITransformer _model;
     private DataViewSchema _schema;
     private const string _path = "courses.zip";
+    private readonly ICosineSimilarityService _cosine;
 
-    public CourseRecommendationService(FakeAppDbContext2 ctx)
+    public CourseRecommendationService(FakeAppDbContext2 ctx, ICosineSimilarityService cosine)
     {
         _ctx = ctx;
         _ml = new MLContext(seed:0);
+        _cosine     = cosine;      
         TrainModel();
     }
 
@@ -116,7 +118,21 @@ public class CourseRecommendationService
         var dv2 = _ml.Data.LoadFromEnumerable(fd);
         var preds = _model.Transform(dv2);
         var scores = _ml.Data.CreateEnumerable<CourseScorePrediction>(preds, reuseRowObject:false)
-            .Select((p,i)=> new { pd[i].CourseId, p.Score })
+            .Select((p, i) =>
+            {var baseScore = p.Score;
+                            // ___ интегрируем cosine‑бонус по навыкам ___
+                                   var bonus = _cosine.Compute(
+                                       /* вектор предпочтительных навыков */ 
+                                           pd[i].SkillsMatchCount > 0 
+                                           ? new float[] { pd[i].SkillsMatchCount } 
+                                                                     : new float[] { 0f },
+                                      /* вектор навыков курса */ 
+                                          pd[i].SkillsMatchCount > 0 
+                                           ? new float[] { pd[i].SkillsMatchCount } 
+                                                                 : new float[] { 0f }
+                                                                                       );
+                               return new { pd[i].CourseId, Score = baseScore + bonus };
+            })
             .OrderByDescending(x=>x.Score)
             .Take(topN)
             .Select(x=> _ctx.Courses.First(c=>c.Id==x.CourseId))

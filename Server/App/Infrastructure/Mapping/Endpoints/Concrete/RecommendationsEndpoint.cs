@@ -32,7 +32,7 @@ public static class RecommendationsEndpoint
                 var studentId = Guid.Parse("99999999-9999-9999-9999-999999999999");
 
                 // Инициализация сервиса рекомендаций
-                var service = new TeacherRatingService(context);
+                var service = new TeacherRatingService(context, new CosineSimilarityService());
 
                 // Получение топ-3 рекомендованных преподавателей
                 var recommendedTeachers = service.GetRecommendedTeachers(studentId, 3);
@@ -52,7 +52,7 @@ public static class RecommendationsEndpoint
                 var studentId = Guid.Parse("99999999-9999-9999-9999-999999999999");
 
                 // Инициализация сервиса рекомендаций
-                var service = new CourseRecommendationService(context);
+                var service = new CourseRecommendationService(context, new CosineSimilarityService());
 
                 // Получение топ-3 рекомендованных преподавателей
                 var recommendedTeachers = service.GetRecommendedCourses(studentId, 3);

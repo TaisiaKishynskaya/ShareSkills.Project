@@ -133,7 +133,7 @@ public class TeacherRecommendationService : ITeacherRecommendationService
                 preferredSubjects
             );
 
-            results.Add((teacher, prediction.Score + similarityBonus));
+            results.Add((teacher, prediction.Score + similarityBonus)); // то есть тут мы даем преподавателю "вес" (оценку) на основании его предикшен результата и доп значения высчитанного на основе косинусного сходства, которое служит как дополнительной мерой к всему том, что было посчитано ранее
         }
 
         return results

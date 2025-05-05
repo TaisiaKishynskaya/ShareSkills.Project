@@ -35,10 +35,12 @@ namespace App.Services.RecommendationSystem.Test
         private readonly MLContext _mlContext;
         private ITransformer _model;
         private DataViewSchema _schema;
+        private readonly ICosineSimilarityService _cosine;  
 
-        public TeacherRatingService(FakeAppDbContext2 context)
+        public TeacherRatingService(FakeAppDbContext2 context, ICosineSimilarityService cosine)
         {
             _context = context;
+            _cosine = cosine;
             _mlContext = new MLContext(seed: 0);
             TrainModel();
         }
@@ -144,7 +146,15 @@ namespace App.Services.RecommendationSystem.Test
             // Предсказание
             var preds = _model.Transform(predDv);
             var scores = _mlContext.Data.CreateEnumerable<TeacherScorePrediction>(preds, reuseRowObject: false)
-                .Select((p, idx) => new { predictionData[idx].TeacherId, p.Score })
+                .Select((p, idx) => new { predictionData[idx].TeacherId,  // ___ интегрируем cosine‑бонус ___
+                                   Score = p.Score +
+                                                                  _cosine.Compute(                                     
+                                                                            /* вектор навыков преподавателя */ 
+                                                                                predictionData[idx].SkillsMatchCount == 1f 
+                                                                                ? new float[] { 1f } : new float[] { 0f }, 
+                                                                            /* вектор средних навыков студента */ 
+                                                                                new float[] { 1f }                                  
+                                                                       ) })
                 .OrderByDescending(x => x.Score)
                 .Take(count)
                 .ToList();
