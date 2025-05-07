@@ -50,6 +50,8 @@ public static class ServicesConfiguration
 
         builder.Services.AddScoped<IReportService, ReportService>();
         
+        builder.Services.AddHttpClient<IOllamaService, OllamaService>();
+        
         //builder.Services.AddAutoMapper();
 
         builder.Services.AddFluentValidationAutoValidation();
