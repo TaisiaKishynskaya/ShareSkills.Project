@@ -1,7 +1,8 @@
 .main {
     font-family: "Marmelad";
     background: #F5FFFF;
-    height: 93vh;
+    min-height: 93vh; /* Ensure full height */
+    padding-bottom: 20px; /* Space at bottom */
 }
 
 .title {
@@ -13,11 +14,13 @@
     align-items: center;
     font-size: 20px;
     padding-left: 10px;
+    position: sticky; /* Keep title visible on scroll */
+    top: 0;
+    z-index: 10;
 }
 
 .content {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 20px 10px; /* Add some top padding */
 }
 
 .block {
@@ -31,15 +34,17 @@
 }
 
 hr {
-    border: 1px solid black;
+    border: none;
+    border-top: 1px solid #ccc; /* Lighter hr */
     width: 100%;
-    background: none;
+    margin: 25px 0; /* More spacing around hr */
 }
 
 .skills-cards {
     display: grid;
     grid-auto-flow: column;
-    overflow: scroll;
+    overflow-x: auto; /* Horizontal scroll */
+    overflow-y: hidden;
     width: 100%;
     padding-top: 10px;
     padding-bottom: 20px;
@@ -53,107 +58,153 @@ hr {
     width: 100px;
     padding: 10px;
     text-align: center;
+    flex-shrink: 0; /* Prevent cards from shrinking */
 }
 
-.skill-card p {
-    margin: 0;
-}
+    .skill-card p {
+        margin: 0;
+    }
 
 .feedback {
     background: #3B9AA9;
-    width: 50%;
+    /* width: 50%; */ /* Consider full-width or auto for web */
+    padding: 10px 20px; /* Adjust padding */
     text-wrap: wrap;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 8px; /* Slightly less rounded for web buttons */
     border: none;
-    font-size: 20px;
+    font-size: 18px; /* Adjust font size */
     color: white;
     font-family: "Marmelad";
     display: block;
-    margin-top: 10px;
+    margin-top: 15px; /* Increased margin */
+    margin-bottom: 15px;
+    margin-left: auto; /* Center if not full width */
+    margin-right: auto;
+    max-width: 300px; /* Max width for buttons */
+    cursor: pointer;
 }
+
+    .feedback:hover {
+        background-color: #2c7a87; /* Darker on hover */
+    }
 
 .name, .skills-text {
     font-size: 25px;
 }
 
 ::-webkit-scrollbar {
-    width: 5px;
+    width: 8px; /* Slightly wider scrollbar for web */
+    height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(6, 210, 255, 1) 0%, rgba(227, 227, 227, 1) 100%);
+    background: #3B9AA9; /* Theme color for thumb */
+    border-radius: 4px;
 }
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Light track */
+}
+
 
 .dialog {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 30px;
+    gap: 25px; /* Adjusted gap */
     background: white;
     border-radius: 10px;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 20px;
+    padding: 25px 30px; /* More padding */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Softer shadow */
+    z-index: 100;
+    width: 90%;
+    max-width: 450px; /* Slightly larger dialog for web */
 }
 
 .dialog-input {
     background: none;
     border: none;
     border-bottom: 1px solid black;
+    padding: 10px 5px; /* More padding */
+    width: 100%;
+    font-size: 1rem;
 }
 
-.dialog-input:focus {
-    outline: none;
-}
+    .dialog-input:focus {
+        outline: none;
+        border-bottom-color: #3B9AA9; /* Theme color */
+    }
 
 .dialog-select {
     border: none;
     border-bottom: 1px solid black;
-    width: 90%;
+    width: 100%; /* Full width */
+    padding: 10px 5px;
+    font-size: 1rem;
+    background-color: white; /* Ensure background for select */
 }
 
 .next-btn {
-    width: 150px;
-    height: 50px;
+    width: 160px; /* Slightly wider */
+    height: 45px; /* Adjusted height */
     border: none;
-    border-radius: 15px;
+    border-radius: 8px;
     background-color: #3B9AA9;
-    box-shadow: 0px 5px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     color: white;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
-svg {
-    width: 35px;
+    .next-btn:hover {
+        background-color: #2c7a87;
+    }
+
+.dialog svg { /* For the close/back icon in dialog */
+    width: 28px; /* Adjusted size */
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    fill: #555; /* Darker fill for better visibility */
 }
+
+    .dialog svg:hover {
+        fill: #000;
+    }
+
 
 .switch-btn {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     align-items: center;
     margin-top: 30px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.switch-btn p {
-    margin: 0;
-}
+    .switch-btn p {
+        margin: 0;
+        font-size: 1rem;
+    }
 
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 50px; /* Slightly smaller switch */
+    height: 28px;
 }
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
 .slider {
     position: absolute;
@@ -162,59 +213,54 @@ svg {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: white;
+    background-color: #ccc; /* Off state */
     -webkit-transition: .4s;
     transition: .4s;
 }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px; /* Adjusted for smaller slider */
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
 
-input:checked {
-    background-color: #2196F3;
-}
-
-.slider {
-    background-color: #cccccc;
-}
+/* input:checked is handled by .slider changes */
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 0 2px rgba(59, 154, 169, 0.4); /* Theme focus */
 }
 
 input:checked + .slider {
-    background-color: #2196F3;
+    background-color: #3B9AA9; /* Theme color for on */
 }
 
-input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-}
+    input:checked + .slider:before {
+        -webkit-transform: translateX(22px); /* Adjusted for smaller slider */
+        -ms-transform: translateX(22px);
+        transform: translateX(22px);
+    }
 
 .slider.round {
-    border-radius: 34px;
+    border-radius: 28px; /* Adjusted for smaller slider */
 }
 
-.slider.round:before {
-    border-radius: 50%;
+    .slider.round:before {
+        border-radius: 50%;
+    }
+
+.error { /* Class for error messages in dialog */
+    color: #d9534f; /* Bootstrap danger color */
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+    margin-top: -10px; /* Adjust position */
+    margin-bottom: 5px;
 }
 
-svg {
-    width: 35px;
-}
-
-.error-messages {
-    color: rgba(255, 0, 0, 0.5);
-    font-size: 0.7rem;
-    max-width: 80%;
-}
+/* .error-messages was your old class, changed to .error for consistency */

@@ -6,50 +6,50 @@
 @inject IAuthService AuthService
 
 <div class="main">
-        <h1>Skills Share</h1>
-        <div class="info">
-            <div class="input-info">
-                <input type="text" class="main-input" placeholder="Name" @bind="@Name">
-                @if(isNameError)
-                {
-                <p class="error">@string.Join(",", registerResponse.Errors["Name"])</p>
-                }
-                <input type="text" class="main-input" placeholder="Surname" @bind="@Surname">
-                @if(isSurnameError)
-                {
-                    <p class="error">@string.Join(",", registerResponse.Errors["Surname"])</p>
-                }
-                <input type="email" class="main-input" placeholder="email" @bind="@Email">
-                @if(isEmailError)
-                {
-                    <p class="error">@string.Join(",", registerResponse.Errors["Email"])</p>
-                }
-                <input type="password" class="main-input" placeholder="Password" @bind="@Password">
-                @if(isPasswordError)
-                {
-                    <p class="error">@string.Join(",", registerResponse.Errors["Password"])</p>
-                }
-            </div>
-            <div class="switch-btn">
-                <p>Student</p>
-                <label class="switch">
-                    <input type="checkbox" @bind="@IsTeacher">
-                    <span class="slider round"></span>
-                </label>
-                <p>Teacher</p>
-            </div>
-            @if (isError)
+    <h1>Skills Share</h1>
+    <div class="info">
+        <div class="input-info">
+            <input type="text" class="main-input" placeholder="Name" @bind="@Name">
+            @if(isNameError)
             {
-                <p class="error">An error occurred</p>
+                <p class="error">@string.Join(",", registerResponse.Errors["Name"])</p>
             }
-            <button class="next-btn" @onclick="Register">Next</button>
-            <div class="login-link">
-                <p>already registered?</p>
-                <a href="" @onclick="loginNavigate">login</a>
-            </div>
-    
+            <input type="text" class="main-input" placeholder="Surname" @bind="@Surname">
+            @if(isSurnameError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Surname"])</p>
+            }
+            <input type="email" class="main-input" placeholder="email" @bind="@Email">
+            @if(isEmailError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Email"])</p>
+            }
+            <input type="password" class="main-input" placeholder="Password" @bind="@Password">
+            @if(isPasswordError)
+            {
+                <p class="error">@string.Join(",", registerResponse.Errors["Password"])</p>
+            }
         </div>
+        <div class="switch-btn">
+            <p>Student</p>
+            <label class="switch">
+                <input type="checkbox" @bind="@IsTeacher">
+                <span class="slider round"></span>
+            </label>
+            <p>Teacher</p>
+        </div>
+        @if (isError)
+        {
+            <p class="error">An error occurred</p>
+        }
+        <button class="next-btn" @onclick="Register">Next</button>
+        <div class="login-link">
+            <p>already registered?</p>
+            <a href="" @onclick="loginNavigate">login</a>
+        </div>
+
     </div>
+</div>
 
 @code {
     private string Name { get; set; }

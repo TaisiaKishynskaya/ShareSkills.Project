@@ -53,6 +53,7 @@ namespace MobileClient
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
             builder.Services.AddScoped<ISearchService, SearchService>();
             builder.Services.AddScoped<IReportsService, ReportsService>();
+            builder.Services.AddScoped<ITechnicalSupportService, TechnicalSupportService>();
 
             return builder.Build();
         }
