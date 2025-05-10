@@ -167,6 +167,11 @@
     animation: spin 1s ease-in-out infinite;
 }
 
+    .support-chat-send-btn svg {
+        width: 50%;
+        fill: white;
+    }
+
 @keyframes spin {
     to { -webkit-transform: rotate(360deg); }
 }

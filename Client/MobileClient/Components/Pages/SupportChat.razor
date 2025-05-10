@@ -82,19 +82,28 @@
         StateHasChanged();
 
         var messageText = currentMessage;
-        var userMessage = new ChatMessage(messageText, true, DateTime.Now);
-        messages.Add(userMessage);
         currentMessage = ""; // Clear input immediately
 
-        // Optimistically update UI
+        // Add user message to UI
+        var userMessage = new ChatMessage(messageText, true, DateTime.Now);
+        messages.Add(userMessage);
         StateHasChanged();
         await ScrollToBottom();
 
+        // Add "waiting for response" message
+        var waitingMessage = new ChatMessage("Waiting for response...", false, DateTime.Now);
+        messages.Add(waitingMessage);
+        StateHasChanged();
+        await ScrollToBottom();
+
+        // Send message to service (this will add user's message to history and make API call)
         await TechnicalSupportService.SendMessageAsync(messageText);
-        // In a real app, you might get a response or confirmation here.
-        // For now, we just simulate a response after a delay.
-        await Task.Delay(1000); // Simulate support agent typing
-        messages.Add(new ChatMessage("Thanks for your message. An agent will be with you shortly.", false, DateTime.Now));
+
+        // Get updated chat history (which now includes the API response)
+        var updatedHistory = await TechnicalSupportService.GetChatHistoryAsync();
+
+        // Replace our local messages list (removing the "waiting" message)
+        messages = updatedHistory;
 
         isSending = false;
         StateHasChanged();
