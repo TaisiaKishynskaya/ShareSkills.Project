@@ -1,6 +1,5 @@
 @page "/cabinet"
 @using WebClient.Services
-@using WebClient.Components @* Add this using for the SupportChat component *@
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject ICabinetService CabinetService
@@ -18,19 +17,6 @@
                 <p class="name">@user.Name @user.Surname</p>
                 <p class="email">@user.Email</p>
             </div>
-            @*
-            <hr>
-             <div class="block">
-                <p class="skills-text">Choosed skills</p>
-                <div class="skills-cards">
-                    @foreach (var skill in skills)
-                    {
-                        <div class="skill-card">
-                            <p>@skill</p>
-                        </div>
-                    }
-                </div>
-            </div> *@
             <hr>
             <div class="switch-btn">
                 <label class="switch">
@@ -40,7 +26,7 @@
                 <p>Allow using Cookies</p>
             </div>
             <button class="feedback" @onclick="() => IsShowDialog = true">Change profile information</button>
-            <button class="feedback" @onclick="ToggleSupportChat">Technical Support</button> @* Added this button *@
+            <button class="feedback" @onclick="NavigateToSupport">Technical Support</button>
             @if (isTeacher)
             {
                 <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>Change skills</button>
@@ -56,8 +42,6 @@
         {
             <p>loading...</p>
         }
-        @* for debug *@
-        @* <button class="feedback" @onclick="ClearPreferences">clear Preferences</button> *@
     </div>
     @if (IsShowDialog)
     {
@@ -78,8 +62,6 @@
             </button>
         </div>
     }
-
-    <SupportChat IsVisible="isSupportChatVisible" OnClose="ToggleSupportChat" /> @* Added SupportChat component *@
 </div>
 
 @code {
@@ -102,9 +84,6 @@
     private string ErrorMessage = "";
     private bool isAllowCookies = false;
 
-    // Support Chat State
-    private bool isSupportChatVisible = false;
-
     protected override async Task OnInitializedAsync()
     {
         user = await CabinetService.GetUser();
@@ -121,7 +100,6 @@
 
         var userRolePreference = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
         isTeacher = userRolePreference == "Teacher";
-        // Removed StateHasChanged() here, as OnInitializedAsync handles UI updates after completion.
     }
 
     private void goToFeedbackPage()
@@ -134,22 +112,9 @@
         Navigation.NavigateTo("/reports");
     }
 
-    private async Task ClearPreferences()
+    private void NavigateToSupport()
     {
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.clear");
-            Console.WriteLine("Cleared Preferences from WebClient");
-            // Consider re-initializing or navigating away if state becomes invalid
-            user = null;
-            isTeacher = false;
-            isAllowCookies = false;
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error clearing preferences: {ex.Message}");
-        }
+        Navigation.NavigateTo("/support");
     }
 
     private async Task ChangeInfo()
@@ -191,11 +156,5 @@
     {
         // isAllowCookies is already bound and updated. This method runs after the update.
         await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", isAllowCookies ? "true" : "false");
-    }
-
-    private void ToggleSupportChat()
-    {
-        isSupportChatVisible = !isSupportChatVisible;
-        // StateHasChanged(); // Not strictly necessary here if only visibility changes, but good for explicit control
     }
 }
