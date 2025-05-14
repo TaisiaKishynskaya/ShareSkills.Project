@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<!-- Common -->
+	<data name="AppName" xml:space="preserve">
+    <value>Skills Share</value>
+  </data>
+	<data name="Loading" xml:space="preserve">
+    <value>Завантаження...</value>
+  </data>
+	<data name="Error" xml:space="preserve">
+    <value>Сталася помилка</value>
+  </data>
+	<data name="Next" xml:space="preserve">
+    <value>Далі</value>
+  </data>
+	<data name="Cancel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+	<data name="Change" xml:space="preserve">
+    <value>Змінити</value>
+  </data>
+	<data name="Send" xml:space="preserve">
+    <value>Надіслати</value>
+  </data>
+	<data name="Find" xml:space="preserve">
+    <value>Знайти</value>
+  </data>
+	<data name="Language" xml:space="preserve">
+    <value>Мова</value>
+  </data>
+
+	<!-- Login/Registration -->
+	<data name="Email" xml:space="preserve">
+    <value>Електронна пошта</value>
+  </data>
+	<data name="Password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+	<data name="Login" xml:space="preserve">
+    <value>Увійти</value>
+  </data>
+	<data name="RegisterNow" xml:space="preserve">
+    <value>Зареєструватися зараз</value>
+  </data>
+	<data name="Name" xml:space="preserve">
+    <value>Ім'я</value>
+  </data>
+	<data name="Surname" xml:space="preserve">
+    <value>Прізвище</value>
+  </data>
+	<data name="Student" xml:space="preserve">
+    <value>Студент</value>
+  </data>
+	<data name="Teacher" xml:space="preserve">
+    <value>Вчитель</value>
+  </data>
+	<data name="AlreadyRegistered" xml:space="preserve">
+    <value>Вже маєте обліковий запис?</value>
+  </data>
+	<data name="IncorrectCredentials" xml:space="preserve">
+    <value>Неправильна електронна пошта або пароль</value>
+  </data>
+	<data name="AllFieldsRequired" xml:space="preserve">
+    <value>Усі поля обов'язкові</value>
+  </data>
+	<data name="CookieQuestion" xml:space="preserve">
+    <value>Чи дозволяєте використовувати файли cookie для покращення досвіду?</value>
+  </data>
+	<data name="Yes" xml:space="preserve">
+    <value>Так</value>
+  </data>
+	<data name="No" xml:space="preserve">
+    <value>Ні</value>
+  </data>
+	<data name="AllowCookies" xml:space="preserve">
+    <value>Дозволити файли cookie</value>
+  </data>
+
+	<!-- Cabinet -->
+	<data name="ChangeProfileInfo" xml:space="preserve">
+    <value>Змінити інформацію профілю</value>
+  </data>
+	<data name="TechnicalSupport" xml:space="preserve">
+    <value>Технічна підтримка</value>
+  </data>
+	<data name="ChangeSkills" xml:space="preserve">
+    <value>Змінити навички</value>
+  </data>
+	<data name="LeaveFeedback" xml:space="preserve">
+    <value>Залишити відгук</value>
+  </data>
+	<data name="SeeReports" xml:space="preserve">
+    <value>Переглянути звіти</value>
+  </data>
+
+	<!-- Calendar -->
+	<data name="PreviousWeek" xml:space="preserve">
+    <value>Попередній тиждень</value>
+  </data>
+	<data name="NextWeek" xml:space="preserve">
+    <value>Наступний тиждень</value>
+  </data>
+	<data name="Monday" xml:space="preserve">
+    <value>Понеділок</value>
+  </data>
+	<data name="Tuesday" xml:space="preserve">
+    <value>Вівторок</value>
+  </data>
+	<data name="Wednesday" xml:space="preserve">
+    <value>Середа</value>
+  </data>
+	<data name="Thursday" xml:space="preserve">
+    <value>Четвер</value>
+  </data>
+	<data name="Friday" xml:space="preserve">
+    <value>П'ятниця</value>
+  </data>
+	<data name="Saturday" xml:space="preserve">
+    <value>Субота</value>
+  </data>
+	<data name="Sunday" xml:space="preserve">
+    <value>Неділя</value>
+  </data>
+	<data name="Title" xml:space="preserve">
+    <value>Назва</value>
+  </data>
+	<data name="Date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+	<data name="Theme" xml:space="preserve">
+    <value>Тема</value>
+  </data>
+	<data name="Create" xml:space="preserve">
+    <value>Створити</value>
+  </data>
+	<data name="SkillsEmpty" xml:space="preserve">
+    <value>Список навичок порожній</value>
+  </data>
+
+	<!-- Lesson -->
+	<data name="Participant" xml:space="preserve">
+    <value>Учасник</value>
+  </data>
+	<data name="Time" xml:space="preserve">
+    <value>Час</value>
+  </data>
+
+	<!-- Choose Skills -->
+	<data name="ChooseSkills" xml:space="preserve">
+    <value>Виберіть навички, які хочете вивчити</value>
+  </data>
+	<data name="ChooseTime" xml:space="preserve">
+    <value>Виберіть зручний час для навчання</value>
+  </data>
+	<data name="Morning" xml:space="preserve">
+    <value>Ранок</value>
+  </data>
+	<data name="Day" xml:space="preserve">
+    <value>День</value>
+  </data>
+	<data name="Evening" xml:space="preserve">
+    <value>Вечір</value>
+  </data>
+	<data name="SelectLevel" xml:space="preserve">
+    <value>Виберіть бажаний рівень знань</value>
+  </data>
+	<data name="Introductory" xml:space="preserve">
+    <value>Початковий</value>
+  </data>
+	<data name="Intermediate" xml:space="preserve">
+    <value>Середній</value>
+  </data>
+	<data name="Advanced" xml:space="preserve">
+    <value>Просунутий</value>
+  </data>
+
+	<!-- Feedback -->
+	<data name="Feedback" xml:space="preserve">
+    <value>Відгук</value>
+  </data>
+	<data name="EnterTeacherEmail" xml:space="preserve">
+    <value>Введіть електронну пошту вчителя:</value>
+  </data>
+	<data name="LeaveYourFeedback" xml:space="preserve">
+    <value>Залиште свій відгук</value>
+  </data>
+	<data name="FeedbackSent" xml:space="preserve">
+    <value>Відгук успішно надіслано</value>
+  </data>
+	<data name="GradeRange" xml:space="preserve">
+    <value>Оцінка має бути від 1 до 5</value>
+  </data>
+	<data name="EmailEmpty" xml:space="preserve">
+    <value>Електронна пошта не може бути порожньою</value>
+  </data>
+
+	<!-- Reports -->
+	<data name="AvailableReports" xml:space="preserve">
+    <value>Доступні звіти</value>
+  </data>
+	<data name="NoReports" xml:space="preserve">
+    <value>Поки немає доступних звітів</value>
+  </data>
+	<data name="ReportFrom" xml:space="preserve">
+    <value>Звіт від:</value>
+  </data>
+	<data name="Subject" xml:space="preserve">
+    <value>Предмет:</value>
+  </data>
+	<data name="LearningTime" xml:space="preserve">
+    <value>Час навчання:</value>
+  </data>
+	<data name="LearnedTopics" xml:space="preserve">
+    <value>Вивчені теми:</value>
+  </data>
+
+	<!-- Search -->
+	<data name="SearchTeacher" xml:space="preserve">
+    <value>Пошук вчителя...</value>
+  </data>
+	<data name="Skill" xml:space="preserve">
+    <value>Навичка</value>
+  </data>
+	<data name="Level" xml:space="preserve">
+    <value>Рівень</value>
+  </data>
+	<data name="ChoosedSkill" xml:space="preserve">
+    <value>Обрана навичка</value>
+  </data>
+
+	<!-- Support -->
+	<data name="TypeMessage" xml:space="preserve">
+    <value>Введіть ваше повідомлення...</value>
+  </data>
+	<data name="WaitingForResponse" xml:space="preserve">
+    <value>Очікування відповіді...</value>
+  </data>
+	<data name="LoadingChatHistory" xml:space="preserve">
+    <value>Завантаження історії чату...</value>
+  </data>
+</root>

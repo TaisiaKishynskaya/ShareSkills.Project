@@ -1,17 +1,18 @@
 @page "/chooseSkills"
 @using WebClient.Components.Layout
 @using WebClient.Services
+@using Microsoft.Extensions.Localization
 @layout NoMenuLayout
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject IAuthService AuthService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
     @if (skills != null)
     {
-        <h3 class="first">Choose the skills you want to learn (you can change it later)</h3>
-        @* <input class="skill-search" type="text" placeholder="Пошук навички..."> *@
+        <h3 class="first">@Localizer["ChooseSkills"]</h3>
         <div class="skills">
             @foreach (var skill in skills)
             {
@@ -24,45 +25,44 @@
         @if (isTeacher)
         {
             <hr>
-            <h3>Choose a time convenient for learning</h3>
+            <h3>@Localizer["ChooseTime"]</h3>
             <div class="lesson-time">
                 <div class="elem">
-                    <label for="time">Morning</label>
+                    <label for="time">@Localizer["Morning"]</label>
                     <input type="radio" name="time" id="morning" @onchange="@(() => Time = "morning")">
                 </div>
                 <div class="elem">
-                    <label for="time">Day</label>
+                    <label for="time">@Localizer["Day"]</label>
                     <input type="radio" name="time" id="day" @onchange="@(() => Time = "day")">
                 </div>
                 <div class="elem">
-                    <label for="time">Evening</label>
+                    <label for="time">@Localizer["Evening"]</label>
                     <input type="radio" name="time" id="evening" @onchange="@(() => Time = "evening")">
                 </div>
             </div>
             <hr>
-            <h3>Select the desired level of knowledge</h3>
+            <h3>@Localizer["SelectLevel"]</h3>
             <div class="level">
                 <div class="elem">
-                    <label for="level">Introductory</label>
+                    <label for="level">@Localizer["Introductory"]</label>
                     <input type="radio" name="level" id="introductory" @onchange="@(() => Level = "introductory")">
                 </div>
                 <div class="elem">
-                    <label for="level">Intermidiate</label>
+                    <label for="level">@Localizer["Intermediate"]</label>
                     <input type="radio" name="level" id="intermidiate" @onchange="@(() => Level = "intermidiate")">
                 </div>
                 <div class="elem">
-                    <label for="level">Advanced</label>
+                    <label for="level">@Localizer["Advanced"]</label>
                     <input type="radio" name="level" id="advanced" @onchange="@(() => Level = "advanced")">
                 </div>
             </div>
         }
     }
-    <button @onclick="calendarNavigate">Next</button>
+    <button @onclick="calendarNavigate">@Localizer["Next"]</button>
     @if (IsError)
     {
-        <p class="error">An error occured</p>
+        <p class="error">@Localizer["Error"]</p>
     }
-
 
 </div>
 

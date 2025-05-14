@@ -4,3 +4,7 @@ window.scrollToBottom = (element) => {
         element.scrollTop = element.scrollHeight;
     }
 };
+
+function reloadPage() {
+    location.reload();
+}

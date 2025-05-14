@@ -1,13 +1,15 @@
 @page "/cabinet"
 @using WebClient.Services
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject ICabinetService CabinetService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
     <div class="title">
-        <p>Skills Share</p>
+        <p>@Localizer["AppName"]</p>
     </div>
 
     <div class="content">
@@ -23,42 +25,47 @@
                     <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleCookiesPreferenceChange">
                     <span class="slider round"></span>
                 </label>
-                <p>Allow using Cookies</p>
+                <p>@Localizer["AllowCookies"]</p>
             </div>
-            <button class="feedback" @onclick="() => IsShowDialog = true">Change profile information</button>
-            <button class="feedback" @onclick="NavigateToSupport">Technical Support</button>
+            
+            <!-- Add Language Selector (non-floating) -->
+            <LanguageSelector IsFloating="false" />
+            
+            <button class="feedback" @onclick="() => IsShowDialog = true">@Localizer["ChangeProfileInfo"]</button>
+            <button class="feedback" @onclick="NavigateToSupport">@Localizer["TechnicalSupport"]</button>
             @if (isTeacher)
             {
-                <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>Change skills</button>
+                <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>@Localizer["ChangeSkills"]</button>
             }
 
             @if (!isTeacher)
             {
-                <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
-                <button class="feedback" @onclick="goToReportsPage">See reports</button>
+                <button class="feedback" @onclick="goToFeedbackPage">@Localizer["LeaveFeedback"]</button>
+                <button class="feedback" @onclick="goToReportsPage">@Localizer["SeeReports"]</button>
             }
         }
         else
         {
-            <p>loading...</p>
+            <p>@Localizer["Loading"]</p>
         }
     </div>
+    
     @if (IsShowDialog)
     {
         <div class="dialog">
             <svg @onclick="() => { IsShowDialog = false; ErrorMessage = string.Empty; }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
             </svg>
-            <input type="text" class="dialog-input" placeholder="Name" @bind="@userToChange.Name">
-            <input type="text" class="dialog-input" placeholder="Surname" @bind="@userToChange.Surname">
-            <input type="text" class="dialog-input" placeholder="Email" @bind="@userToChange.Email">
-            <input type="text" class="dialog-input" placeholder="Password" @bind="@newPassword">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Name"]" @bind="@userToChange.Name">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Surname"]" @bind="@userToChange.Surname">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Email"]" @bind="@userToChange.Email">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Password"]" @bind="@newPassword">
             @if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 <p class="error">@ErrorMessage</p>
             }
             <button class="next-btn" @onclick="ChangeInfo">
-                Change
+                @Localizer["Change"]
             </button>
         </div>
     }
@@ -78,7 +85,6 @@
         };
 
     private String newPassword = "";
-    private string[] skills = { "Python", "Java", "C#", "HTML", "C++" };
     private bool IsShowDialog = false;
     private bool isTeacher;
     private string ErrorMessage = "";
@@ -124,7 +130,7 @@
             string.IsNullOrWhiteSpace(userToChange.Email) ||
             string.IsNullOrWhiteSpace(newPassword))
         {
-            ErrorMessage = "All fields must be filled in.";
+            ErrorMessage = Localizer["AllFieldsRequired"];
             return;
         }
 
@@ -147,7 +153,7 @@
         }
         else
         {
-            ErrorMessage = serviceErrorMessage ?? "Failed to update profile. Please try again.";
+            ErrorMessage = serviceErrorMessage ?? Localizer["Error"];
         }
     }
 

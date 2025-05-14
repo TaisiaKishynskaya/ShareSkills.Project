@@ -1,9 +1,11 @@
 @page "/lesson/{id}"
 @using WebClient.Services
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject ICalendarService CalendarService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
     @if (participant != null && meeting != null)
@@ -20,22 +22,23 @@
 
         <div class="content">
             <div class="block">
-                <p class="text-info">Participant:</p>
+                <p class="text-info">@Localizer["Participant"]:</p>
                 <p class="text-value">@participant.Name @participant.Surname</p>
             </div>
 
             <div class="block">
-                <p class="text-info">Time:</p>
+                <p class="text-info">@Localizer["Time"]:</p>
                 <p class="text-value">@meeting.DateTime.ToString("HH:mm")</p>
             </div>
         </div>
 
-        <button class="cancel" @onclick="CancelMeeting">cancel</button>
+        <button class="cancel" @onclick="CancelMeeting">@Localizer["Cancel"]</button>
     }
     else 
     {
-        <p>loading...</p>
+        <p>@Localizer["Loading"]</p>
     }
+    
 </div>
 
 @code {

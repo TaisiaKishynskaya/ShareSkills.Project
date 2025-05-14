@@ -1,53 +1,59 @@
 @page "/registration"
 @using WebClient.Components.Layout
 @using WebClient.Services
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Navigation
 @layout NoMenuLayout
 @inject IAuthService AuthService
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
-    <h1>Skills Share</h1>
+    <h1>@Localizer["AppName"]</h1>
     <div class="info">
         <div class="input-info">
-            <input type="text" class="main-input" placeholder="Name" @bind="@Name">
+            <input type="text" class="main-input" placeholder="@Localizer["Name"]" @bind="@Name">
             @if (isNameError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Name"])</p>
             }
-            <input type="text" class="main-input" placeholder="Surname" @bind="@Surname">
+            <input type="text" class="main-input" placeholder="@Localizer["Surname"]" @bind="@Surname">
             @if (isSurnameError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Surname"])</p>
             }
-            <input type="email" class="main-input" placeholder="email" @bind="@Email">
+            <input type="email" class="main-input" placeholder="@Localizer["Email"]" @bind="@Email">
             @if (isEmailError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Email"])</p>
             }
-            <input type="password" class="main-input" placeholder="Password" @bind="@Password">
+            <input type="password" class="main-input" placeholder="@Localizer["Password"]" @bind="@Password">
             @if (isPasswordError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Password"])</p>
             }
         </div>
         <div class="switch-btn">
-            <p>Student</p>
+            <p>@Localizer["Student"]</p>
             <label class="switch">
                 <input type="checkbox" @bind="@IsTeacher">
                 <span class="slider round"></span>
             </label>
-            <p>Teacher</p>
+            <p>@Localizer["Teacher"]</p>
         </div>
         @if (isError)
         {
-            <p class="error">An error occurred</p>
+            <p class="error">@Localizer["Error"]</p>
         }
-        <button class="next-btn" @onclick="Register">Next</button>
+        <button class="next-btn" @onclick="Register">@Localizer["Next"]</button>
         <div class="login-link">
-            <p>Already have an account?</p>
-            <a @onclick="loginNavigate">Log in</a>
+            <p>@Localizer["AlreadyRegistered"]</p>
+            <a @onclick="loginNavigate">@Localizer["Login"]</a>
         </div>
     </div>
+
+    <!-- Add Language Selector with floating style -->
+    <LanguageSelector IsFloating="true" />
 
     <!-- Floating support button -->
     <div class="support-floating-btn" @onclick="ToggleSupportChat">
@@ -61,7 +67,7 @@
         <div class="support-chat-popup-overlay" @onclick="ToggleSupportChat">
             <div class="support-chat-popup" @onclick:stopPropagation="true">
                 <div class="support-chat-header">
-                    <span>Support Chat</span>
+                    <span>@Localizer["TechnicalSupport"]</span>
                     <svg @onclick="ToggleSupportChat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="close-icon">
                         <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                     </svg>
@@ -69,7 +75,7 @@
                 <div class="support-chat-messages-container" @ref="messagesContainer">
                     @if (isLoadingChatHistory)
                     {
-                        <div class="loading-history">Loading chat history...</div>
+                        <div class="loading-history">@Localizer["LoadingChatHistory"]</div>
                     }
                     else
                     {
@@ -83,7 +89,7 @@
                     }
                 </div>
                 <div class="support-chat-input-area">
-                    <input type="text" class="support-chat-input" placeholder="Type your message..." @bind="currentChatMessage" @bind:event="oninput" @onkeyup="HandleChatInputKeyUp" />
+                    <input type="text" class="support-chat-input" placeholder="@Localizer["TypeMessage"]" @bind="currentChatMessage" @bind:event="oninput" @onkeyup="HandleChatInputKeyUp" />
                     <button class="support-chat-send-btn" @onclick="SendChatMessageAsync" disabled="@(isSendingChatMessage || string.IsNullOrWhiteSpace(currentChatMessage))">
                         @if (isSendingChatMessage)
                         {
@@ -126,7 +132,6 @@
     private ElementReference messagesContainer;
 
     [Inject] private ITechnicalSupportService TechnicalSupportService { get; set; }
-    [Inject] private IJSRuntime JSRuntime { get; set; }
 
     private void ToggleSupportChat()
     {
@@ -165,7 +170,7 @@
         await ScrollToBottom();
 
         // Add "waiting for response" message
-        var waitingMessage = new ChatMessage("Waiting for response...", false, DateTime.Now);
+        var waitingMessage = new ChatMessage(Localizer["WaitingForResponse"], false, DateTime.Now);
         chatMessages.Add(waitingMessage);
         StateHasChanged();
         await ScrollToBottom();
