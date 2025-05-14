@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MobileClient.Services;
+using System.Globalization;
 using System.Net;
 
 namespace MobileClient
@@ -38,8 +39,12 @@ namespace MobileClient
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
-            
+            var defaultCulture = new CultureInfo("en");
+            CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Strings");
+            builder.Services.AddSingleton<ISharedResource, SharedResource>();
+            builder.Services.AddSingleton<ILanguageService, LanguageService>();
             builder.Services.AddScoped<HttpClient>();
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<CalendarService>();
@@ -53,6 +58,7 @@ namespace MobileClient
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
             builder.Services.AddScoped<ISearchService, SearchService>();
             builder.Services.AddScoped<IReportsService, ReportsService>();
+            builder.Services.AddScoped<ITechnicalSupportService, TechnicalSupportService>();
 
             return builder.Build();
         }

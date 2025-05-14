@@ -1,96 +1,95 @@
 @page "/cabinet"
 @using MobileClient.Services
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject IPreferencesService Preferences
 @inject ICabinetService CabinetService
+@inject ILanguageService LanguageService
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
-        <div class="title">
-            <p>Skills Share</p>
-        </div>
+    <div class="title">
+        <p>@Localizer["AppName"]</p>
+    </div>
 
-        <div class="content">
-            @if (user != null)
-            {
-                <div class="block">
-                    <p class="name">@user.Name @user.Surname</p>
-                    <p class="email">@user.Email</p>
-                </div>
-            @*<hr>
+    <div class="content">
+        @if (user != null)
+        {
             <div class="block">
-                <p class="skills-text">Selected skill</p>
-                <div class="skills-cards">
-                    @foreach (var skill in skills) 
-                    {
-                        <div class="skill-card">
-                            <p>@skill</p>
-                        </div>
-                    }
-                </div>
-            </div> *@
+                <p class="name">@user.Name @user.Surname</p>
+                <p class="email">@user.Email</p>
+            </div>
             <hr>
             <div class="switch-btn">
                 <label class="switch">
                     <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleInputClick">
                     <span class="slider round"></span>
                 </label>
-                <p>Allow using Cookies</p>
+                <p>@Localizer["AllowCookies"]</p>
             </div>
-            <button class="feedback" @onclick="() => IsShowDialog=true">Change profile information</button>
+            <div class="language-selector">
+                <p>@Localizer["Language"]</p>
+                <select @onchange="ChangeLanguage">
+                    @foreach (var lang in LanguageService.GetAvailableLanguages())
+                    {
+                        <option value="@lang.CultureCode" selected="@(lang.CultureCode == currentLanguage)">@lang.DisplayName</option>
+                    }
+                </select>
+            </div>
+            <button class="feedback" @onclick="() => IsShowDialog=true">@Localizer["ChangeProfileInfo"]</button>
+            <button class="feedback" @onclick="NavigateToSupport">@Localizer["TechnicalSupport"]</button>
             @if (isTeacher)
             {
-                <button class="feedback" @onclick='() => Navigation.NavigateTo("/choose-skills")'>Change skills</button>
+                <button class="feedback" @onclick='() => Navigation.NavigateTo("/choose-skills")'>@Localizer["ChangeSkills"]</button>
             }
             @if (!isTeacher)
             {
-                <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
-                <button class="feedback" @onclick="goToReportsPage">See reports</button>
+                <button class="feedback" @onclick="goToFeedbackPage">@Localizer["LeaveFeedback"]</button>
+                <button class="feedback" @onclick="goToReportsPage">@Localizer["SeeReports"]</button>
             }
-            }
-            else
-            {
-                <p>loading...</p>
-            }
-             @*for debug*@
-             <button class="feedback" @onclick="ClearPreferences">clear Preferences</button>
-        </div>
-        @if (IsShowDialog)
+        }
+        else
         {
-            <div class="dialog">
-                <svg @onclick="() => {IsShowDialog=false; isError=false;}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-                <input type="text" class="dialog-input" placeholder="Name" @bind="@userToChange.Name">
-                <input type="text" class="dialog-input" placeholder="Surname" @bind = "@userToChange.Surname">
-                <input type="text" class="dialog-input" placeholder="Email" @bind = "@userToChange.Email">
-                <input type="text" class="dialog-input" placeholder="Password" @bind = "@newPassword">
-                @if(isError)
-                {
-                    <p class="error">all field must be filed in</p>              
-                }
-                <button class="next-btn" @onclick="ChangeInfo">
-                    Change
-                </button>
-            </div>
+            <p>@Localizer["Loading"]</p>
         }
     </div>
+    @if (IsShowDialog)
+    {
+        <div class="dialog">
+            <svg @onclick="() => {IsShowDialog=false; isError=false;}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" /></svg>
+            <input type="text" class="dialog-input" placeholder="@Localizer["Name"]" @bind="@userToChange.Name">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Surname"]" @bind="@userToChange.Surname">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Email"]" @bind="@userToChange.Email">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Password"]" @bind="@newPassword">
+            @if (isError)
+            {
+                <p class="error">@Localizer["AllFieldsRequired"]</p>
+            }
+            <button class="next-btn" @onclick="ChangeInfo">
+                @Localizer["Change"]
+            </button>
+        </div>
+    }
+</div>
 
 @code {
-    private User user;
+    private User? user;
     private User userToChange = new User
-    {
-        Id = "",
-        Name = "",
-        Surname = "",
-        Email = "",
-        PasswordHash = "",
-        Role = ""
-    };
+        {
+            Id = "",
+            Name = "",
+            Surname = "",
+            Email = "",
+            PasswordHash = "",
+            Role = ""
+        };
     private String newPassword = "";
-    private string[] skills = {"Python", "Java", "C#", "HTML", "C++"};
     private bool IsShowDialog = false;
     private bool isTeacher;
     private bool isError = false;
     private bool isAllowCookies = false;
+    private string currentLanguage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,11 +105,25 @@
         {
             isAllowCookies = true;
         }
-        StateHasChanged();
-        isTeacher = (Preferences.Get("userRole", string.Empty) == "Teacher") ? true : false;
+        isTeacher = (Preferences.Get("userRole", string.Empty) == "Teacher");
+        LanguageService.InitializeLanguageAsync();
+        currentLanguage = LanguageService.GetCurrentLanguage();
     }
 
-    private void goToFeedbackPage() {
+    private async Task ChangeLanguage(ChangeEventArgs e)
+    {
+        string newLanguage = e.Value.ToString();
+        if (newLanguage != currentLanguage)
+        {
+            await LanguageService.SetLanguageAsync(newLanguage);
+            currentLanguage = newLanguage;
+            // Reload the page to apply new language
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+
+    private void goToFeedbackPage()
+    {
         Navigation.NavigateTo("/feedback");
     }
 
@@ -119,15 +132,14 @@
         Navigation.NavigateTo("/reports");
     }
 
-    //for debug
-    private void ClearPreferences()
+    private void NavigateToSupport()
     {
-        Preferences.Clear();
-        Console.WriteLine("Cleared Preferences");
+        Navigation.NavigateTo("/support");
     }
 
-    private async Task ChangeInfo() {
-        if (userToChange.Name == "" || userToChange.Surname == "" || userToChange.Email == "" || newPassword == "")
+    private async Task ChangeInfo()
+    {
+        if (string.IsNullOrWhiteSpace(userToChange.Name) || string.IsNullOrWhiteSpace(userToChange.Surname) || string.IsNullOrWhiteSpace(userToChange.Email) || string.IsNullOrWhiteSpace(newPassword))
         {
             isError = true;
         }
@@ -135,19 +147,19 @@
         {
             IsShowDialog = false;
             isError = false;
+            // Optionally, refresh user data if it changed
+            user = await CabinetService.GetUser();
             StateHasChanged();
+        }
+        else
+        {
+            // Handle failure to change info, maybe show a different error
+            isError = true; // Or a more specific error message
         }
     }
 
     private async Task HandleInputClick()
     {
-        if (isAllowCookies)
-        {
-            Preferences.Set("allowCookies", "true");
-        }
-        else
-        {
-            Preferences.Set("allowCookies", "false");
-        }
+        Preferences.Set("allowCookies", isAllowCookies ? "true" : "false");
     }
 }

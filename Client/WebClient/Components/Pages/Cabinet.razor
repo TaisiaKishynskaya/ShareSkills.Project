@@ -1,13 +1,15 @@
 @page "/cabinet"
 @using WebClient.Services
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject ICabinetService CabinetService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
     <div class="title">
-        <p>Skills Share</p>
+        <p>@Localizer["AppName"]</p>
     </div>
 
     <div class="content">
@@ -17,82 +19,72 @@
                 <p class="name">@user.Name @user.Surname</p>
                 <p class="email">@user.Email</p>
             </div>
-            @*
-            <hr>
-             <div class="block">
-                <p class="skills-text">Choosed skills</p>
-                <div class="skills-cards">
-                    @foreach (var skill in skills)
-                    {
-                        <div class="skill-card">
-                            <p>@skill</p>
-                        </div>
-                    }
-                </div>
-            </div> *@
             <hr>
             <div class="switch-btn">
                 <label class="switch">
-                    <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleInputClick">
+                    <input type="checkbox" @bind="@isAllowCookies" @bind:after="HandleCookiesPreferenceChange">
                     <span class="slider round"></span>
                 </label>
-                <p>Allow using Cookies</p>
+                <p>@Localizer["AllowCookies"]</p>
             </div>
-            <button class="feedback" @onclick="() => IsShowDialog = true">Change profile information</button>
+            
+            <!-- Add Language Selector (non-floating) -->
+            <LanguageSelector IsFloating="false" />
+            
+            <button class="feedback" @onclick="() => IsShowDialog = true">@Localizer["ChangeProfileInfo"]</button>
+            <button class="feedback" @onclick="NavigateToSupport">@Localizer["TechnicalSupport"]</button>
             @if (isTeacher)
             {
-                <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>Change skills</button>
+                <button class="feedback" @onclick='() => Navigation.NavigateTo("/chooseSkills")'>@Localizer["ChangeSkills"]</button>
             }
 
             @if (!isTeacher)
             {
-                <button class="feedback" @onclick="goToFeedbackPage">Leave feedback</button>
-                <button class="feedback" @onclick="goToReportsPage">See reports</button>
+                <button class="feedback" @onclick="goToFeedbackPage">@Localizer["LeaveFeedback"]</button>
+                <button class="feedback" @onclick="goToReportsPage">@Localizer["SeeReports"]</button>
             }
         }
         else
         {
-            <p>loading...</p>
+            <p>@Localizer["Loading"]</p>
         }
-        @* for debug *@
-        @* <button class="feedback" @onclick="ClearPreferences">clear Preferences</button> *@
     </div>
+    
     @if (IsShowDialog)
     {
         <div class="dialog">
             <svg @onclick="() => { IsShowDialog = false; ErrorMessage = string.Empty; }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
             </svg>
-            <input type="text" class="dialog-input" placeholder="Name" @bind="@userToChange.Name">
-            <input type="text" class="dialog-input" placeholder="Surname" @bind="@userToChange.Surname">
-            <input type="text" class="dialog-input" placeholder="Email" @bind="@userToChange.Email">
-            <input type="text" class="dialog-input" placeholder="Password" @bind="@newPassword">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Name"]" @bind="@userToChange.Name">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Surname"]" @bind="@userToChange.Surname">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Email"]" @bind="@userToChange.Email">
+            <input type="text" class="dialog-input" placeholder="@Localizer["Password"]" @bind="@newPassword">
             @if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 <p class="error">@ErrorMessage</p>
             }
             <button class="next-btn" @onclick="ChangeInfo">
-                Change
+                @Localizer["Change"]
             </button>
         </div>
     }
 </div>
 
 @code {
-    private User user;
+    private User? user; // Nullable User
 
     private User userToChange = new User
-    {
-        Id = "",
-        Name = "",
-        Surname = "",
-        Email = "",
-        PasswordHash = "",
-        Role = "",
-    };
+        {
+            Id = "",
+            Name = "",
+            Surname = "",
+            Email = "",
+            PasswordHash = "",
+            Role = "",
+        };
 
     private String newPassword = "";
-    private string[] skills = { "Python", "Java", "C#", "HTML", "C++" };
     private bool IsShowDialog = false;
     private bool isTeacher;
     private string ErrorMessage = "";
@@ -106,38 +98,29 @@
             userToChange.Name = user.Name;
             userToChange.Surname = user.Surname;
             userToChange.Email = user.Email;
-            userToChange.PasswordHash = user.PasswordHash;
+            userToChange.PasswordHash = user.PasswordHash; // Assuming this is okay to copy for change purposes
         }
 
-        var allowCookies = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "allowCookies");
-        isAllowCookies = allowCookies == "true";
+        var allowCookiesPreference = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "allowCookies");
+        isAllowCookies = allowCookiesPreference == "true";
 
-        StateHasChanged();
-        isTeacher = (await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole") == "Teacher") ? true : false;
+        var userRolePreference = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userRole");
+        isTeacher = userRolePreference == "Teacher";
     }
 
     private void goToFeedbackPage()
     {
         Navigation.NavigateTo("/feedback");
     }
-    
+
     private void goToReportsPage()
     {
         Navigation.NavigateTo("/reports");
     }
 
-    // for debug
-    private async Task ClearPreferences()
+    private void NavigateToSupport()
     {
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.clear");
-            Console.WriteLine("Cleared Preferences");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error clearing preferences: {ex.Message}");
-        }
+        Navigation.NavigateTo("/support");
     }
 
     private async Task ChangeInfo()
@@ -147,33 +130,37 @@
             string.IsNullOrWhiteSpace(userToChange.Email) ||
             string.IsNullOrWhiteSpace(newPassword))
         {
-            ErrorMessage = "All fields must be filled in.";
+            ErrorMessage = Localizer["AllFieldsRequired"];
             return;
         }
 
-        var (success, errorMessage) = await CabinetService.ChangeInfo(userToChange, newPassword);
+        ErrorMessage = ""; // Clear previous error
+
+        // Assuming CabinetService.ChangeInfo returns a tuple (bool success, string? errorMessage)
+        var (success, serviceErrorMessage) = await CabinetService.ChangeInfo(userToChange, newPassword);
         if (success)
         {
             IsShowDialog = false;
-            ErrorMessage = "";
+            // Optionally, refresh user data from service
+            user = await CabinetService.GetUser();
+            if (user != null) // Update userToChange as well if dialog might reopen with old data
+            {
+                userToChange.Name = user.Name;
+                userToChange.Surname = user.Surname;
+                userToChange.Email = user.Email;
+            }
             StateHasChanged();
         }
         else
         {
-            ErrorMessage = errorMessage;
+            ErrorMessage = serviceErrorMessage ?? Localizer["Error"];
         }
     }
 
-    private async Task HandleInputClick()
+    // Renamed from HandleInputClick for clarity as it's specifically for cookies
+    private async Task HandleCookiesPreferenceChange()
     {
-        if (isAllowCookies)
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "true");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", "false");
-        }
+        // isAllowCookies is already bound and updated. This method runs after the update.
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "allowCookies", isAllowCookies ? "true" : "false");
     }
-
 }

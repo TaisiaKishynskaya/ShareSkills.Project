@@ -1,0 +1,56 @@
+﻿@using MobileClient.Services
+@using Microsoft.Extensions.Localization
+@inject ILanguageService LanguageService
+@inject IStringLocalizer<SharedResource> Localizer
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+@if (IsFloating)
+{
+    <div class="floating-language-selector">
+        <select @onchange="ChangeLanguage">
+            @foreach (var lang in LanguageService.GetAvailableLanguages())
+            {
+                <option value="@lang.CultureCode" selected="@(lang.CultureCode == currentLanguage)">@lang.DisplayName</option>
+            }
+        </select>
+    </div>
+}
+else
+{
+    <div class="language-selector">
+        <p>@Localizer["Language"]</p>
+        <select @onchange="ChangeLanguage">
+            @foreach (var lang in LanguageService.GetAvailableLanguages())
+            {
+                <option value="@lang.CultureCode" selected="@(lang.CultureCode == currentLanguage)">@lang.DisplayName</option>
+            }
+        </select>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsFloating { get; set; } = false;
+
+    private string currentLanguage;
+
+    protected override void OnInitialized()
+    {
+        currentLanguage = LanguageService.GetCurrentLanguage();
+    }
+
+    private async Task ChangeLanguage(ChangeEventArgs e)
+    {
+        string newLanguage = e.Value.ToString();
+        if (newLanguage != currentLanguage)
+        {
+            // Set the language in the service
+            await LanguageService.SetLanguageAsync(newLanguage);
+            currentLanguage = newLanguage;
+
+            // Use JS interop to force a full page reload
+            await JSRuntime.InvokeVoidAsync("reloadPage");
+        }
+    }
+}
