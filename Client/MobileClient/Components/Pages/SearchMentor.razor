@@ -1,12 +1,14 @@
 @page "/search"
 @using MobileClient.Services
+@using Microsoft.Extensions.Localization
 @inject NavigationManager Navigation
 @inject IAuthService AuthService
 @inject ISearchService SearchService
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
     <div class="search">
-        <input class="mentor-search" type="email" placeholder="Search teacher..." @bind="email">
+        <input class="mentor-search" type="email" placeholder="@Localizer["SearchTeacher"]" @bind="email">
         <svg @onclick="()=>isFilters = !isFilters" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/></svg>
     </div>
     @if (isFilters)
@@ -15,7 +17,7 @@
             <div class="filters">
                 <div class="col">
                     <div class="head">
-                        <p>skill:</p>
+                        <p>@Localizer["Skill"]:</p>
                     </div>
                     <div class="content">
                         @if (skills != null)
@@ -33,47 +35,47 @@
 
                 <div class="col">
                     <div class="head">
-                        <p>time:</p>
+                        <p>@Localizer["Time"]:</p>
                     </div>
                     <div class="content">
                         <div class="skill-check-container">
                             <input class="skill-check" type="radio" name="time" @onchange="@(()=>time = "Morning")">
-                            <p>Morning</p>
+                            <p>@Localizer["Morning"]</p>
                         </div>
                         <div class="skill-check-container">
                             <input class="skill-check" type="radio" name="time" @onchange="@(()=>time = "Day")">
-                            <p>Day</p>
+                            <p>@Localizer["Day"]</p>
                         </div>
                         <div class="skill-check-container">
                             <input class="skill-check" type="radio" name="time" @onchange="@(()=>time = "Evening")">
-                            <p>Evening</p>
+                            <p>@Localizer["Evening"]</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="head">
-                        <p>level:</p>
+                        <p>@Localizer["Level"]:</p>
                     </div>
                     <div class="content">
                         <div class="skill-check-container">
                             <input class="skill-check" type="radio" name="level" @onchange="@(()=>level = "Introductory")">
-                            <p>Introductory</p>
+                            <p>@Localizer["Introductory"]</p>
                         </div>
                         <div class="skill-check-container">
                             <input class="skill-check" type="radio" name="level" @onchange="@(()=>level = "Advanced")">
-                            <p>Advanced</p>
+                            <p>@Localizer["Advanced"]</p>
                         </div>
                         <div class="skill-check-container">
                             <input class="skill-check" type="radio" name="level" @onchange="@(()=>level = "Intermediate")">
-                            <p>Intermediate</p>
+                            <p>@Localizer["Intermediate"]</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     }
-    <button class="find-btn" @onclick="searchTeacher">find</button>
+    <button class="find-btn" @onclick="searchTeacher">@Localizer["Find"]</button>
     <div class="mentor-cards">
         @if (teachers != null)
         {
@@ -95,6 +97,7 @@
         }
         }
     </div>
+    
 </div>
 
 @code {

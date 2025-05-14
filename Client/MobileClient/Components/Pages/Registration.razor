@@ -1,53 +1,58 @@
 @page "/registration"
 @using MobileClient.Services
+@using Microsoft.Extensions.Localization
 @layout NoMenuLayout
 @inject NavigationManager Navigation
 @inject HttpClient httpClient
 @inject IAuthService AuthService
+@inject IStringLocalizer<SharedResource> Localizer
 
 <div class="main">
-    <h1>Skills Share</h1>
+    <h1>@Localizer["AppName"]</h1>
     <div class="info">
         <div class="input-info">
-            <input type="text" class="main-input" placeholder="Name" @bind="@Name">
+            <input type="text" class="main-input" placeholder="@Localizer["Name"]" @bind="@Name">
             @if (isNameError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Name"])</p>
             }
-            <input type="text" class="main-input" placeholder="Surname" @bind="@Surname">
+            <input type="text" class="main-input" placeholder="@Localizer["Surname"]" @bind="@Surname">
             @if (isSurnameError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Surname"])</p>
             }
-            <input type="email" class="main-input" placeholder="email" @bind="@Email">
+            <input type="email" class="main-input" placeholder="@Localizer["Email"]" @bind="@Email">
             @if (isEmailError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Email"])</p>
             }
-            <input type="password" class="main-input" placeholder="Password" @bind="@Password">
+            <input type="password" class="main-input" placeholder="@Localizer["Password"]" @bind="@Password">
             @if (isPasswordError)
             {
                 <p class="error">@string.Join(",", registerResponse.Errors["Password"])</p>
             }
         </div>
         <div class="switch-btn">
-            <p>Student</p>
+            <p>@Localizer["Student"]</p>
             <label class="switch">
                 <input type="checkbox" @bind="@IsTeacher">
                 <span class="slider round"></span>
             </label>
-            <p>Teacher</p>
+            <p>@Localizer["Teacher"]</p>
         </div>
         @if (isError)
         {
-            <p class="error">An error occurred</p>
+            <p class="error">@Localizer["Error"]</p>
         }
-        <button class="next-btn" @onclick="Register">Next</button>
+        <button class="next-btn" @onclick="Register">@Localizer["Next"]</button>
         <div class="login-link">
-            <p>already registered?</p>
-            <a href="" @onclick="loginNavigate">login</a>
+            <p>@Localizer["AlreadyRegistered"]</p>
+            <a href="" @onclick="loginNavigate">@Localizer["Login"]</a>
         </div>
     </div>
+
+    <!-- Added Language Selector -->
+    <LanguageSelector IsFloating="true" />
 
     <!-- Floating support button -->
     <div class="support-floating-btn" @onclick="NavigateToSupport">
