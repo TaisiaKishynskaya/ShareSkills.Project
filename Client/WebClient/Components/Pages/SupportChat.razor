@@ -31,6 +31,17 @@
                         <span class="message-timestamp">@msg.Timestamp.ToString("hh:mm tt")</span>
                     </div>
                 }
+
+                @if (isWaitingForResponse)
+                {
+                    <div class="typing-indicator">
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                }
             }
         </div>
 
@@ -52,7 +63,7 @@
             </button>
         </div>
     </div>
-    
+
 </div>
 
 @code {
@@ -60,6 +71,7 @@
     private List<ChatMessage> messages = new List<ChatMessage>();
     private bool isLoadingHistory = false;
     private bool isSending = false;
+    private bool isWaitingForResponse = false;
     private ElementReference messagesContainer;
 
     protected override async Task OnInitializedAsync()
@@ -83,6 +95,7 @@
         if (string.IsNullOrWhiteSpace(currentMessage) || isSending) return;
 
         isSending = true;
+        isWaitingForResponse = true;
         StateHasChanged();
 
         var messageText = currentMessage;
@@ -94,22 +107,17 @@
         StateHasChanged();
         await ScrollToBottom();
 
-        // Add "waiting for response" message
-        var waitingMessage = new ChatMessage(Localizer["WaitingForResponse"], false, DateTime.Now);
-        messages.Add(waitingMessage);
-        StateHasChanged();
-        await ScrollToBottom();
-
         // Send message to service (this will add user's message to history and make API call)
         await TechnicalSupportService.SendMessageAsync(messageText);
 
         // Get updated chat history (which now includes the API response)
         var updatedHistory = await TechnicalSupportService.GetChatHistoryAsync();
 
-        // Replace our local messages list (removing the "waiting" message)
+        // Replace our local messages list
         messages = updatedHistory;
 
         isSending = false;
+        isWaitingForResponse = false;
         StateHasChanged();
         await ScrollToBottom();
     }

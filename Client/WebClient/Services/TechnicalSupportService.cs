@@ -35,7 +35,7 @@ namespace WebClient.Services
                 var requestBody = new { prompt = message };
 
                 // Make API call to Ollama
-                var response = await _httpClient.PostAsJsonAsync("/ollama/generate", requestBody);
+                var response = await _httpClient.PostAsJsonAsync("http://localhost:5115/ollama/generate", requestBody);
 
                 // Check response status
                 response.EnsureSuccessStatusCode();

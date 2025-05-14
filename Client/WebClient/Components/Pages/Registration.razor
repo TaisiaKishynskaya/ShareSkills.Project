@@ -86,6 +86,17 @@
                                 <span class="message-timestamp">@msg.Timestamp.ToString("hh:mm tt")</span>
                             </div>
                         }
+
+                        @if (isWaitingForResponse)
+                        {
+                            <div class="typing-indicator">
+                                <div class="typing-dots">
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                </div>
+                            </div>
+                        }
                     }
                 </div>
                 <div class="support-chat-input-area">
@@ -129,6 +140,7 @@
     private List<ChatMessage> chatMessages = new List<ChatMessage>();
     private bool isLoadingChatHistory = false;
     private bool isSendingChatMessage = false;
+    private bool isWaitingForResponse = false;
     private ElementReference messagesContainer;
 
     [Inject] private ITechnicalSupportService TechnicalSupportService { get; set; }
@@ -158,6 +170,7 @@
         if (string.IsNullOrWhiteSpace(currentChatMessage) || isSendingChatMessage) return;
 
         isSendingChatMessage = true;
+        isWaitingForResponse = true;
         StateHasChanged();
 
         var messageText = currentChatMessage;
@@ -166,12 +179,6 @@
         // Add user message to UI
         var userMessage = new ChatMessage(messageText, true, DateTime.Now);
         chatMessages.Add(userMessage);
-        StateHasChanged();
-        await ScrollToBottom();
-
-        // Add "waiting for response" message
-        var waitingMessage = new ChatMessage(Localizer["WaitingForResponse"], false, DateTime.Now);
-        chatMessages.Add(waitingMessage);
         StateHasChanged();
         await ScrollToBottom();
 
@@ -185,6 +192,7 @@
         chatMessages = updatedHistory;
 
         isSendingChatMessage = false;
+        isWaitingForResponse = false;
         StateHasChanged();
         await ScrollToBottom();
     }
