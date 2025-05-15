@@ -6,15 +6,27 @@ public class OllamaService : IOllamaService
 {
     private readonly HttpClient _httpClient;
     private const string ModelName = "llama3.2";
+    private readonly ICacheService _cacheService;
 
-    public OllamaService(HttpClient httpClient)
+    public OllamaService(HttpClient httpClient, ICacheService cacheService)
     {
         _httpClient = httpClient;
         _httpClient.BaseAddress = new Uri("http://localhost:11434");
+        _cacheService = cacheService;
     }
 
     public async Task<string> GetOllamaResponseAsync(string prompt)
     {
+        var cacheKey = $"ollama:{prompt.Trim()}";
+        
+        var cachedResponse = await _cacheService.GetCacheValueAsync(cacheKey);
+
+        if (!string.IsNullOrEmpty(cachedResponse))
+        {
+            Console.WriteLine($"[CACHE HIT] Returning cached result for: {prompt}");
+            return cachedResponse;
+        }
+        
         var requestBody = new
         {
             model = ModelName,
@@ -31,7 +43,16 @@ public class OllamaService : IOllamaService
 
             var responseString = await response.Content.ReadAsStringAsync();
             var json = JsonDocument.Parse(responseString);
-            return json.RootElement.GetProperty("response").GetString();
+            var result = json.RootElement.GetProperty("response").GetString();
+            
+            if (!string.IsNullOrEmpty(result))
+            {
+                await _cacheService.SetCacheValueAsync(cacheKey, result);
+                Console.WriteLine($"[CACHE SET] Key: {cacheKey}");
+            }
+            
+            return result;
+
         }
         catch (Exception ex)
         {
