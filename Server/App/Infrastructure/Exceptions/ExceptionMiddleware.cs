@@ -19,6 +19,7 @@ public class ExceptionMiddleware
         { typeof(ArgumentException), StatusCodes.Status400BadRequest },
         { typeof(ValidationAsyncException), StatusCodes.Status400BadRequest },
         { typeof(ModelTimeoutException), StatusCodes.Status504GatewayTimeout },
+        { typeof(BadRequestException), StatusCodes.Status400BadRequest },
         { typeof(Exception), StatusCodes.Status500InternalServerError }
     };
 

@@ -18,6 +18,9 @@ public class OllamaService : IOllamaService
 
     public async Task<string> GetOllamaResponseAsync(string prompt)
     {
+        if (string.IsNullOrWhiteSpace(prompt))
+            throw new BadRequestException("Prompt cannot be empty.");
+        
         var cacheKey = $"ollama:{prompt.Trim()}";
         
         var cachedResponse = await _cacheService.GetCacheValueAsync(cacheKey);
