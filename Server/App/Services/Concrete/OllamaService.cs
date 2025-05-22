@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using App.Services.Abstract;
-
+using App.Infrastructure.Exceptions.Base;
 public class OllamaService : IOllamaService
 {
     private readonly HttpClient _httpClient;
@@ -12,6 +12,7 @@ public class OllamaService : IOllamaService
     {
         _httpClient = httpClient;
         _httpClient.BaseAddress = new Uri("http://localhost:11434");
+        _httpClient.Timeout = TimeSpan.FromSeconds(60);
         _cacheService = cacheService;
     }
 
@@ -54,10 +55,10 @@ public class OllamaService : IOllamaService
             return result;
 
         }
-        catch (Exception ex)
+        catch (TaskCanceledException)
         {
-            Console.WriteLine($"[OLLAMA ERROR] {ex.Message}");
-            return $"Error while contacting the model: {ex.Message}";
+            throw new ModelTimeoutException(
+                $"Model did not respond within {_httpClient.Timeout.TotalSeconds} seconds");
         }
     }
 }
