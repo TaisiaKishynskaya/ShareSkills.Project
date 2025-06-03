@@ -1,4 +1,5 @@
-﻿using Libraries.Entities.Concrete;
+﻿using Libraries.Data;
+using Libraries.Entities.Concrete;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
@@ -39,7 +40,7 @@ namespace App.Services.RecommendationSystem.Test
 
     public class TeacherRatingService
     {
-        private readonly FakeAppDbContext _context;
+        private readonly AppDbContext _context;
         private readonly MLContext _mlContext;
         private ITransformer _model;
         private ITransformer _cfModel;
@@ -47,7 +48,7 @@ namespace App.Services.RecommendationSystem.Test
         private PredictionEngine<TeacherCfData, TeacherScorePrediction> _cfEngine;
         private readonly ICosineSimilarityService _cosine;
 
-        public TeacherRatingService(FakeAppDbContext context, ICosineSimilarityService cosine)
+        public TeacherRatingService(AppDbContext context, ICosineSimilarityService cosine)
         {
             _context    = context;
             _cosine     = cosine;
@@ -78,7 +79,7 @@ namespace App.Services.RecommendationSystem.Test
                 );
 
             // regression training data
-            var trainingData = teacherRatings.Select(tr =>
+            var trainingData = teacherRatings.ToList().Select(tr =>
             {
                 var stats   = studentStats[tr.StudentId];
                 var teacher = _context.Teachers.First(t => t.Id == tr.TeacherId);

@@ -24,8 +24,26 @@ public class MeetingRepositoryTests
     public async Task GetAllAsync_ShouldReturnAllMeetings()
     {
         // Arrange
-        var meeting1 = new MeetingEntity { Id = Guid.NewGuid(), Name = "Meeting 1", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid()};
-        var meeting2 = new MeetingEntity { Id = Guid.NewGuid(), Name = "Meeting 2", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting1 = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Meeting 1",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
+        var meeting2 = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Meeting 2",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
         _context.Meetings.AddRange(meeting1, meeting2);
         await _context.SaveChangesAsync();
 
@@ -43,7 +61,16 @@ public class MeetingRepositoryTests
     public async Task GetByIdAsync_ShouldReturnCorrectMeeting()
     {
         // Arrange
-        var meeting = new MeetingEntity { Id = Guid.NewGuid(), Name = "Meeting", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Meeting",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
         _context.Meetings.Add(meeting);
         await _context.SaveChangesAsync();
 
@@ -62,7 +89,16 @@ public class MeetingRepositoryTests
         // Arrange
         var ownerId = Guid.NewGuid();
         var dateTime = DateTime.UtcNow;
-        var meeting = new MeetingEntity { Id = Guid.NewGuid(), Name = "Meeting", DateTime = dateTime, OwnerId = ownerId, ForeignId = Guid.NewGuid() };
+        var meeting = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Meeting",
+            DateTime = dateTime,
+            OwnerId = ownerId,
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
         _context.Meetings.Add(meeting);
         await _context.SaveChangesAsync();
 
@@ -93,7 +129,16 @@ public class MeetingRepositoryTests
     public void Insert_ShouldAddMeeting()
     {
         // Arrange
-        var meeting = new MeetingEntity { Id = Guid.NewGuid(), Name = "New Meeting", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "New Meeting",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
 
         // Act
         _repository.Insert(meeting);
@@ -110,11 +155,29 @@ public class MeetingRepositoryTests
     {
         // Arrange
         var meetingId = Guid.NewGuid();
-        var meeting1 = new MeetingEntity { Id = meetingId, Name = "Meeting 1", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting1 = new MeetingEntity
+        {
+            Id = meetingId,
+            Name = "Meeting 1",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
         _repository.Insert(meeting1);
         _context.SaveChanges();
 
-        var meeting2 = new MeetingEntity { Id = meetingId, Name = "Meeting 2", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting2 = new MeetingEntity
+        {
+            Id = meetingId,
+            Name = "Meeting 2",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
 
         // Act & Assert
         var exception = Record.Exception(() =>
@@ -132,7 +195,16 @@ public class MeetingRepositoryTests
     public void Remove_ShouldDeleteMeeting()
     {
         // Arrange
-        var meeting = new MeetingEntity { Id = Guid.NewGuid(), Name = "Meeting to Delete", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Meeting to Delete",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
         _context.Meetings.Add(meeting);
         _context.SaveChanges();
 
@@ -149,7 +221,16 @@ public class MeetingRepositoryTests
     public async Task Remove_ShouldThrowDbUpdateConcurrencyExceptionIfMeetingDoesNotExist()
     {
         // Arrange
-        var meeting = new MeetingEntity { Id = Guid.NewGuid(), Name = "Nonexistent Meeting", DateTime = DateTime.UtcNow, OwnerId = Guid.NewGuid(), ForeignId = Guid.NewGuid() };
+        var meeting = new MeetingEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Nonexistent Meeting",
+            DateTime = DateTime.UtcNow,
+            OwnerId = Guid.NewGuid(),
+            ForeignId = Guid.NewGuid(),
+            Theme = null,
+            SkillId = default
+        };
 
         // Act & Assert
         var exception = await Record.ExceptionAsync(async () =>

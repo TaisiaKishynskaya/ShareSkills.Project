@@ -1,10 +1,10 @@
-﻿using Libraries.Entities.Concrete;
+﻿using Libraries.Data;
+using Libraries.Entities.Concrete;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
 namespace App.Services.RecommendationSystem.Test
 {
-    // Для обучения: только числовые признаки + Label
     public class CourseTrainData
     {
         [LoadColumn(0)] public float SkillsMatchCount;
@@ -12,7 +12,6 @@ namespace App.Services.RecommendationSystem.Test
         [LoadColumn(2), ColumnName("Label")] public float Rating;
     }
 
-    // Для предсказания: мета + признаки
     public class CoursePredictData
     {
         public Guid CourseId;
@@ -21,13 +20,11 @@ namespace App.Services.RecommendationSystem.Test
         public float FavTeacherCount;
     }
 
-    // Выход модели
     public class CourseScorePrediction
     {
         [ColumnName("Score")] public float Score;
     }
 
-    // для CF‑обучения student–course–grade
     public class CourseCfData
     {
         [LoadColumn(0)] public uint StudentId;
@@ -41,12 +38,12 @@ namespace App.Services.RecommendationSystem.Test
         private DataViewSchema _schema;
         private ITransformer _cfCourseModel;
         private PredictionEngine<CourseCfData, CourseScorePrediction> _cfCourseEngine;
-        private readonly FakeAppDbContext _ctx;
+        private readonly AppDbContext _ctx;
         private readonly MLContext _ml;
         private const string _path = "courses.zip";
         private readonly ICosineSimilarityService _cosine;
 
-        public CourseRecommendationService(FakeAppDbContext ctx, ICosineSimilarityService cosine)
+        public CourseRecommendationService(AppDbContext ctx, ICosineSimilarityService cosine)
         {
             _ctx = ctx;
             _ml = new MLContext(seed: 0);
@@ -56,7 +53,6 @@ namespace App.Services.RecommendationSystem.Test
 
         public void TrainModel()
         {
-            // ——— 1) FastTree regression training ———
             var data = new List<CourseTrainData>();
             foreach (var gr in _ctx.Grades)
             {
@@ -71,7 +67,6 @@ namespace App.Services.RecommendationSystem.Test
 
             var dv = _ml.Data.LoadFromEnumerable(data);
 
-            // ——— 2.1) Prepare CF data from GradeEntity ———
             var cfCourseData = _ctx.Grades
                 .SelectMany(g => g.Students.Select(s => new CourseCfData
                 {
@@ -82,7 +77,6 @@ namespace App.Services.RecommendationSystem.Test
                 .ToList();
             var cfCdDv = _ml.Data.LoadFromEnumerable(cfCourseData);
 
-            // ——— 2.2) Train MF-model for courses ———
             var cfCoursePipe = _ml.Transforms.Conversion.MapValueToKey("UserEncoded", nameof(CourseCfData.StudentId))
                                  .Append(_ml.Transforms.Conversion.MapValueToKey("ItemEncoded", nameof(CourseCfData.CourseId)))
                                  .Append(_ml.Recommendation().Trainers.MatrixFactorization(
@@ -97,7 +91,6 @@ namespace App.Services.RecommendationSystem.Test
             _cfCourseModel = cfCoursePipe.Fit(cfCdDv);
             _cfCourseEngine = _ml.Model.CreatePredictionEngine<CourseCfData, CourseScorePrediction>(_cfCourseModel);
 
-            // ——— continue FastTree regression ———
             var pipe = _ml.Transforms.Concatenate("Features",
                             nameof(CourseTrainData.SkillsMatchCount),
                             nameof(CourseTrainData.FavTeacherCount))
@@ -114,30 +107,25 @@ namespace App.Services.RecommendationSystem.Test
         {
             if (_model == null) TrainModel();
 
-            // 1) Курсы, которые студент уже оценил
             var seen = _ctx.Grades
                 .Where(g => g.Students.Any(s => s.Id == studentId))
                 .SelectMany(g => g.Courses.Select(c => c.Id))
                 .ToHashSet();
 
-            // 2) Навыки из курсов, оцененных >=3
             var prefSkills = _ctx.Grades
                 .Where(g => g.Grade >= 3 && g.Students.Any(s => s.Id == studentId))
                 .SelectMany(g => g.Courses)
                 .SelectMany(c => c.Teachers.Select(t => t.SkillId))
                 .ToHashSet();
 
-            // 3) Любимые преподаватели (rating>=4)
             var favT = _ctx.TeacherRatings
                 .Where(r => r.StudentId == studentId && r.Rating >= 4)
                 .Select(r => r.TeacherId).ToHashSet();
 
-            // 4) Кандидатные курсы
             var cands = _ctx.Courses
                 .Where(c => !seen.Contains(c.Id) && c.Teachers.Any(t => prefSkills.Contains(t.SkillId)))
                 .ToList();
 
-            // Формируем предсказания
             var pd = new List<CoursePredictData>();
             foreach (var c in cands)
             {
@@ -150,7 +138,6 @@ namespace App.Services.RecommendationSystem.Test
                 });
             }
 
-            // Prepare FastTree features
             var fd = pd.Select(x => new CourseTrainData
             {
                 SkillsMatchCount = x.SkillsMatchCount,
@@ -160,7 +147,6 @@ namespace App.Services.RecommendationSystem.Test
             var dv2 = _ml.Data.LoadFromEnumerable(fd);
             var ftPreds = _model.Transform(dv2);
 
-            // ——— 3.1) Prepare CF prediction data ———
             var cfPredData = pd.Select(x => new CourseCfData
             {
                 StudentId = GuidToUIntMapper.Map(x.StudentId),
@@ -192,7 +178,6 @@ namespace App.Services.RecommendationSystem.Test
             return results;
         }
 
-        // Guid→uint mapper
         public static class GuidToUIntMapper
         {
             public static uint Map(Guid guid) =>

@@ -2,9 +2,11 @@
 using System.Net.Http.Json;
 using App.Infrastructure.Mapping.Endpoints.Concrete;
 using App.Services.RecommendationSystem.Test;
+using Libraries.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
 namespace Server.UnitTests.Test;
@@ -13,12 +15,12 @@ public class RecommendationsEndpointTests
 {
     private readonly IHost _host;
     private readonly HttpClient _client;
-    private readonly FakeAppDbContext _ctx;
+    private readonly AppDbContext _ctx;
 
     public RecommendationsEndpointTests()
     {
         // Используем тот же FakeAppDbContext для проверки совпадения
-        _ctx = new FakeAppDbContext();
+        _ctx = new AppDbContext(new DbContextOptions<AppDbContext>());
 
         _host = new HostBuilder()
             .ConfigureWebHostDefaults(webBuilder =>
